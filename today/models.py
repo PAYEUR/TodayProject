@@ -1,20 +1,16 @@
-from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 
 from django.db import models
 from swingtime.models import Event
 
 
-class Image(models.Model):
-    """ Single table that contains images either from download from existing db
+@python_2_unicode_compatible
+class Picture(models.Model):
+    """ Single table that contains images either from download or from existing db
+        Each Image is related to one single Event
     """
-    field = models.ImageField()
-
-
-class EventWithImage(models.Model):
-    """ swingtime.Event + Image so that an event in todayProject is necessarily linked to an image
-    """
-    event = models.ForeignKey(Event)
-    image = models.ForeignKey(Image)
+    image = models.ImageField()
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return self.event.title

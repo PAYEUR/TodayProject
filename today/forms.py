@@ -1,4 +1,14 @@
-from django import forms
+from django.forms import CharField, Form, ModelForm
+from today.models import Picture
 
-class NameForm(forms.Form):
-    your_name = forms.CharField(label="Your name", max_length=100)
+
+class PictureForm(ModelForm):
+    class Meta:
+        model = Picture
+        fields = '__all__'
+
+
+class NameForm(Form):
+    """ formulaire bateau
+    """
+    your_name = CharField(label='Your name', max_length=100)
