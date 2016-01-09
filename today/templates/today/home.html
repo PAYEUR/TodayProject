@@ -1,7 +1,18 @@
 {% extends 'today/base.html' %}
 
-{% block title %}django-bootstrap3{% endblock %}
+{% load bootstrap3 %}
+
+{% block title %}
+    Accueil
+{% endblock %}
 
 {% block content %}
-    This is <em>bootstrap3</em> for <strong>Django</strong>.
+
+    {% block carousel %} <p> ici sera  le carrousel </p> {% endblock %}
+
+    {# Wrap the rest of the page in another container to center all of the content #}
+    <div class="container marketing">
+    {% block message_and_featurettes  %}(no content){% endblock %}
+    </div>
+
 {% endblock %}

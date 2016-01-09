@@ -3,15 +3,19 @@
 {% load bootstrap3 %}
 
 {% block title %}
-    Forms
+    Inscription
 {% endblock %}
 
 {% block content %}
+    {# Wrap the rest of the page in another container to center all of the content #}
+    <div class="container marketing">
 
     <form role="form" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
     </form>
+
+    </div>
 
 {% endblock %}
