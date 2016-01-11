@@ -8,6 +8,14 @@ def index(request):
     return render(request, 'today/home.html')
 
 
+def base(request):
+    return render(request, 'today/base.html')
+
+
+def base2(request):
+    return render(request, 'today/base2.html')
+
+
 def get_name(request):
     if request.method == 'POST':
         form = NameForm(request.POST)
