@@ -59,8 +59,7 @@ ROOT_URLCONF = 'TodayProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,4 +131,4 @@ BOOTSTRAP3 = {
 
 SWINGTIME_SETTINGS_MODULE = 'today.swingtime_settings'
 
-MEDIA_ROOT = '/media/'
+MEDIA_URL = '/home/payeur/PycharmProject/TodayProject/today/media/'

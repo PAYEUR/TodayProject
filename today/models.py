@@ -32,7 +32,7 @@ class EventWithImage(md.Event):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('get_event', kwargs={'pk':self.pk})
+        return reverse('get_event', kwargs={'event_id':self.pk})
 
 @python_2_unicode_compatible
 class EventTypeWithImage(md.EventType):
