@@ -1,0 +1,46 @@
+{% extends 'today/base.html' %}
+
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block title %}
+    titre recherche
+{% endblock %}
+
+{% block content %}
+
+    <div class="jumbotron">
+        <img src="{% static "today/eglise2.jpg"%}" class="img-responsive" alt="..." />
+        <h1>Titre de la recherche</h1>
+    </div>
+
+    {% for name in event_names %}
+        <div class="row">
+            <div class="col-sm-12 col-md-9">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <img src="{% static "today/eglise.jpg"%}" class="img-responsive" alt="..." />
+                        <h2>{{ name }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-3">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <p>
+                            {% bootstrap_button "Ce soir" button_type="link" size="lg" href="" icon="calendar" %}
+                        </p>
+                        <p>
+                            {% bootstrap_button "20h30-minuit" button_type="link" size="lg" href="" icon="time" %}
+                        </p>
+                        <p>
+                            {% bootstrap_button "Paris XVIe" button_type="link" size="lg" href="" icon="map-marker" %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

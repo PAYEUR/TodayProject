@@ -127,5 +127,9 @@ STATIC_URL = '/static/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
-    'theme_url': 'today/base.css',
+    'set_required': False,
 }
+
+SWINGTIME_SETTINGS_MODULE = 'today.swingtime_settings'
+
+MEDIA_ROOT = '/media/'

@@ -1,0 +1,55 @@
+{% extends 'today/base.html' %}
+
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block title %}
+    événement{{ event.id }}
+{% endblock %}
+
+{% block content %}
+
+   <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <img src="{{ event.image.url }}" class="img-responsive" alt="..." />
+        <h1>{{ event.title }}</h1>
+    </div>
+
+    <div id="description" class="row">
+        <div class="col-sm-12 col-md-8">
+            <div class="thumbnail">
+                <div class="caption">
+                    <p>{{ event.description }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-4">
+            <div class="thumbnail">
+            <div class="caption">
+                <p role = presentation>
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <a href="#">{{ event.next_occurrence.start_time }}</a>
+                </p>
+                <p role = presentation>
+                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                    <a href="#">{{ event.next_occurrence.start_time }}</a>
+                </p>
+                <p role = presentation>
+                    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                    <a href="#">{{ event.city.city_name }}</a>
+                </p>
+                <p role = presentation>
+                    <span class="glyphicon glyphicon-envelop" aria-hidden="true"></span>
+                    <a href="#">Contact</a>
+                </p>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="jumbotron">
+        <h1>Map</h1>
+        <p>Here gonna be the google map</p>
+    </div>
+
+{% endblock %}
