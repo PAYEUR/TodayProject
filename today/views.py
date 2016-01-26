@@ -49,6 +49,12 @@ def get_event_by_date(request, year, month, day):
     :return: today/event_by_date template
     """
 
+    # abstract get_event and construct get_today, get_tomorrow and so one
+    # if year and month and day:
+    #    dt = datetime(int(year), int(month), int(day))
+    # else:
+    #    dt = datetime.now()
+
     # for the moment only date
     dt = datetime(int(year), int(month), int(day))
 
