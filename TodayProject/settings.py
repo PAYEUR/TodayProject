@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'today.apps.TodayConfig',
-    'swingtime',
     'bootstrap3',
 
 ]
@@ -81,7 +80,7 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'nouvelle'),
     }
 }
 

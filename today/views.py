@@ -3,26 +3,26 @@ import itertools
 import logging
 
 
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, time
 from django import http
 from django.db import models
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.views.generic import ListView
 
-from swingtime import utils, forms
-from swingtime.conf import settings as swingtime_settings
-
 from dateutil import parser
 
-from .forms import EventWithImageForm
-from .models import EventWithImage, EventTypeWithImage, OccurrenceWithImage
+from . import forms
+from forms import EventForm
+from .models import Event, EventType, Occurrence
+
+from . import utils
+from . import swingtime_settings
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 def event_type_listing():
-    return {'nav_list':  get_list_or_404(EventTypeWithImage)}
+    return {'nav_list':  get_list_or_404(EventType)}
 
 # today's views
 # -------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ def index(request):
 
 
 def get_event(request, event_id):
-    event = get_object_or_404(EventWithImage, pk=event_id)
+    event = get_object_or_404(Event, pk=event_id)
     context = dict({'event': event}
                    , **event_type_listing())
     return render(request, 'today/single_event.html', context)
@@ -53,10 +53,10 @@ def get_event_by_date(request, year, month, day):
     dt = datetime(int(year), int(month), int(day))
 
     # As event is a occurrence.foreignkey, need to go through OccurrenceWithImage before getting all events
-    occurrences = OccurrenceWithImage.objects.daily_occurrences(dt=dt)
+    occurrences = Occurrence.objects.daily_occurrences(dt=dt)
     ##### No redondance because one occurrence is linked to one single event
     ### all sw.events for the selected date
-    events_list = [occurrence.event_with_image for occurrence in occurrences]
+    events_list = [occurrence.event for occurrence in occurrences]
     ### cleared event_types_list
     event_types_list = list(set([event.event_type for event in events_list]))
 
@@ -69,8 +69,8 @@ def get_event_by_date(request, year, month, day):
 
 
 # TODO build a context processor to get event.label for navbar
-class EventTypeWithImageView(ListView):
-    model = EventTypeWithImage
+class EventTypeView(ListView):
+    model = EventType
     template_name = 'today/base.html'
     context_object_name = 'nav_list'
 
@@ -100,7 +100,7 @@ def event_listing(
     ... plus all values passed in via **extra_context
     '''
     if events is None:
-        events = EventWithImage.objects.all()
+        events = Event.objects.all()
 
     extra_context['events'] = events
     return render(request, template, extra_context)
@@ -111,7 +111,7 @@ def event_view(
     request,
     pk,
     template='swingtime/event_detail.html',
-    event_form_class=EventWithImageForm,
+    event_form_class=EventForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
     ):
     """
@@ -129,7 +129,7 @@ def event_view(
     ``recurrence_form``
         a form object for adding occurrences
     """
-    event = get_object_or_404(EventWithImage, pk=pk)
+    event = get_object_or_404(Event, pk=pk)
     event_form = recurrence_form = None
     if request.method == 'POST':
         if '_update' in request.POST:
@@ -188,7 +188,7 @@ def occurrence_view(
 def add_event(
     request,
     template='today/add_event.html',
-    event_form_class=EventWithImageForm,
+    event_form_class=EventForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
     ):
     '''

@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 
-
 __all__ = (
     'Note',
     'EventType',
@@ -17,6 +16,19 @@ __all__ = (
     'Occurrence',
     'create_event'
 )
+
+
+# ==============================================================================
+@python_2_unicode_compatible
+class City(models.Model):
+    """ City class. Use to make queries on city_name.
+    """
+
+    city_name = models.CharField(_('city_name'), max_length=30, default="Paris")
+
+    def __str__(self):
+        return self.city_name
+
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -47,8 +59,10 @@ class EventType(models.Model):
     """
     Simple ``Event`` classifcation.
     """
+
     label = models.CharField(_('label'), max_length=50)
     image = models.ImageField(default=None, upload_to='event_types/')
+
     # ==========================================================================
     class Meta:
         verbose_name = _('event type')
@@ -85,7 +99,6 @@ class Event(models.Model):
         return self.title
 
     # --------------------------------------------------------------------------
-    @models.permalink
     def get_absolute_url(self):
         return reverse('get_event', kwargs={'event_id': self.pk})
 
@@ -223,17 +236,6 @@ class Occurrence(models.Model):
     def event_type(self):
         return self.event.event_type
 
-
-# ==============================================================================
-@python_2_unicode_compatible
-class City(models.Model):
-    """ City class. Use to make queries on city_name.
-    """
-
-    city_name = models.CharField(_('city_name'), max_length=30, default="Paris")
-
-    def __str__(self):
-        return self.city_name
 
 
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import *
+from .models import Event, EventType, City
 
-admin.site.register(EventTypeWithImage)
+admin.site.register(EventType)
 admin.site.register(City)
-admin.site.register(EventWithImage)
+admin.site.register(Event)
