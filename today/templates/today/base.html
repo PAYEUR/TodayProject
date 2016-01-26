@@ -26,14 +26,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="{% url 'index' %}">Today Project</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="{% url 'index' %}">Menu principal</a></li>
+            <li><a href="#">Agenda</a></li>
+            <li><a href="#">Contactez-nous</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -53,22 +52,17 @@
 
         <div class="col-sm-offset-1 col-sm-2">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
+            <li><a href="#">Aujourd'hui</a></li>
+            <li><a href="#">Demain</a></li>
+            <li><a href="#">Cette semaine</a></li>
           </ul>
           <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
+              {% for event_type in nav_list %}
+            <li><a href="{{event_type.get_absolute_url}}">{{ event_type.label|capfirst }}</a></li>
+              {% endfor %}
           </ul>
           <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
+            <li class="active"><a href="{% url 'nouvel_evenement' %}">Poster un événement <span class="sr-only">(current)</span></a></li>
           </ul>
         </div>
 
@@ -79,7 +73,7 @@
 
     {% block footer %}
       <footer>
-        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p class="pull-right" ><a href="#">Back to top</a></p>
         <p>&copy; 2015 TodayProjectCompany, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
     {% endblock %}

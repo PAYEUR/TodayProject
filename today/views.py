@@ -7,62 +7,76 @@ from datetime import datetime, timedelta
 
 from django import http
 from django.db import models
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, get_list_or_404, render
+from django.views.generic import ListView
 
-from swingtime.models import Occurrence
 from swingtime import utils, forms
 from swingtime.conf import settings as swingtime_settings
 
 from dateutil import parser
 
-from .forms import NameForm, EventWithImageForm
-from .models import EventWithImage
+from .forms import EventWithImageForm
+from .models import EventWithImage, EventTypeWithImage, OccurrenceWithImage
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
+def event_type_listing():
+    return {'nav_list':  get_list_or_404(EventTypeWithImage)}
 
 # today's views
 # -------------------------------------------------------------------------------
+
 def index(request):
-    return render(request, 'today/home.html')
-
-
-def base(request):
-    return render(request, 'today/base.html')
-
-
-def get_name(request):
-    if request.method == 'POST':
-        form = NameForm(request.POST)
-        if form.is_valid():
-            return http.HttpResponseRedirect('/today/')
-    else:
-        form = NameForm()
-
-    return render(request, 'today/form.html', {'form': form})
+    context = event_type_listing()
+    return render(request, 'today/home.html', context)
 
 
 def get_event(request, event_id):
     event = get_object_or_404(EventWithImage, pk=event_id)
-    return render(request, 'today/single_event.html', {'event': event})
+    context = dict({'event': event}
+                   , **event_type_listing())
+    return render(request, 'today/single_event.html', context)
 
 
-def get_event_by(request):
-    event_names = ["messe", "groupe de priere", "conference"]
-    context = {'event_names': event_names, }
-    return render(request, 'today/event_by.html', context)
+def get_event_by_date(request, year, month, day):
+    """
+    :param request:
+    :param year: int in the url
+    :param month: int in the url
+    :param day: int in the url
+
+    :return: today/event_by_date template
+    """
+
+    # for the moment only date
+    dt = datetime(int(year), int(month), int(day))
+
+    # As event is a occurrence.foreignkey, need to go through OccurrenceWithImage before getting all events
+    occurrences = OccurrenceWithImage.objects.daily_occurrences(dt=dt)
+    ##### No redondance because one occurrence is linked to one single event
+    ### all sw.events for the selected date
+    events_list = [occurrence.event_with_image for occurrence in occurrences]
+    ### cleared event_types_list
+    event_types_list = list(set([event.event_type for event in events_list]))
+
+    context = dict({'events_list': events_list,
+                   'event_types_list' : event_types_list,
+                    'dt': dt,
+                    }, **event_type_listing())
+
+    return render(request, 'today/event_by_date.html', context)
 
 
-def set_event(request):
-    if request.method == 'POST':
-        form = EventWithImageForm(request.POST)
-        if form.is_valid():
-            return http.HttpResponseRedirect('/today/')
-    else:
-        form = EventWithImageForm()
+# TODO build a context processor to get event.label for navbar
+class EventTypeWithImageView(ListView):
+    model = EventTypeWithImage
+    template_name = 'today/base.html'
+    context_object_name = 'nav_list'
 
-    return render(request, 'today/form.html', {'form': form})
+
+def base(request):
+    return render(request, 'today/base.html')
 
 
 # swingtime's views
@@ -100,7 +114,7 @@ def event_view(
     event_form_class=EventWithImageForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
     ):
-    '''
+    """
     View an ``Event`` instance and optionally update either the event or its
     occurrences.
 
@@ -114,7 +128,7 @@ def event_view(
 
     ``recurrence_form``
         a form object for adding occurrences
-    '''
+    """
     event = get_object_or_404(EventWithImage, pk=pk)
     event_form = recurrence_form = None
     if request.method == 'POST':
@@ -261,7 +275,7 @@ def _datetime_view(
 
 
 #-------------------------------------------------------------------------------
-def day_view(request, year, month, day, template='swingtime/daily_view.html', **params):
+def day_view(request, year, month, day, template='today/event_by_date', **params):
     '''
     See documentation for function``_datetime_view``.
 
