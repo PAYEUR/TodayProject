@@ -1,13 +1,10 @@
 import calendar
-import itertools
 import logging
 
 
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from django import http
-from django.db import models
 from django.shortcuts import get_object_or_404, get_list_or_404, render
-from django.views.generic import ListView
 
 from dateutil import parser
 
@@ -15,74 +12,125 @@ from . import forms
 from forms import EventForm
 from .models import Event, EventType, Occurrence
 
-from . import utils
 from . import swingtime_settings
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
-def event_type_listing():
+
+# TODO build a context processor to get event.label for navbar
+# nav-bar functions to call in each context
+
+def nav_bar():
     return {'nav_list':  get_list_or_404(EventType)}
+
 
 # today's views
 # -------------------------------------------------------------------------------
 
 def index(request):
-    context = event_type_listing()
+    context = nav_bar()
     return render(request, 'today/home.html', context)
+
 
 
 def get_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     context = dict({'event': event}
-                   , **event_type_listing())
+                   , **nav_bar())
     return render(request, 'today/single_event.html', context)
 
 
-def get_event_by_date(request, year, month, day):
+def _events_in_a_period(request, days, template='today/event_by_date.html'):
     """
+
     :param request:
-    :param year: int in the url
-    :param month: int in the url
-    :param day: int in the url
+    :param days: a list of days
+    :return: context with occurrences, event_types_list and days
+    """
+    # not satisfying because len(moment) times database requests
+    # print all occurrences
+    occurrences = []
+    for day in days:
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day)
+        for occurrence_day in occurrences_day:
+            occurrences.append(occurrence_day)
 
-    :return: today/event_by_date template
+    # get all related event_types  (double sorted)
+    events_list = [occurrence.event for occurrence in occurrences]
+    event_types_list = list(set([event.event_type for event in events_list]))
+                                 # list(set([occurrence.event for occurrence in occurrences]))]))
+
+
+
+    context = dict({'occurrences': occurrences,
+                   'event_types_list' : event_types_list,
+                    'days': days,
+                    },  **nav_bar())
+
+    return render(request, template, context)
+
+
+def today_events(request, template='today/event_by_date.html'):
     """
 
-    # abstract get_event and construct get_today, get_tomorrow and so one
-    # if year and month and day:
-    #    dt = datetime(int(year), int(month), int(day))
-    # else:
-    #    dt = datetime.now()
-
-    # for the moment only date
-    dt = datetime(int(year), int(month), int(day))
-
-    # As event is a occurrence.foreignkey, need to go through OccurrenceWithImage before getting all events
-    occurrences = Occurrence.objects.daily_occurrences(dt=dt)
-    ##### No redondance because one occurrence is linked to one single event
-    ### all sw.events for the selected date
-    events_list = [occurrence.event for occurrence in occurrences]
-    ### cleared event_types_list
-    event_types_list = list(set([event.event_type for event in events_list]))
-
-    context = dict({'events_list': events_list,
-                   'event_types_list' : event_types_list,
-                    'dt': dt,
-                    }, **event_type_listing())
-
-    return render(request, 'today/event_by_date.html', context)
+    :param request:
+    :param template:
+    :return: all events for today
+    """
+    days = [datetime.now()]
+    return _events_in_a_period(request, days, template)
 
 
-# TODO build a context processor to get event.label for navbar
-class EventTypeView(ListView):
-    model = EventType
-    template_name = 'today/base.html'
-    context_object_name = 'nav_list'
+def tomorrow_events(request, template='today/event_by_date.html'):
+    """
+
+    :param request:
+    :param template:
+    :return: all events for tomorrow
+    """
+    days = [datetime.now()+timedelta(days=+1)]
+    return _events_in_a_period(request, days, template)
 
 
-def base(request):
-    return render(request, 'today/base.html')
+def coming_days_events(request,next_days_duration=7, template='today/event_by_date.html'):
+    """
+
+    :param request:
+    :param next_days_duration: how many days does "coming_days" mean
+    :param template:
+    :return: all events for coming_days
+    """
+    today = datetime.now()
+    i =0
+    days = []
+    while i < int(next_days_duration):
+        days.append(today +timedelta(days=+i))
+        i+=1
+
+    return _events_in_a_period(request, days, template)
+
+
+def daily_events(request, year, month, day, template='today/event_by_date.html'):
+
+    days = [datetime(int(year), int(month), int(day))]
+
+    return _events_in_a_period(request, days, template)
+
+
+def monthly_events(request, year, month, template='today/event_by_date.html'):
+
+    year, month = int(year), int(month)
+    cal = calendar.Calendar()
+    weeks = cal.monthdatescalendar(year, month)
+    days=[]
+    for week in weeks:
+        for day in week:
+            days.append(day)
+
+    return _events_in_a_period(request, days, template)
+
+
 
 
 # swingtime's views
@@ -93,7 +141,7 @@ def event_listing(
     events=None,
     **extra_context
     ):
-    '''
+    """
     View all ``events``.
 
     If ``events`` is a queryset, clone it. If ``None`` default to all ``Event``s.
@@ -104,7 +152,7 @@ def event_listing(
         an iterable of ``Event`` objects
 
     ... plus all values passed in via **extra_context
-    '''
+    """
     if events is None:
         events = Event.objects.all()
 
@@ -167,7 +215,7 @@ def occurrence_view(
     template='swingtime/occurrence_detail.html',
     form_class=forms.SingleOccurrenceForm
     ):
-    '''
+    """
     View a specific occurrence and optionally handle any updates.
 
     Context parameters:
@@ -177,7 +225,7 @@ def occurrence_view(
 
     ``form``
         a form object for updating the occurrence
-    '''
+    """
     occurrence = get_object_or_404(Occurrence, pk=pk, event__pk=event_pk)
     if request.method == 'POST':
         form = form_class(request.POST, instance=occurrence)
@@ -197,7 +245,7 @@ def add_event(
     event_form_class=EventForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
     ):
-    '''
+    """
     Add a new ``Event`` instance and 1 or more associated ``Occurrence``s.
 
     Context parameters:
@@ -212,7 +260,8 @@ def add_event(
     ``recurrence_form``
         a form object for adding occurrences
 
-    '''
+    """
+    global supp_context
     dtstart = None
     if request.method == 'POST':
         event_form = event_form_class(request.POST, request.FILES)
@@ -234,169 +283,7 @@ def add_event(
         event_form = event_form_class()
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
 
-    return render(
-        request,
-        template,
-        {'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form}
-    )
+    context = dict({'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form}
+                   , **nav_bar())
 
-
-#-------------------------------------------------------------------------------
-def _datetime_view(
-    request,
-    template,
-    dt,
-    timeslot_factory=None,
-    items=None,
-    params=None
-    ):
-    '''
-    Build a time slot grid representation for the given datetime ``dt``. See
-    utils.create_timeslot_table documentation for items and params.
-
-    Context parameters:
-
-    ``day``
-        the specified datetime value (dt)
-
-    ``next_day``
-        day + 1 day
-
-    ``prev_day``
-        day - 1 day
-
-    ``timeslots``
-        time slot grid of (time, cells) rows
-
-    '''
-    timeslot_factory = timeslot_factory or utils.create_timeslot_table
-    params = params or {}
-
-    return render(request, template, {
-        'day':       dt,
-        'next_day':  dt + timedelta(days=+1),
-        'prev_day':  dt + timedelta(days=-1),
-        'timeslots': timeslot_factory(dt, items, **params)
-    })
-
-
-#-------------------------------------------------------------------------------
-def day_view(request, year, month, day, template='today/event_by_date', **params):
-    '''
-    See documentation for function``_datetime_view``.
-
-    '''
-    dt = datetime(int(year), int(month), int(day))
-    return _datetime_view(request, template, dt, **params)
-
-
-#-------------------------------------------------------------------------------
-def today_view(request, template='swingtime/daily_view.html', **params):
-    '''
-    See documentation for function``_datetime_view``.
-
-    '''
-    return _datetime_view(request, template, datetime.now(), **params)
-
-
-#-------------------------------------------------------------------------------
-def year_view(request, year, template='swingtime/yearly_view.html', queryset=None):
-    '''
-
-    Context parameters:
-
-    ``year``
-        an integer value for the year in questin
-
-    ``next_year``
-        year + 1
-
-    ``last_year``
-        year - 1
-
-    ``by_month``
-        a sorted list of (month, occurrences) tuples where month is a
-        datetime.datetime object for the first day of a month and occurrences
-        is a (potentially empty) list of values for that month. Only months
-        which have at least 1 occurrence is represented in the list
-
-    '''
-    year = int(year)
-    queryset = queryset._clone() if queryset is not None else Occurrence.objects.select_related()
-    occurrences = queryset.filter(
-        models.Q(start_time__year=year) |
-        models.Q(end_time__year=year)
-    )
-
-    def group_key(o):
-        return datetime(
-            year,
-            o.start_time.month if o.start_time.year == year else o.end_time.month,
-            1
-        )
-
-    return render(request, template, {
-        'year': year,
-        'by_month': [(dt, list(o)) for dt,o in itertools.groupby(occurrences, group_key)],
-        'next_year': year + 1,
-        'last_year': year - 1
-
-    })
-
-
-#-------------------------------------------------------------------------------
-def month_view(
-    request,
-    year,
-    month,
-    template='swingtime/monthly_view.html',
-    queryset=None
-    ):
-    '''
-    Render a tradional calendar grid view with temporal navigation variables.
-
-    Context parameters:
-
-    ``today``
-        the current datetime.datetime value
-
-    ``calendar``
-        a list of rows containing (day, items) cells, where day is the day of
-        the month integer and items is a (potentially empty) list of occurrence
-        for the day
-
-    ``this_month``
-        a datetime.datetime representing the first day of the month
-
-    ``next_month``
-        this_month + 1 month
-
-    ``last_month``
-        this_month - 1 month
-
-    '''
-    year, month = int(year), int(month)
-    cal         = calendar.monthcalendar(year, month)
-    dtstart     = datetime(year, month, 1)
-    last_day    = max(cal[-1])
-    dtend       = datetime(year, month, last_day)
-
-    # TODO Whether to include those occurrences that started in the previous
-    # month but end in this month?
-    queryset = queryset._clone() if queryset is not None else Occurrence.objects.select_related()
-    occurrences = queryset.filter(start_time__year=year, start_time__month=month)
-
-    def start_day(o):
-        return o.start_time.day
-
-    by_day = dict([(dt, list(o)) for dt,o in itertools.groupby(occurrences, start_day)])
-    data = {
-        'today':      datetime.now(),
-        'calendar':   [[(d, by_day.get(d, [])) for d in row] for row in cal],
-        'this_month': dtstart,
-        'next_month': dtstart + timedelta(days=+last_day),
-        'last_month': dtstart + timedelta(days=-1),
-    }
-
-    return render(request, template, data)
-
+    return render(request, template, context)

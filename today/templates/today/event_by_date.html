@@ -10,36 +10,55 @@
 {% block content %}
 
     <div class="jumbotron">
-        <h1>{{ dt|date:"D d M Y" }}</h1>
+        <h1>
+            {% if days|length > 1 and days|length <= 25 %}
+                Les prochains jours
+            {% elif days|length > 25 %}
+                {{ days|first|date:"F Y"}}
+            {% else %}
+                {{ days|first|date:"l d F Y" }}
+             {% endif %}
+        </h1>
     </div>
 
     {# list_categories and list_events for the selected date only #}
-    {% for event_type in event_types_list %}
-    <div id="services" class="row">
-        <h2>{{ event_type.label }}</h2>
-    {# TODO need to sort events by event_type #}
-        {% for event in events_list %}
-            {% if event.event_type == event_type %}
-                <div class="col-sm-12 col-md-4">
-                    <div class="thumbnail">
-                        <img src="{{ event.image.url }}" class="img-responsive" alt="..." />
-                        <div class="caption">
-                            <h3><a href = {{event.get_absolute_url }}> {{ event.title }} </a></h3>
-                            <p>{{ event.description }}</p>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <p role = presentation>
-                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                        <a href="#">{{ event.next_occurrence.start_time }}</a>
-                                    </p>
-                                </div>
+    {% if event_types_list %}
+        {% for event_type in event_types_list %}
+        <div id="services" class="row">
+            <h2>{{ event_type.label }}</h2>
+            {% for occurrence in occurrences %}
+                {% if occurrence.event.event_type == event_type %}
+                    <div class="col-sm-12 col-md-4">
+                        <div class="thumbnail">
+                            <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
+                            <div class="caption">
+                                <h3><a href = {{ occurrence.event.get_absolute_url }}> {{ occurrence.event.title }} </a></h3>
+                                <p>{{ occurrence.event.description }}</p>
+                                <p role = presentation>
+                                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                    <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
+                                </p>
+                                <p role = presentation>
+                                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                    <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }}</a>
+                                </p>
+                                <p role = presentation>
+                                    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                                    <a href="">{{ occurrence.event.city.city_name }} </a>
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
         {% endfor %}
-    </div>
-    {% endfor %}
+
+        {# if no content#}
+        {% else %}
+        <div id="services" class="row">
+                <h2>Pas de contenu pour la période sélectionnée</h2>
+        </div>
+    {% endif %}
 
 {% endblock %}

@@ -30,4 +30,4 @@ TIMESLOT_MIN_COLUMNS = 4
 DEFAULT_OCCURRENCE_DURATION = datetime.timedelta(hours=+1)
 
 # If not None, passed to the calendar module's setfirstweekday function.
-CALENDAR_FIRST_WEEKDAY = 1
+CALENDAR_FIRST_WEEKDAY = 0

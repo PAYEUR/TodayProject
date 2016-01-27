@@ -3,10 +3,12 @@ from dateutil import rrule
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from location_field.models.plain import PlainLocationField
 
 
 __all__ = (
@@ -21,10 +23,11 @@ __all__ = (
 # ==============================================================================
 @python_2_unicode_compatible
 class City(models.Model):
-    """ City class. Use to make queries on city_name.
+    """ Place class. Use to make queries on city.
     """
 
-    city_name = models.CharField(_('city_name'), max_length=30, default="Paris")
+    city_name = models.CharField(_('city_name'), max_length=255, default="Paris")
+    #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
 
     def __str__(self):
         return self.city_name
@@ -215,7 +218,7 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def __str__(self):
-        return '{}: {}'.format(self.title, self.start_time.isoformat())
+        return u'{}: {}'.format(self.title, self.start_time.isoformat())
 
     # --------------------------------------------------------------------------
     @models.permalink
@@ -226,13 +229,14 @@ class Occurrence(models.Model):
     def __lt__(self, other):
         return self.start_time < other.start_time
 
-    # --------------------------------------------------------------------------
-    @property
+    # -------------------------------------
+    # Pas bien sur de ces deux proprietes
+    @cached_property
     def title(self):
         return self.event.title
 
     # --------------------------------------------------------------------------
-    @property
+    @cached_property
     def event_type(self):
         return self.event.event_type
 

@@ -52,9 +52,9 @@
 
         <div class="col-sm-offset-1 col-sm-2">
           <ul class="nav nav-sidebar">
-            <li><a href="#">Aujourd'hui</a></li>
-            <li><a href="#">Demain</a></li>
-            <li><a href="#">Cette semaine</a></li>
+            <li><a href="{% url 'today_events' %}">Aujourd'hui</a></li>
+            <li><a href="{% url 'tomorrow_events' %}">Demain</a></li>
+            <li><a href="{% url 'coming_days_events' %}">Les prochains jours</a></li>
           </ul>
           <ul class="nav nav-sidebar">
               {% for event_type in nav_list %}

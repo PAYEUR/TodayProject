@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'today.apps.TodayConfig',
     'bootstrap3',
+    'location_field'
 
 ]
 
