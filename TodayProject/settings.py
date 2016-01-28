@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'today.apps.TodayConfig',
     'bootstrap3',
-    'location_field'
+    'datetimewidget'
 
 ]
 
@@ -126,7 +126,9 @@ STATIC_URL = '/static/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
-    'set_required': False,
+    'include_jquery': True,
+    'javascript_in_head':True,
+
 }
 
 SWINGTIME_SETTINGS_MODULE = 'today.swingtime_settings'

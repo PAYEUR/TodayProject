@@ -1,9 +1,16 @@
 {% extends 'today/base.html' %}
 
 {% load bootstrap3 %}
+{% load static %}
+
 
 {% block title %}
     Formulaire
+{% endblock %}
+
+{# to get correct js#}
+{% block bootstrap3_extra_head %}
+    {{form.media}}
 {% endblock %}
 
 {% block content %}

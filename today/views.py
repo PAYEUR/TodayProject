@@ -4,12 +4,12 @@ import logging
 
 from datetime import datetime, timedelta
 from django import http
-from django.shortcuts import get_object_or_404, get_list_or_404, render
+from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 
 from dateutil import parser
 
 from . import forms
-from forms import EventForm
+from forms import EventForm, IndexForm
 from .models import Event, EventType, Occurrence
 
 from . import swingtime_settings
@@ -28,9 +28,40 @@ def nav_bar():
 # today's views
 # -------------------------------------------------------------------------------
 
-def index(request):
-    context = nav_bar()
-    return render(request, 'today/home.html', context)
+def index(request, template='today/home.html'):
+    """
+    :param request:
+    :param template:
+    :return: home template with index form
+    """
+
+    if request.method == 'POST':
+        form = IndexForm(request.POST)
+
+        if form.is_valid():
+            #dont use city from now
+            event_type = form.cleaned_data['event_type']
+            date = form.cleaned_data['date']
+
+            if event_type != None:
+                return redirect("single_day_event_type",
+                                event_type_id=event_type.pk,
+                                year=date.year,
+                                month=date.month,
+                                day=date.day)
+            else:
+                return redirect("daily_events",
+                                year=date.year,
+                                month=date.month,
+                                day=date.day)
+
+    else:
+        form = IndexForm()
+
+    context = dict({'form': form,
+                    },  **nav_bar())
+
+    return render(request, template, context)
 
 
 
@@ -78,7 +109,7 @@ def today_events(request, template='today/event_by_date.html'):
     :param template:
     :return: all events for today
     """
-    days = [datetime.now()]
+    days = [datetime.today()]
     return _events_in_a_period(request, days, template)
 
 
@@ -89,7 +120,7 @@ def tomorrow_events(request, template='today/event_by_date.html'):
     :param template:
     :return: all events for tomorrow
     """
-    days = [datetime.now()+timedelta(days=+1)]
+    days = [datetime.today()+timedelta(days=+1)]
     return _events_in_a_period(request, days, template)
 
 
@@ -131,7 +162,86 @@ def monthly_events(request, year, month, template='today/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
+def event_type_coming_days(request, event_type_id, next_days_duration=7,template='today/date_by_event_type.html'):
 
+    # list of 7 days
+    today = datetime.now()
+    i =0
+    days = []
+    while i < int(next_days_duration):
+        days.append(today +timedelta(days=+i))
+        i+=1
+
+    #sort event_type.occurrences by day
+    event_type = get_object_or_404(EventType, pk=int(event_type_id))
+    occurrences = []
+    for day in days:
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type)
+        for occurrence_day in occurrences_day:
+            occurrences.append(occurrence_day)
+
+    context = dict({'occurrences': occurrences,
+                    'event_type' : event_type,
+                    },  **nav_bar())
+
+    return render(request, template, context)
+
+
+def _single_day_event_type(
+        request,
+        event_type_id,
+        dt,
+        template='today/event_by_date.html'
+    ):
+
+    event_type = get_object_or_404(EventType, pk=int(event_type_id))
+    occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
+
+    context = dict({'occurrences': occurrences,
+                    'event_types_list' : [event_type],
+                    'days'       : [dt]
+                    },  **nav_bar())
+
+    return render(request, template, context)
+
+def today_event_type(
+        request,
+        event_type_id,
+        template='today/event_by_date.html'
+    ):
+
+    dt = datetime.today()
+    return _single_day_event_type(request, event_type_id, dt, template)
+
+
+def tomorrow_event_type(
+        request,
+        event_type_id,
+        template='today/event_by_date.html'
+    ):
+
+    dt = datetime.today()+timedelta(days=+1)
+    return _single_day_event_type(request, event_type_id, dt, template)
+
+def single_day_event_type(
+        request,
+        event_type_id,
+        year,
+        month,
+        day,
+        template='today/event_by_date.html'
+    ):
+
+    dt = datetime(int(year), int(month), int(day))
+    event_type = get_object_or_404(EventType, pk=int(event_type_id))
+    occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
+
+    context = dict({'occurrences': occurrences,
+                    'event_types_list' : [event_type],
+                    'days'       : [dt]
+                    },  **nav_bar())
+
+    return render(request, template, context)
 
 # swingtime's views
 # -------------------------------------------------------------------------------
@@ -243,7 +353,7 @@ def add_event(
     request,
     template='today/add_event.html',
     event_form_class=EventForm,
-    recurrence_form_class=forms.MultipleOccurrenceForm
+    recurrence_form_class=forms.SingleOccurrenceForm
     ):
     """
     Add a new ``Event`` instance and 1 or more associated ``Occurrence``s.

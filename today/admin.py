@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Event, EventType, City
+from .models import Event, EventType, City, Occurrence
 
 admin.site.register(EventType)
 admin.site.register(City)
 admin.site.register(Event)
+admin.site.register(Occurrence)

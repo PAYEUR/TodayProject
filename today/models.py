@@ -1,3 +1,4 @@
+# coding=utf-8
 from datetime import datetime
 from dateutil import rrule
 
@@ -8,17 +9,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from location_field.models.plain import PlainLocationField
-
 
 __all__ = (
     'Note',
     'EventType',
     'Event',
     'Occurrence',
-    'create_event'
+    'City',
 )
-
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -29,6 +27,12 @@ class City(models.Model):
     city_name = models.CharField(_('city_name'), max_length=255, default="Paris")
     #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
 
+    # ==========================================================================
+    class Meta:
+        verbose_name =_('city')
+        verbose_name_plural =_('cities')
+
+    # --------------------------------------------------------------------------
     def __str__(self):
         return self.city_name
 
@@ -75,6 +79,9 @@ class EventType(models.Model):
     def __str__(self):
         return self.label
 
+    def get_absolute_url(self):
+        return reverse('event_type_coming_days', kwargs={'event_type_id': self.pk})
+
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -88,8 +95,9 @@ class Event(models.Model):
     notes = GenericRelation(Note, verbose_name=_('notes'))
     image = models.ImageField(default=None, upload_to='events/')
     price = models.PositiveSmallIntegerField(default=0)
-    city = models.ForeignKey(City)
-    address = models.CharField(_('address'), max_length=150, default="non precise")
+    #For the moment one limits choices to Paris
+    city = models.ForeignKey(City, limit_choices_to={'city_name': "Paris"}, default={'city_name': "Paris"})
+    address = models.CharField(_('address'), max_length=150, default="non precisé")
 
     # ===========================================================================
     class Meta:

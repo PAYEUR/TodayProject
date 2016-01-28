@@ -1,4 +1,4 @@
-{% extends 'bootstrap3/bootstrap3.html' %}
+{% extends 'today/bootstrap3.html' %}
 
 {% load bootstrap3 %}
 {% load static %}
@@ -8,11 +8,11 @@
     <link href="{%  static 'today/base.css' %}" rel="stylesheet">
 {% endblock %}
 
-{% block bootstrap3_title %}
-    {% block title %}
-        (no content)
-    {% endblock %}
+
+{% block title %}
+    (no content)
 {% endblock %}
+
 
 {% block bootstrap3_content %}
 
@@ -66,16 +66,15 @@
           </ul>
         </div>
 
+        {% endblock %}
 
-    {% endblock %}
     </div>
 
-
-    {% block footer %}
       <footer>
         <p class="pull-right" ><a href="#">Back to top</a></p>
         <p>&copy; 2015 TodayProjectCompany, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
-    {% endblock %}
-</div>
+
+    </div>
+
 {% endblock %}

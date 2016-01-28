@@ -1,54 +1,33 @@
-{% extends 'today/base.html' %}
+{% extends 'today/bootstrap3.html' %}
 
-{% load staticfiles %}
 {% load bootstrap3 %}
 
+
+
 {% block title %}
-    classement par dates
+    Menu Principal
 {% endblock %}
 
-{% block content %}
+{% block bootstrap3_extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block bootstrap3_content %}
+
+<div class="container">
 
     <div class="jumbotron">
-        <h1>
-            Something
-        </h1>
-        <p>
-            Description quelconque
-        </p>
+        {# image statique par exemple #}
+        <h1>Que faire à Paris?</h1>
     </div>
 
-    {# list_categories and list_events for the selected date only #}
-    {% for event_type in nav_list|slice:":4" %}
-    <div id="services" class="row">
-        <h2>{{ event_type.label }}</h2>
-        {% for event in event_type. %}
-            {% if occurrence.event.event_type == event_type %}
-                <div class="col-sm-12 col-md-4">
-                    <div class="thumbnail">
-                        <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
-                        <div class="caption">
-                            <h3><a href = {{ occurrence.event.get_absolute_url }}> {{ occurrence.event.title }} </a></h3>
-                            <p>{{ occurrence.event.description }}</p>
-                            <p role = presentation>
-                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
-                            </p>
-                            <p role = presentation>
-                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                                <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }}</a>
-                            </p>
-                            <p role = presentation>
-                                <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                                <a href="">{{ occurrence.event.city.city_name }} </a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    {% endfor %}
+    {# Input form #}
+    <form role="form" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons submit='GO!'%}{% endbuttons %}
+    </form>
 
+</div>
 
 {% endblock %}

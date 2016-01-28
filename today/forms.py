@@ -6,12 +6,13 @@ from __future__ import print_function, unicode_literals
 from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
+from datetimewidget.widgets import DateWidget, DateTimeWidget
+from django.utils.translation import ugettext_lazy as _
 
 from dateutil import rrule
 from . import swingtime_settings
-from .models import Event, Occurrence, OccurrenceManager
+from .models import Event, EventType #,City, Occurrence
 from . import utils
 
 FIELDS_REQUIRED = (VERSION[:2] >= (1, 6))
@@ -100,6 +101,27 @@ ISO_WEEKDAYS_MAP = (
 
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 SECONDS_INTERVAL = utils.time_delta_total_seconds(swingtime_settings.DEFAULT_OCCURRENCE_DURATION)
+
+
+# IndexForm first try:
+
+class IndexForm(forms.Form):
+    """
+    Get the 3 main informations to print on the index page
+    """
+
+    #city = forms.ModelChoiceField(City.objects.all())
+    event_type = forms.ModelChoiceField(
+            EventType.objects.all(),
+            required=False,
+            empty_label=None,
+            widget=forms.widgets.RadioSelect)
+    date = forms.DateField(
+            required=True,
+            initial=datetime.today(),
+            widget=DateWidget(bootstrap_version=3))
+
+
 
 # -------------------------------------------------------------------------------
 def timeslot_options(
@@ -209,7 +231,7 @@ class MultipleOccurrenceForm(forms.Form):
     day = forms.DateField(
         label=_('Date'),
         initial=date.today,
-        widget=SelectDateWidget()
+        widget= SelectDateWidget()
     )
 
     start_time_delta = forms.IntegerField(
@@ -401,20 +423,20 @@ class EventForm(forms.ModelForm):
 
 
  # ==============================================================================
-class SingleOccurrenceForm(forms.ModelForm):
+class SingleOccurrenceForm(forms.Form):
     """
     A simple form for adding and updating single Occurrence attributes
 
     """
-
-    start_time = forms.DateTimeField(widget=SplitDateTimeWidget)
-    end_time = forms.DateTimeField(widget=SplitDateTimeWidget)
-
      # ==========================================================================
-    class Meta:
-        model = Occurrence
-        if FIELDS_REQUIRED:
-            fields = "__all__"
+    start_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
+    end_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
 
+    def save(self, event):
 
+        event.add_occurrences(
+            self.cleaned_data['start_time'],
+            self.cleaned_data['end_time'],
+        )
 
+        return event
