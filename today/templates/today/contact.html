@@ -1,0 +1,63 @@
+{% extends 'today/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Contact
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron"><h1>Contact</h1></div>
+
+    <div id="services" class="row">
+        <h2> Nous contacter </h2>
+        <div class="col-sm-12 col-md-12">
+            <div class="thumbnail" align="center">
+                <address>
+                    <strong>Mail :</strong></br>
+                    <a href="">todayproject@gmail.com</a>
+                </address>
+                <div class="caption">
+                    <p> N'hésitez pas à parler de ce site autour de vous !!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="services" class="row">
+        <h2> L'équipe </h2>
+
+        <div class="col-sm-9 col-md-9">
+            <div class="thumbnail">
+                <h3> Jean-Baptiste</h3>
+                <div class="caption">
+                    <p> Ingénieur informaticien engagé dans sa paroisse, Jean-Baptiste a voulu proposer un service qui permet à chacun de proposer et de se tenir au courant des événements spirituels à proximité de son lieu de vie.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3 col-md-3">
+            <div class="thumbnail">
+                <img src="{% static 'today/jb.jpg' %}" class="img-responsive" alt="JB" />
+            </div>
+        </div>
+
+        <div class="col-sm-9 col-md-9">
+            <div class="thumbnail">
+                <h3> Antoine</h3>
+                <div class="caption">
+                    <p>Educateur spécialisé à la fondation d'Auteuil à Paris, Antoine a eu un jour l'idée de lancer un site internet qui recenserait toutes les activités spirituelles et sociales en région parisienne, de façon simple et immédiate. </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3 col-md-3">
+            <div class="thumbnail">
+                <img src="{% static 'today/antoine.jpg' %}" class="img-responsive" alt="JB" />
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -5,11 +5,13 @@ import logging
 from datetime import datetime, timedelta
 from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
+# from django.views.generic import ListView
 
 from dateutil import parser
 
 from . import forms
 from forms import EventForm, IndexForm
+# from . import models
 from .models import Event, EventType, Occurrence
 
 from . import swingtime_settings
@@ -25,8 +27,39 @@ def nav_bar():
     return {'nav_list':  get_list_or_404(EventType)}
 
 
+# not for now
+# research view, after http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
+# def search(request):
+#    """
+#    :param request:
+#    :return: events corresponding to search terms. Only events, no dates.
+#    """
+#    query_string =''
+#    found_entries = None
+#    if ('q' in request.GET) and request.GET['q'].strip():
+#        query_string = request.GET['q']
+#        # query on Event.city.city_name, Event
+#        entry_query = models.get_query(query_string, ['city__city_name', 'description', 'event_type__label'])
+#        events = Event.objects.filter(entry_query)
+#
+#    return redirect("eventlist", object_list=events)
+#
+#
+#class EventList(ListView):
+#    model = Event
+#    template_name = "event_list.html"
+#
+#    def get_context_data(self, **kwargs):
+#        context = super(EventList,self).get_context_data(**kwargs)
+#        context['nav_list'] = get_list_or_404(EventType)
+#        return context
+
+
+
 # today's views
 # -------------------------------------------------------------------------------
+def contact(request, template='today/contact.html'):
+    return render(request, template, nav_bar())
 
 def index(request, template='today/home.html'):
     """
@@ -40,8 +73,8 @@ def index(request, template='today/home.html'):
 
         if form.is_valid():
             #dont use city from now
-            event_type = form.cleaned_data['event_type']
-            date = form.cleaned_data['date']
+            event_type = form.cleaned_data['quoi']
+            date = form.cleaned_data['quand']
 
             if event_type != None:
                 return redirect("single_day_event_type",
@@ -318,36 +351,36 @@ def event_view(
 
 
 #-------------------------------------------------------------------------------
-def occurrence_view(
-    request,
-    event_pk,
-    pk,
-    template='swingtime/occurrence_detail.html',
-    form_class=forms.SingleOccurrenceForm
-    ):
-    """
-    View a specific occurrence and optionally handle any updates.
-
-    Context parameters:
-
-    ``occurrence``
-        the occurrence object keyed by ``pk``
-
-    ``form``
-        a form object for updating the occurrence
-    """
-    occurrence = get_object_or_404(Occurrence, pk=pk, event__pk=event_pk)
-    if request.method == 'POST':
-        form = form_class(request.POST, instance=occurrence)
-        if form.is_valid():
-            form.save()
-            return http.HttpResponseRedirect(request.path)
-    else:
-        form = form_class(instance=occurrence)
-
-    return render(request, template, {'occurrence': occurrence, 'form': form})
-
-
+# def occurrence_view(
+#     request,
+#    event_pk,
+#    pk,
+#    template='swingtime/occurrence_detail.html',
+#    form_class=forms.SingleOccurrenceForm
+#    ):
+#    """
+#    View a specific occurrence and optionally handle any updates.
+#
+#    Context parameters:
+#
+#    ``occurrence``
+#        the occurrence object keyed by ``pk``
+#
+#    ``form``
+#        a form object for updating the occurrence
+#    """
+#    occurrence = get_object_or_404(Occurrence, pk=pk, event__pk=event_pk)
+#    if request.method == 'POST':
+#        form = form_class(request.POST, instance=occurrence)
+#        if form.is_valid():
+#            form.save()
+#            return http.HttpResponseRedirect(request.path)
+#    else:
+#        form = form_class(instance=occurrence)
+#
+#    return render(request, template, {'occurrence': occurrence, 'form': form})
+#
+#
 #-------------------------------------------------------------------------------
 def add_event(
     request,

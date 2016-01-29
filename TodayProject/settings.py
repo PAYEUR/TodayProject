@@ -116,7 +116,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# do not use TZ so that all times are like datetime.now
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

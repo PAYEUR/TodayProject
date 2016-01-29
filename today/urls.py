@@ -20,4 +20,5 @@ urlpatterns = [
         views.single_day_event_type, name="single_day_event_type"),
     url(r'^categorie(?P<event_type_id>[0-9])/aujourd-hui/$', views.today_event_type, name="today_event_type"),
     url(r'^categorie(?P<event_type_id>[0-9])/demain/$', views.tomorrow_event_type, name="tomorrow_event_type"),
+    url(r'^contact$', views.contact, name="contact"),
     ]

@@ -103,7 +103,7 @@ MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 SECONDS_INTERVAL = utils.time_delta_total_seconds(swingtime_settings.DEFAULT_OCCURRENCE_DURATION)
 
 
-# IndexForm first try:
+# IndexForm
 
 class IndexForm(forms.Form):
     """
@@ -111,16 +111,15 @@ class IndexForm(forms.Form):
     """
 
     #city = forms.ModelChoiceField(City.objects.all())
-    event_type = forms.ModelChoiceField(
+    quoi = forms.ModelChoiceField(
             EventType.objects.all(),
             required=False,
             empty_label=None,
             widget=forms.widgets.RadioSelect)
-    date = forms.DateField(
+    quand = forms.DateField(
             required=True,
             initial=datetime.today(),
             widget=DateWidget(bootstrap_version=3))
-
 
 
 # -------------------------------------------------------------------------------
@@ -415,6 +414,7 @@ class EventForm(forms.ModelForm):
         model = Event
         if FIELDS_REQUIRED:
             fields = "__all__"
+            #exclude = ['city']
 
     #---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
@@ -432,6 +432,17 @@ class SingleOccurrenceForm(forms.Form):
     start_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
     end_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
 
+    def clean(self):
+        cleaned_data = super(SingleOccurrenceForm, self).clean()
+        start_time = cleaned_data['start_time']
+        end_time = cleaned_data['end_time']
+
+        if start_time and end_time:
+            now = datetime.now()
+            if start_time > end_time or start_time < now or end_time < now:
+                raise forms.ValidationError("Verifier que les dates correspondent")
+
+
     def save(self, event):
 
         event.add_occurrences(
@@ -440,3 +451,4 @@ class SingleOccurrenceForm(forms.Form):
         )
 
         return event
+
