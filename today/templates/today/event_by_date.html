@@ -41,11 +41,11 @@
                                     </p>
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                                        <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }}</a>
+                                        {{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }}
                                     </p>
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                                        <a href="">{{ occurrence.event.city.city_name }} </a>
+                                        {{ occurrence.event.address }}
                                     </p>
                                 </div>
                             </div>

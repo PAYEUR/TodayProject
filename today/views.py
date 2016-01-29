@@ -100,8 +100,15 @@ def index(request, template='today/home.html'):
 
 def get_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    context = dict({'event': event}
-                   , **nav_bar())
+
+    if event.address != "non precise":
+        address = event.address + ", France"
+    else:
+        address = False
+
+    context = dict({'event': event,
+                    'address': address,
+                   }, **nav_bar())
     return render(request, 'today/single_event.html', context)
 
 

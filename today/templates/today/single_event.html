@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load bootstrap3 %}
+{% load easy_maps_tags %}
 
 {% block title %}
     événement{{ event.id }}
@@ -33,30 +34,29 @@
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                    <a href="{% url 'daily_events' event.next_occurrence.start_time|date:'Y' event.next_occurrence.start_time|date:'m' event.next_occurrence.start_time|date:'d' %}">{{ event.next_occurrence.start_time|date:"H"}}h{{ event.next_occurrence.start_time|date:"i"}}</a>
+                    {{ event.next_occurrence.start_time|date:"H"}}h{{ event.next_occurrence.start_time|date:"i"}}
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                    <a href="#">{{ event.city.city_name }}</a>
+                    {{ event.city.city_name }} </br> {{address|capfirst}}
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-euro" aria-hidden="true"></span>
-                    <a href="#">
-                        {% if event.price == 0 %}
-                            gratuit
-                        {% else %}
-                            {{event.price}}€
-                        {% endif %}
-                    </a>
+                    {% if event.price == 0 %}
+                        gratuit
+                    {% else %}
+                        {{event.price}}€
+                    {% endif %}
                 </p>
             </div>
             </div>
         </div>
     </div>
 
-    <div class="jumbotron">
-        <h1>Map</h1>
-        <p>Here gonna be the google map</p>
+    <div id="description" class="row">
+        <div class="col-sm-12 col-md-12" align="center">
+            {% easy_map address 500 300 %}
+        </div>
     </div>
 
 {% endblock %}
