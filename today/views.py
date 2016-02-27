@@ -5,14 +5,12 @@ import logging
 from datetime import datetime, timedelta
 from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-# from django.views.generic import ListView
 
 from dateutil import parser
 
 from . import forms
 from forms import EventForm, IndexForm
-# from . import models
-from .models import Event, EventType, Occurrence
+from .models import EventType, Occurrence
 
 from . import swingtime_settings
 
@@ -25,35 +23,6 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
 
 def nav_bar():
     return {'nav_list':  get_list_or_404(EventType)}
-
-
-# not for now
-# research view, after http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
-# def search(request):
-#    """
-#    :param request:
-#    :return: events corresponding to search terms. Only events, no dates.
-#    """
-#    query_string =''
-#    found_entries = None
-#    if ('q' in request.GET) and request.GET['q'].strip():
-#        query_string = request.GET['q']
-#        # query on Event.city.city_name, Event
-#        entry_query = models.get_query(query_string, ['city__city_name', 'description', 'event_type__label'])
-#        events = Event.objects.filter(entry_query)
-#
-#    return redirect("eventlist", object_list=events)
-#
-#
-#class EventList(ListView):
-#    model = Event
-#    template_name = "event_list.html"
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(EventList,self).get_context_data(**kwargs)
-#        context['nav_list'] = get_list_or_404(EventType)
-#        return context
-
 
 
 # today's views
@@ -98,15 +67,15 @@ def index(request, template='today/home.html'):
 
 
 
-def get_event(request, event_id):
-    event = get_object_or_404(Event, pk=event_id)
+def get_occurrence(request, occurrence_id):
+    occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
 
-    if event.address != "non precise":
-        address = event.address + ", France"
+    if occurrence.event.address != "non precise":
+        address = occurrence.event.address + ", France"
     else:
         address = False
 
-    context = dict({'event': event,
+    context = dict({'occurrence': occurrence,
                     'address': address,
                    }, **nav_bar())
     return render(request, 'today/single_event.html', context)
@@ -283,112 +252,7 @@ def single_day_event_type(
 
     return render(request, template, context)
 
-# swingtime's views
-# -------------------------------------------------------------------------------
-def event_listing(
-    request,
-    template='swingtime/event_list.html',
-    events=None,
-    **extra_context
-    ):
-    """
-    View all ``events``.
 
-    If ``events`` is a queryset, clone it. If ``None`` default to all ``Event``s.
-
-    Context parameters:
-
-    ``events``
-        an iterable of ``Event`` objects
-
-    ... plus all values passed in via **extra_context
-    """
-    if events is None:
-        events = Event.objects.all()
-
-    extra_context['events'] = events
-    return render(request, template, extra_context)
-
-
-#-------------------------------------------------------------------------------
-def event_view(
-    request,
-    pk,
-    template='swingtime/event_detail.html',
-    event_form_class=EventForm,
-    recurrence_form_class=forms.MultipleOccurrenceForm
-    ):
-    """
-    View an ``Event`` instance and optionally update either the event or its
-    occurrences.
-
-    Context parameters:
-
-    ``event``
-        the event keyed by ``pk``
-
-    ``event_form``
-        a form object for updating the event
-
-    ``recurrence_form``
-        a form object for adding occurrences
-    """
-    event = get_object_or_404(Event, pk=pk)
-    event_form = recurrence_form = None
-    if request.method == 'POST':
-        if '_update' in request.POST:
-            event_form = event_form_class(request.POST, instance=event)
-            if event_form.is_valid():
-                event_form.save(event)
-                return http.HttpResponseRedirect(request.path)
-        elif '_add' in request.POST:
-            recurrence_form = recurrence_form_class(request.POST)
-            if recurrence_form.is_valid():
-                recurrence_form.save(event)
-                return http.HttpResponseRedirect(request.path)
-        else:
-            return http.HttpResponseBadRequest('Bad Request')
-
-    data = {
-        'event': event,
-        'event_form': event_form or event_form_class(instance=event),
-        'recurrence_form': recurrence_form or recurrence_form_class(initial={'dtstart': datetime.now()})
-    }
-    return render(request, template, data)
-
-
-#-------------------------------------------------------------------------------
-# def occurrence_view(
-#     request,
-#    event_pk,
-#    pk,
-#    template='swingtime/occurrence_detail.html',
-#    form_class=forms.SingleOccurrenceForm
-#    ):
-#    """
-#    View a specific occurrence and optionally handle any updates.
-#
-#    Context parameters:
-#
-#    ``occurrence``
-#        the occurrence object keyed by ``pk``
-#
-#    ``form``
-#        a form object for updating the occurrence
-#    """
-#    occurrence = get_object_or_404(Occurrence, pk=pk, event__pk=event_pk)
-#    if request.method == 'POST':
-#        form = form_class(request.POST, instance=occurrence)
-#        if form.is_valid():
-#            form.save()
-#            return http.HttpResponseRedirect(request.path)
-#    else:
-#        form = form_class(instance=occurrence)
-#
-#    return render(request, template, {'occurrence': occurrence, 'form': form})
-#
-#
-#-------------------------------------------------------------------------------
 def add_event(
     request,
     template='today/add_event.html',
@@ -434,6 +298,66 @@ def add_event(
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
 
     context = dict({'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form}
+                   , **nav_bar())
+
+    return render(request, template, context)
+
+
+def add_multiple_occurrence_event(
+    request,
+    template='today/add_multiple_occurrences_event.html',
+    event_form_class=EventForm,
+    ):
+    """
+    Add a new ``Event`` instance and 1 or more associated ``Occurrence``s.
+
+    Context parameters:
+
+    ``dtstart``
+        a datetime.datetime object representing the GET request value if present,
+        otherwise None
+
+    ``event_form``
+        a form object for updating the event
+
+    ``recurrence_form``
+        a form object for adding occurrences
+
+    """
+    global supp_context
+    dtstart = None
+    if request.method == 'POST':
+        event_form = event_form_class(request.POST, request.FILES)
+        single_occurrence_form = forms.SingleOccurrenceForm(request.POST)
+        multiple_occurrence_form = forms.MultipleOccurrenceForm(request.POST)
+
+        #need to validate event form and only one of occurrence_form
+        if event_form.is_valid() and single_occurrence_form.is_valid() and multiple_occurrence_form.is_empty():
+            event = event_form.save()
+            single_occurrence_form.save(event)
+            return http.HttpResponseRedirect(event.get_absolute_url())
+
+        elif event_form.is_valid() and single_occurrence_form.is_empty() and multiple_occurrence_form.is_valid():
+            event = event_form.save()
+            multiple_occurrence_form.save(event)
+            return http.HttpResponseRedirect(event.get_absolute_url())
+
+    else:
+        if 'dtstart' in request.GET:
+            try:
+                dtstart = parser.parse(request.GET['dtstart'])
+            except(TypeError, ValueError) as exc:
+                # TODO: A badly formatted date is passed to add_event
+                logging.warning(exc)
+
+        dtstart = dtstart or datetime.now()
+        event_form = event_form_class()
+        single_occurrence_form = forms.SingleOccurrenceForm(initial={'dtstart': dtstart})
+        multiple_occurrences_form = forms.MultipleOccurrenceForm(initial={'dtstart': dtstart})
+
+    context = dict({'dtstart': dtstart, 'event_form': event_form,
+                    'single_occurrence_form': single_occurrence_form,
+                    'multiple_occurrences_form': multiple_occurrences_form}
                    , **nav_bar())
 
     return render(request, template, context)

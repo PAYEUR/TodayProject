@@ -5,22 +5,22 @@
 {% load easy_maps_tags %}
 
 {% block title %}
-    événement{{ event.id }}
+    événement{{ occurrence.event.id }}
 {% endblock %}
 
 {% block content %}
 
    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <img src="{{ event.image.url }}" class="img-responsive" alt="..." />
-        <h1>{{ event.title }}</h1>
+        <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
+        <h1>{{ occurrence.event.title }}</h1>
     </div>
 
     <div id="description" class="row">
         <div class="col-sm-12 col-md-8">
             <div class="thumbnail">
                 <div class="caption">
-                    <p>{{ event.description }}</p>
+                    <p>{{ occurrence.event.description }}</p>
                 </div>
             </div>
         </div>
@@ -30,15 +30,15 @@
                 <p role = presentation>Prochaine date:</p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                    <a href="{% url 'daily_events' event.next_occurrence.start_time|date:'Y' event.next_occurrence.start_time|date:'m' event.next_occurrence.start_time|date:'d' %}">{{ event.next_occurrence.start_time|date:"l d F" }}</a>
+                    <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                    {{ event.next_occurrence.start_time|date:"H"}}h{{ event.next_occurrence.start_time|date:"i"}}
+                    {{ occurrence.start_time|date:"H"}}h{{ occurrence.start_time|date:"i"}}
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                    {{ event.city.city_name }} </br> {{address|capfirst}}
+                    {{ occurrence.event.city.city_name }} </br> {{address|capfirst}}
                 </p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-euro" aria-hidden="true"></span>

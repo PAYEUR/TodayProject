@@ -230,9 +230,8 @@ class Occurrence(models.Model):
         return u'{}: {}'.format(self.title, self.start_time.isoformat())
 
     # --------------------------------------------------------------------------
-    @models.permalink
     def get_absolute_url(self):
-        return ('swingtime-occurrence', [str(self.event.id), str(self.id)])
+        return reverse('get_occurrence', kwargs={'occurrence_id': self.pk})
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

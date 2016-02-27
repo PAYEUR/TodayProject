@@ -9,7 +9,7 @@
 
 {% block content %}
 
-    <div class="jumbotron">
+    <div class="jumbotron" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
         <h1>
             {% if days|length > 1 and days|length <= 25 %}
                 Les prochains jours
@@ -33,15 +33,25 @@
                             <div class="thumbnail">
                                 <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
                                 <div class="caption">
-                                    <h3><a href = {{ occurrence.event.get_absolute_url }}> {{ occurrence.event.title }} </a></h3>
+                                    <h3><a href = {{ occurrence.get_absolute_url }}> {{ occurrence.event.title }} </a></h3>
                                     <p>{{ occurrence.event.description|slice:":100" }}...</p>
+                                    <p role = presentation><strong>Début:</strong></p>
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                        <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
+                                         <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}"> {{ occurrence.start_time|date:"l d F" }}</a>
                                     </p>
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
                                         {{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }}
+                                    </p>
+                                    <p role = presentation><strong>Fin:</strong></p>
+                                    <p role = presentation>
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <a href="{% url 'daily_events' occurrence.end_time|date:'Y' occurrence.end_time|date:'m' occurrence.end_time|date:'d' %}"> {{ occurrence.end_time|date:"l d F" }}</a>
+                                    </p>
+                                    <p role = presentation>
+                                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                        {{ occurrence.end_time|date:"H" }}h{{ occurrence.end_time|date:"i" }}
                                     </p>
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>

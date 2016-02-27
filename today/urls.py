@@ -5,9 +5,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name="index"),
-    url(r'^evenement(?P<event_id>[0-9]+)$', views.get_event, name="get_event"),
-    url(r'^nouvel_evenement$', views.add_event,  # {'recurrence_form_class': SingleOccurrenceForm},
-        name="nouvel_evenement"),
+    url(r'^evenement(?P<occurrence_id>[0-9]+)$', views.get_occurrence, name="get_occurrence"),
     url(r'^toutes-categories/aujourd-hui/$', views.today_events, name="today_events"),
     url(r'^toutes-categories/demain/$', views.tomorrow_events, name="tomorrow_events"),
     url(r'^toutes-categories/prochains-jours/$', views.coming_days_events, name="coming_days_events"),
@@ -21,4 +19,5 @@ urlpatterns = [
     url(r'^categorie(?P<event_type_id>[0-9])/aujourd-hui/$', views.today_event_type, name="today_event_type"),
     url(r'^categorie(?P<event_type_id>[0-9])/demain/$', views.tomorrow_event_type, name="tomorrow_event_type"),
     url(r'^contact$', views.contact, name="contact"),
+    url(r'^nouvel_evenement$', views.add_multiple_occurrence_event, name="nouvel_evenement"),
     ]

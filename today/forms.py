@@ -7,7 +7,7 @@ from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
-from datetimewidget.widgets import DateWidget, DateTimeWidget
+from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil import rrule
@@ -119,7 +119,14 @@ class IndexForm(forms.Form):
     quand = forms.DateField(
             required=True,
             initial=datetime.today(),
-            widget=DateWidget(bootstrap_version=3))
+            widget=DateWidget(
+                options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                },
+                bootstrap_version=3)
+            )
 
 
 # -------------------------------------------------------------------------------
@@ -226,7 +233,7 @@ class SplitDateTimeWidget(forms.MultiWidget):
 
 
 # ==============================================================================
-class MultipleOccurrenceForm(forms.Form):
+class MultipleOccurrenceForm2(forms.Form):
     day = forms.DateField(
         label=_('Date'),
         initial=date.today,
@@ -311,7 +318,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
-        super(MultipleOccurrenceForm, self).__init__(*args, **kws)
+        super(MultipleOccurrenceForm2, self).__init__(*args, **kws)
         dtstart = self.initial.get('dtstart', None)
         if dtstart:
             dtstart = dtstart.replace(
@@ -429,8 +436,23 @@ class SingleOccurrenceForm(forms.Form):
 
     """
      # ==========================================================================
-    start_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
-    end_time = forms.DateTimeField(widget=DateTimeWidget(bootstrap_version=3))
+    start_time = forms.DateTimeField(
+        label =_('Start time'),
+        widget=DateTimeWidget(
+            options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                    },bootstrap_version=3))
+
+    end_time = forms.DateTimeField(
+        label = _('End time'),
+        widget=DateTimeWidget(
+            options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                    },bootstrap_version=3))
 
     def clean(self):
         cleaned_data = super(SingleOccurrenceForm, self).clean()
@@ -451,4 +473,180 @@ class SingleOccurrenceForm(forms.Form):
         )
 
         return event
+
+# ==============================================================================
+class MultipleOccurrenceForm(forms.Form):
+    """
+    Complex occurrences form
+    """
+
+    # frequency
+    ## hour
+    start_time = forms.TimeField(
+        label=_('Start time'),
+        widget=TimeWidget(
+            options={
+                    'pickerPosition':'top-left',
+                    },bootstrap_version=3))
+
+
+    end_time = forms.TimeField(
+        label=_('End time'),
+        widget=TimeWidget(
+            options={
+                    'pickerPosition':'top-left',
+                    },bootstrap_version=3))
+
+    ## date options
+    start_date = forms.DateField(
+        label=_('From'),
+        widget=DateWidget(
+            options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                    },bootstrap_version=3))
+
+
+    end_date = forms.DateField(
+        label=_('Until'),
+        widget=DateWidget(
+            options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                    },bootstrap_version=3))
+
+
+    ## recurrence options
+    interval = forms.IntegerField(
+        required=False,
+        initial='1',
+        widget=forms.TextInput(attrs=dict(size=3, max_length=3))
+    )
+
+
+    freq = forms.IntegerField(
+        label=_('Frequency'),
+        initial=rrule.WEEKLY,
+        widget=forms.RadioSelect(choices=FREQUENCY_CHOICES),
+    )
+
+    ### weekly options
+    week_days = MultipleIntegerField(
+        WEEKDAY_SHORT,
+        label=_('Weekly options'),
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    ### monthly choices
+    month_option = forms.ChoiceField(
+        choices=(('on',_('On the')), ('each',_('Each:'))),
+        initial='each',
+        widget=forms.RadioSelect(),
+        label=_('Monthly options')
+    )
+
+    #### 'on the' monthly options
+    month_ordinal = forms.IntegerField(widget=forms.Select(choices=ORDINAL), required=False)
+
+    month_ordinal_day = forms.IntegerField(widget=forms.Select(choices=WEEKDAY_LONG), required=False)
+
+    #### 'each' monthly options
+    each_month_day = MultipleIntegerField(
+        [(i,i) for i in range(1,32)],
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    # ---------------------------------------------------------------------------
+    def __init__(self, *args, **kws):
+        super(MultipleOccurrenceForm, self).__init__(*args, **kws)
+        dtstart = self.initial.get('dtstart', None)
+        if dtstart:
+            dtstart = dtstart.replace(
+                minute=((dtstart.minute // MINUTES_INTERVAL) * MINUTES_INTERVAL),
+                second=0,
+                microsecond=0
+            )
+
+            weekday = dtstart.isoweekday()
+            ordinal = dtstart.day // 7
+            ordinal = '%d' % (-1 if ordinal > 3 else ordinal + 1,)
+            offset = (dtstart - datetime.combine(dtstart.date(), time(0, tzinfo=dtstart.tzinfo))).seconds
+
+            self.initial.setdefault('day', dtstart)
+            self.initial.setdefault('week_days', '%d' % weekday)
+            self.initial.setdefault('month_ordinal', ordinal)
+            self.initial.setdefault('month_ordinal_day', '%d' % weekday)
+            self.initial.setdefault('each_month_day', ['%d' % dtstart.day])
+            self.initial.setdefault('year_months', ['%d' % dtstart.month])
+            self.initial.setdefault('year_month_ordinal', ordinal)
+            self.initial.setdefault('year_month_ordinal_day', '%d' % weekday)
+            self.initial.setdefault('start_time_delta', '%d' % offset)
+            self.initial.setdefault('end_time_delta', '%d' % (offset + SECONDS_INTERVAL,))
+
+    # ---------------------------------------------------------------------------
+    def clean(self):
+        day = datetime.combine(self.cleaned_data['day'], time(0))
+        self.cleaned_data['start_time'] = day + timedelta(
+            seconds=self.cleaned_data['start_time_delta']
+        )
+
+        self.cleaned_data['end_time'] = day + timedelta(
+            seconds=self.cleaned_data['end_time_delta']
+        )
+
+        return self.cleaned_data
+
+    # ---------------------------------------------------------------------------
+    def save(self, event):
+        if self.cleaned_data['repeats'] == 'count' and self.cleaned_data['count'] == 1:
+            params = {}
+        else:
+            params = self._build_rrule_params()
+
+        event.add_occurrences(
+            self.cleaned_data['start_time'],
+            self.cleaned_data['end_time'],
+            **params
+        )
+
+        return event
+
+    # ---------------------------------------------------------------------------
+    def _build_rrule_params(self):
+        iso = ISO_WEEKDAYS_MAP
+        data = self.cleaned_data
+        params = dict(
+            freq=data['freq'],
+            interval=data['interval'] or 1
+        )
+
+        if data['repeats'] == 'until':
+            params['until'] = data['until']
+        else:
+            params['count'] = data.get('count', 1)
+
+        if params['freq'] == rrule.WEEKLY:
+            params['byweekday'] = [iso[n] for n in data['week_days']]
+
+        elif params['freq'] == rrule.MONTHLY:
+            if 'on' == data['month_option']:
+                ordinal = data['month_ordinal']
+                day = iso[data['month_ordinal_day']]
+                params.update(byweekday=day, bysetpos=ordinal)
+            else:
+                params['bymonthday'] = data['each_month_day']
+
+        elif params['freq'] == rrule.YEARLY:
+            params['bymonth'] = data['year_months']
+            if data['is_year_month_ordinal']:
+                ordinal = data['year_month_ordinal']
+                day = iso[data['year_month_ordinal_day']]
+                params['byweekday'] = day(ordinal)
+
+        elif params['freq'] != rrule.DAILY:
+            raise NotImplementedError(_('Unknown interval rule ' + params['freq']))
+
+        return params
 
