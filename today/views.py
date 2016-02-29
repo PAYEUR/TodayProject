@@ -10,6 +10,7 @@ from dateutil import parser
 
 from . import forms
 from forms import EventForm, IndexForm
+from django.forms import formset_factory
 from .models import EventType, Occurrence
 
 from . import swingtime_settings
@@ -103,7 +104,7 @@ def _events_in_a_period(request, days, template='today/event_by_date.html'):
 
 
 
-    context = dict({'occurrences': occurrences,
+    context = dict({'occurrences': occurrences[:5],
                    'event_types_list' : event_types_list,
                     'days': days,
                     },  **nav_bar())
@@ -189,7 +190,7 @@ def event_type_coming_days(request, event_type_id, next_days_duration=7,template
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
-    context = dict({'occurrences': occurrences,
+    context = dict({'occurrences': occurrences[:5],
                     'event_type' : event_type,
                     },  **nav_bar())
 
@@ -206,7 +207,7 @@ def _single_day_event_type(
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
     occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
 
-    context = dict({'occurrences': occurrences,
+    context = dict({'occurrences': occurrences[:5],
                     'event_types_list' : [event_type],
                     'days'       : [dt]
                     },  **nav_bar())
@@ -253,7 +254,7 @@ def single_day_event_type(
     return render(request, template, context)
 
 
-def add_event(
+def _add_event(
     request,
     template='today/add_event.html',
     event_form_class=EventForm,
@@ -283,7 +284,7 @@ def add_event(
         if event_form.is_valid() and recurrence_form.is_valid():
             event = event_form.save()
             recurrence_form.save(event)
-            return http.HttpResponseRedirect(event.get_absolute_url())
+            return http.HttpResponseRedirect(event.next_occurrence().get_absolute_url())
 
     else:
         if 'dtstart' in request.GET:
@@ -303,61 +304,17 @@ def add_event(
     return render(request, template, context)
 
 
-def add_multiple_occurrence_event(
-    request,
-    template='today/add_multiple_occurrences_event.html',
-    event_form_class=EventForm,
-    ):
-    """
-    Add a new ``Event`` instance and 1 or more associated ``Occurrence``s.
+def add_multiple_occurrence_event(request):
+    return _add_event(request, recurrence_form_class=forms.MultipleOccurrenceForm)
 
-    Context parameters:
+def add_single_event(request):
+    return _add_event(request)
 
-    ``dtstart``
-        a datetime.datetime object representing the GET request value if present,
-        otherwise None
+#def add_multiple_dates(request):
 
-    ``event_form``
-        a form object for updating the event
+#    return _add_event(request,
+#                      template='today/add_event_as_dates.html',
+#                      recurrence_form_class=formset_factory(forms.SingleOccurrenceForm))
 
-    ``recurrence_form``
-        a form object for adding occurrences
-
-    """
-    global supp_context
-    dtstart = None
-    if request.method == 'POST':
-        event_form = event_form_class(request.POST, request.FILES)
-        single_occurrence_form = forms.SingleOccurrenceForm(request.POST)
-        multiple_occurrence_form = forms.MultipleOccurrenceForm(request.POST)
-
-        #need to validate event form and only one of occurrence_form
-        if event_form.is_valid() and single_occurrence_form.is_valid() and multiple_occurrence_form.is_empty():
-            event = event_form.save()
-            single_occurrence_form.save(event)
-            return http.HttpResponseRedirect(event.get_absolute_url())
-
-        elif event_form.is_valid() and single_occurrence_form.is_empty() and multiple_occurrence_form.is_valid():
-            event = event_form.save()
-            multiple_occurrence_form.save(event)
-            return http.HttpResponseRedirect(event.get_absolute_url())
-
-    else:
-        if 'dtstart' in request.GET:
-            try:
-                dtstart = parser.parse(request.GET['dtstart'])
-            except(TypeError, ValueError) as exc:
-                # TODO: A badly formatted date is passed to add_event
-                logging.warning(exc)
-
-        dtstart = dtstart or datetime.now()
-        event_form = event_form_class()
-        single_occurrence_form = forms.SingleOccurrenceForm(initial={'dtstart': dtstart})
-        multiple_occurrences_form = forms.MultipleOccurrenceForm(initial={'dtstart': dtstart})
-
-    context = dict({'dtstart': dtstart, 'event_form': event_form,
-                    'single_occurrence_form': single_occurrence_form,
-                    'multiple_occurrences_form': multiple_occurrences_form}
-                   , **nav_bar())
-
-    return render(request, template, context)
+def new_event(request):
+    return render(request, 'today/add_event_choice.html', nav_bar())
