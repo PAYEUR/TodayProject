@@ -280,25 +280,37 @@ class SingleOccurrenceForm(forms.Form):
                     'pickerPosition':'top-left'
                     },bootstrap_version=3))
 
+
+    def clean_start_time(self):
+        start_time = self.cleaned_data['start_time']
+        if start_time is not None:
+            return start_time
+
+
+    def clean_end_time(self):
+        end_time = self.cleaned_data['end_time']
+        if end_time is not None:
+            return end_time
+
     def clean(self):
         cleaned_data = super(SingleOccurrenceForm, self).clean()
-        start_time = cleaned_data['start_time']
-        end_time = cleaned_data['end_time']
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        now = datetime.now()
 
-        if start_time and end_time:
-            now = datetime.now()
-            if start_time > end_time or start_time < now or end_time < now:
-                raise forms.ValidationError("Verifier que les dates correspondent")
+        if start_time > end_time or start_time < now or end_time < now:
+            raise forms.ValidationError("Verifier que les dates correspondent")
 
 
     def save(self, event):
 
         event.add_occurrences(
-            self.cleaned_data['start_time'],
-            self.cleaned_data['end_time'],
+            self.cleaned_data.get('start_time'),
+            self.cleaned_data.get('end_time'),
         )
 
         return event
+
 
 class MultipleOccurrenceForm(forms.Form):
     """

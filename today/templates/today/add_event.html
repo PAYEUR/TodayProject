@@ -15,7 +15,7 @@
 {% block content %}
     <h3> Ajouter un événement</h3>
     {{ event_form.non_field_errors }}
-    {{ recurring_form.non_field_errors }}
+    {{ recurrence_form.non_field_errors }}
     {% if event_form.errors or recurrence_form.errors %}
         <p class="errornote"> Merci de corriger le formulaire </p>
     {% endif %}

@@ -21,6 +21,6 @@ urlpatterns = [
     url(r'^contact$', views.contact, name="contact"),
     url(r'^nouvel_evenement_multiple$', views.add_multiple_occurrence_event, name="nouvel_evenement_multiple"),
     url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),
-    #url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="event_as_dates"),
+    url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
     url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
     ]

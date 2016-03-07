@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render, redirec
 from dateutil import parser
 
 from . import forms
-from forms import EventForm, IndexForm
+from forms import EventForm, IndexForm, SingleOccurrenceForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence
 
@@ -296,6 +296,7 @@ def _add_event(
 
         dtstart = dtstart or datetime.now()
         event_form = event_form_class()
+        #Caution: initial is a form_class parameter, not a request one.
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
 
     context = dict({'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form}
@@ -310,11 +311,47 @@ def add_multiple_occurrence_event(request):
 def add_single_event(request):
     return _add_event(request)
 
-#def add_multiple_dates(request):
+def add_multiple_dates(
+    request,
+    template='today/add_event_as_dates.html',
+    event_form_class=EventForm,
+    recurrence_form_class=SingleOccurrenceForm
+    ):
 
-#    return _add_event(request,
-#                      template='today/add_event_as_dates.html',
-#                      recurrence_form_class=formset_factory(forms.SingleOccurrenceForm))
+    global supp_context
+    dtstart = None
+    OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
+    if request.method == 'POST':
+        event_form = event_form_class(request.POST, request.FILES)
+        formset = OccurrenceFormSet(request.POST)
+        if event_form.is_valid() and formset.is_valid():
+            event = event_form.save()
+            for occurrence_form in formset:
+                if occurrence_form.is_valid:
+                    if occurrence_form.cleaned_data['start_time'] is not None and occurrence_form.cleaned_data['end_time'] is not None:
+                        occurrence_form.save(event)
+            return http.HttpResponseRedirect(event.next_occurrence().get_absolute_url())
+
+    else:
+        if 'dtstart' in request.GET:
+            try:
+                dtstart = parser.parse(request.GET['dtstart'])
+            except(TypeError, ValueError) as exc:
+                # TODO: A badly formatted date is passed to add_event
+                logging.warning(exc)
+
+        dtstart = dtstart or datetime.now()
+        event_form = event_form_class()
+        # initial parameter doesnt work here
+        formset = OccurrenceFormSet()
+
+    context = dict({'dtstart': dtstart,
+                    'event_form': event_form,
+                    'formset': formset,
+                    }, **nav_bar())
+
+    return render(request, template, context)
+
 
 def new_event(request):
     return render(request, 'today/add_event_choice.html', nav_bar())
