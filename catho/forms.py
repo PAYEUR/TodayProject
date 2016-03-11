@@ -3,7 +3,7 @@ Convenience forms for adding and updating ``Event`` and ``Occurrence``s.
 
 """
 from __future__ import print_function, unicode_literals
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
@@ -209,28 +209,6 @@ class MultipleIntegerField(forms.MultipleChoiceField):
         return [int(i) for i in super(MultipleIntegerField, self).clean(value)]
 
 # ==============================================================================
-class SplitDateTimeWidget(forms.MultiWidget):
-    """
-    A Widget that splits datetime input into a SelectDateWidget for dates and
-    Select widget for times.
-
-    """
-    #---------------------------------------------------------------------------
-    def __init__(self, attrs=None):
-        widgets = (
-            SelectDateWidget(attrs=attrs),
-            forms.Select(choices=default_timeslot_options, attrs=attrs)
-        )
-        super(SplitDateTimeWidget, self).__init__(widgets, attrs)
-
-    #---------------------------------------------------------------------------
-    def decompress(self, value):
-        if value:
-            return [value.date(), value.time().replace(microsecond=0)]
-
-        return [None, None]
-
-# ==============================================================================
 
 class EventForm(forms.ModelForm):
     """
@@ -260,53 +238,71 @@ class SingleOccurrenceForm(forms.Form):
 
     """
      # ==========================================================================
-    start_time = forms.DateTimeField(
+    date = forms.DateField(
+        required=True,
+        label=_('Date'),
+        widget=DateWidget(
+            options={
+                    'todayHighlight':True,
+                    'weekStart':1,
+                    'pickerPosition':'top-left'
+                    },bootstrap_version=3))
+
+
+    start_time = forms.TimeField(
         required=True,
         label =_('Start time'),
-        widget=DateTimeWidget(
+        widget=TimeWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
                     'pickerPosition':'top-left'
                     },bootstrap_version=3))
 
-    end_time = forms.DateTimeField(
-        required=True,
+
+    end_time = forms.TimeField(
+        required=False,
         label = _('End time'),
-        widget=DateTimeWidget(
+        widget=TimeWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
                     'pickerPosition':'top-left'
                     },bootstrap_version=3))
 
-
-    def clean_start_time(self):
-        start_time = self.cleaned_data['start_time']
-        if start_time is not None:
-            return start_time
-
-
-    def clean_end_time(self):
-        end_time = self.cleaned_data['end_time']
-        if end_time is not None:
-            return end_time
 
     def clean(self):
+        """
+        :return: validation error if start_time or end_time in the past
+        concatenate date and hour to give start and end datetime
+        """
         cleaned_data = super(SingleOccurrenceForm, self).clean()
-        start_time = cleaned_data.get('start_time')
-        end_time = cleaned_data.get('end_time')
+        start_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('start_time'))
         now = datetime.now()
 
-        if start_time > end_time or start_time < now or end_time < now:
+        if start_time < now:
             raise forms.ValidationError("Verifier que les dates correspondent")
+
+        if cleaned_data.get('end_time') is not None:
+            end_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('end_time'))
+            if start_time > end_time or end_time < now:
+                raise forms.ValidationError("Verifier que les dates correspondent")
+
+        return self.cleaned_data
 
 
     def save(self, event):
+        """
+        :param event:
+        :return: end_time = start_time + 1h if end_time is None
+        """
+        start_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('start_time'))
+
+        if self.cleaned_data.get('end_time') is not None:
+            end_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('end_time'))
+        else:
+            end_time = start_time + timedelta(hours=1)
 
         event.add_occurrences(
-            self.cleaned_data.get('start_time'),
-            self.cleaned_data.get('end_time'),
+            start_time,
+            end_time,
+            is_multiple=False,
         )
 
         return event
@@ -408,6 +404,7 @@ class MultipleOccurrenceForm(forms.Form):
         event.add_occurrences(
             self.cleaned_data['start_time'],
             self.cleaned_data['end_time'],
+            is_multiple=True,
             **params
         )
 

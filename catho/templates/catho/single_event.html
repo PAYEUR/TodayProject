@@ -1,4 +1,4 @@
-{% extends 'today/base.html' %}
+{% extends 'catho/base.html' %}
 
 {% load staticfiles %}
 {% load bootstrap3 %}
@@ -12,8 +12,14 @@
 
    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
-        <h1>{{ occurrence.event.title }}</h1>
+        <div class="row" align="center">
+            <div class="col-sm-10 col-md-6">
+                <img src="{{ occurrence.event.image.url }}" class="img-responsive" alt="..." />
+            </div>
+        </div>
+        <div class="row">
+            <h1>{{ occurrence.event.title }}</h1>
+        </div>
     </div>
 
     <div id="description" class="row">

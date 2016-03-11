@@ -26,12 +26,12 @@ def nav_bar():
     return {'nav_list':  get_list_or_404(EventType)}
 
 
-# today's views
+# catho's views
 # -------------------------------------------------------------------------------
-def contact(request, template='today/contact.html'):
+def contact(request, template='catho/contact.html'):
     return render(request, template, nav_bar())
 
-def index(request, template='today/home.html'):
+def index(request, template='catho/home.html'):
     """
     :param request:
     :param template:
@@ -66,8 +66,6 @@ def index(request, template='today/home.html'):
 
     return render(request, template, context)
 
-
-
 def get_occurrence(request, occurrence_id):
     occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
 
@@ -79,10 +77,9 @@ def get_occurrence(request, occurrence_id):
     context = dict({'occurrence': occurrence,
                     'address': address,
                    }, **nav_bar())
-    return render(request, 'today/single_event.html', context)
+    return render(request, 'catho/single_event.html', context)
 
-
-def _events_in_a_period(request, days, template='today/event_by_date.html'):
+def _events_in_a_period(request, days, template='catho/event_by_date.html'):
     """
 
     :param request:
@@ -90,19 +87,17 @@ def _events_in_a_period(request, days, template='today/event_by_date.html'):
     :return: context with occurrences, event_types_list and days
     """
     # not satisfying because len(moment) times database requests
-    # print all occurrences
+
+    # print event_types occurrences except multiples occurrences
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day)
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(is_multiple=False)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
     # get all related event_types  (double sorted)
     events_list = [occurrence.event for occurrence in occurrences]
     event_types_list = list(set([event.event_type for event in events_list]))
-                                 # list(set([occurrence.event for occurrence in occurrences]))]))
-
-
 
     context = dict({'occurrences': occurrences[:5],
                    'event_types_list' : event_types_list,
@@ -112,18 +107,18 @@ def _events_in_a_period(request, days, template='today/event_by_date.html'):
     return render(request, template, context)
 
 
-def today_events(request, template='today/event_by_date.html'):
+def today_events(request, template='catho/event_by_date.html'):
     """
 
     :param request:
     :param template:
-    :return: all events for today
+    :return: all events for catho
     """
     days = [datetime.today()]
     return _events_in_a_period(request, days, template)
 
 
-def tomorrow_events(request, template='today/event_by_date.html'):
+def tomorrow_events(request, template='catho/event_by_date.html'):
     """
 
     :param request:
@@ -134,7 +129,7 @@ def tomorrow_events(request, template='today/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
-def coming_days_events(request,next_days_duration=7, template='today/event_by_date.html'):
+def coming_days_events(request,next_days_duration=7, template='catho/event_by_date.html'):
     """
 
     :param request:
@@ -152,14 +147,14 @@ def coming_days_events(request,next_days_duration=7, template='today/event_by_da
     return _events_in_a_period(request, days, template)
 
 
-def daily_events(request, year, month, day, template='today/event_by_date.html'):
+def daily_events(request, year, month, day, template='catho/event_by_date.html'):
 
     days = [datetime(int(year), int(month), int(day))]
 
     return _events_in_a_period(request, days, template)
 
 
-def monthly_events(request, year, month, template='today/event_by_date.html'):
+def monthly_events(request, year, month, template='catho/event_by_date.html'):
 
     year, month = int(year), int(month)
     cal = calendar.Calendar()
@@ -172,7 +167,7 @@ def monthly_events(request, year, month, template='today/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
-def event_type_coming_days(request, event_type_id, next_days_duration=7,template='today/date_by_event_type.html'):
+def event_type_coming_days(request, event_type_id, next_days_duration=7,template='catho/date_by_event_type.html'):
 
     # list of 7 days
     today = datetime.now()
@@ -201,7 +196,7 @@ def _single_day_event_type(
         request,
         event_type_id,
         dt,
-        template='today/event_by_date.html'
+        template='catho/event_by_date.html'
     ):
 
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
@@ -217,7 +212,7 @@ def _single_day_event_type(
 def today_event_type(
         request,
         event_type_id,
-        template='today/event_by_date.html'
+        template='catho/event_by_date.html'
     ):
 
     dt = datetime.today()
@@ -227,7 +222,7 @@ def today_event_type(
 def tomorrow_event_type(
         request,
         event_type_id,
-        template='today/event_by_date.html'
+        template='catho/event_by_date.html'
     ):
 
     dt = datetime.today()+timedelta(days=+1)
@@ -239,7 +234,7 @@ def single_day_event_type(
         year,
         month,
         day,
-        template='today/event_by_date.html'
+        template='catho/event_by_date.html'
     ):
 
     dt = datetime(int(year), int(month), int(day))
@@ -256,7 +251,7 @@ def single_day_event_type(
 
 def _add_event(
     request,
-    template='today/add_event.html',
+    template='catho/add_event.html',
     event_form_class=EventForm,
     recurrence_form_class=forms.SingleOccurrenceForm
     ):
@@ -313,7 +308,7 @@ def add_single_event(request):
 
 def add_multiple_dates(
     request,
-    template='today/add_event_as_dates.html',
+    template='catho/add_event_as_dates.html',
     event_form_class=EventForm,
     recurrence_form_class=SingleOccurrenceForm
     ):
@@ -327,9 +322,10 @@ def add_multiple_dates(
         if event_form.is_valid() and formset.is_valid():
             event = event_form.save()
             for occurrence_form in formset:
-                if occurrence_form.is_valid:
-                    if occurrence_form.cleaned_data['start_time'] is not None and occurrence_form.cleaned_data['end_time'] is not None:
-                        occurrence_form.save(event)
+                if occurrence_form.is_valid and occurrence_form.cleaned_data:
+                    #if occurrence_form.cleaned_data['start_time'] is not None and occurrence_form.cleaned_data['end_time'] is not None:
+                    print(occurrence_form.cleaned_data)
+                    occurrence_form.save(event)
             return http.HttpResponseRedirect(event.next_occurrence().get_absolute_url())
 
     else:
@@ -354,4 +350,4 @@ def add_multiple_dates(
 
 
 def new_event(request):
-    return render(request, 'today/add_event_choice.html', nav_bar())
+    return render(request, 'catho/add_event_choice.html', nav_bar())

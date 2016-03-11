@@ -1,4 +1,4 @@
-{% extends 'today/base.html' %}
+{% extends 'catho/base.html' %}
 
 {% load bootstrap3 %}
 
@@ -8,14 +8,14 @@
 
 {# to allow recurrence_form.query #}
 {% block bootstrap3_extra_head %}
-    {# event_form.media #}
-    {{ recurrence_form.media }}
+    {{ event_form.media }}
+    {{ formset.media }}
 {% endblock %}
 
 {% block content %}
     <h3> Ajouter un événement</h3>
     {{ event_form.non_field_errors }}
-    {{ recurrence_form.non_field_errors }}
+    {{ formset.non_field_errors }}
     {% if event_form.errors or recurrence_form.errors %}
         <p class="errornote"> Merci de corriger le formulaire </p>
     {% endif %}
@@ -23,7 +23,11 @@
     <form role="form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form event_form %}
-        {% bootstrap_form recurrence_form %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <h3>Date n°{{forloop.counter}}</h3>
+            {% bootstrap_form form %}
+        {% endfor %}
         {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
     </form>
 

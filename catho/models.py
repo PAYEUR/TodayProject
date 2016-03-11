@@ -65,7 +65,7 @@ class Note(models.Model):
 @python_2_unicode_compatible
 class EventType(models.Model):
     """
-    Simple ``Event`` classifcation.
+    Simple ``Event`` classification.
     """
 
     label = models.CharField(_('label'), max_length=50)
@@ -83,14 +83,13 @@ class EventType(models.Model):
     def get_absolute_url(self):
         return reverse('event_type_coming_days', kwargs={'event_type_id': self.pk})
 
-
 # ==============================================================================
 @python_2_unicode_compatible
 class Event(models.Model):
     """
     Container model for general metadata and associated ``Occurrence`` entries.
     """
-    title = models.CharField(_('title'), max_length=50)
+    title = models.CharField(_('title'), max_length=100)
     description = models.TextField(_('description'))
     event_type = models.ForeignKey(EventType, verbose_name=_('event type'))
     notes = GenericRelation(Note, verbose_name=_('notes'))
@@ -115,7 +114,7 @@ class Event(models.Model):
         return reverse('get_event', kwargs={'event_id': self.pk})
 
     # --------------------------------------------------------------------------
-    def add_occurrences(self, start_time, end_time, **rrule_params):
+    def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
         """
         Add one or more occurences to the event using a comparable API to
         ``dateutil.rrule``.
@@ -140,7 +139,10 @@ class Event(models.Model):
             delta = end_time - start_time
             occurrences = []
             for ev in rrule.rrule(dtstart=start_time, **rrule_params):
-                occurrences.append(Occurrence(start_time=ev, end_time=ev + delta, event=self))
+                occurrences.append(Occurrence(start_time=ev,
+                                              end_time=ev + delta,
+                                              event=self,
+                                              is_multiple=is_multiple))
             self.occurrence_set.bulk_create(occurrences)
 
     # --------------------------------------------------------------------------
@@ -216,8 +218,8 @@ class Occurrence(models.Model):
     end_time = models.DateTimeField(_('end time'))
     event = models.ForeignKey(Event, verbose_name=_('event'), editable=False)
     notes = GenericRelation(Note, verbose_name=_('notes'))
-
     objects = OccurrenceManager()
+    is_multiple = models.BooleanField(default=False)
 
     # ==========================================================================
     class Meta:

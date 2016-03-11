@@ -1,0 +1,39 @@
+{% extends 'catho/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Nouvel Evénement
+{% endblock %}
+
+{# to allow recurrence_form.query #}
+{% block bootstrap3_extra_head %}
+    {# event_form.media #}
+    {{ recurrence_form.media }}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Ajouter un événement</h1>
+    </div>
+
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+
+            {{ event_form.non_field_errors }}
+            {{ recurrence_form.non_field_errors }}
+            {% if event_form.errors or recurrence_form.errors %}
+                <p class="errornote"> Merci de corriger le formulaire </p>
+            {% endif %}
+
+            <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form event_form %}
+                {% bootstrap_form recurrence_form %}
+                {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

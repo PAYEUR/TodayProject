@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'today.apps.TodayConfig',
+    'catho.apps.TodayConfig',
     'bootstrap3',
     'datetimewidget',
     'easy_maps'
@@ -133,9 +133,9 @@ BOOTSTRAP3 = {
 
 }
 
-SWINGTIME_SETTINGS_MODULE = 'today.swingtime_settings'
+SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
 
-MEDIA_ROOT = '/home/payeur/PycharmProject/TodayProject/today/media/'
+MEDIA_ROOT = '/home/payeur/PycharmProject/TodayProject/catho/media/'
 MEDIA_URL = '/media/'
 
 EASY_MAPS_CENTER = (48.853, 2.35)

@@ -554,3 +554,24 @@ class MultipleOccurrenceFormSwingtime(forms.Form):
 
 
  # ==============================================================================
+    # ==============================================================================
+class SplitDateTimeWidget(forms.MultiWidget):
+    """
+    A Widget that splits datetime input into a SelectDateWidget for dates and
+    Select widget for times.
+
+    """
+    #---------------------------------------------------------------------------
+    def __init__(self, attrs=None):
+        widgets = (
+            SelectDateWidget(attrs=attrs),
+            forms.Select(choices=default_timeslot_options, attrs=attrs)
+        )
+        super(SplitDateTimeWidget, self).__init__(widgets, attrs)
+
+    #---------------------------------------------------------------------------
+    def decompress(self, value):
+        if value:
+            return [value.date(), value.time().replace(microsecond=0)]
+
+        return [None, None]
