@@ -31,7 +31,7 @@ def nav_bar():
 def contact(request, template='catho/contact.html'):
     return render(request, template, nav_bar())
 
-def index(request, template='catho/home.html'):
+def index(request, template='catho/research.html'):
     """
     :param request:
     :param template:

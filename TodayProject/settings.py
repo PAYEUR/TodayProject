@@ -129,8 +129,6 @@ STATIC_URL = '/static/'
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
     'include_jquery': True,
-    'javascript_in_head':True,
-
 }
 
 SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'

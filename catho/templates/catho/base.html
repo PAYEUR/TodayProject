@@ -3,9 +3,11 @@
 {% load bootstrap3 %}
 {% load static %}
 
-{# a little crappy but didn't figure out how to do this properly #}
+{# make shure that childrens of this template don't call bootstrap3_extra_head #}
 {% block bootstrap3_extra_head %}
     <link href="{%  static 'today/base.css' %}" rel="stylesheet">
+
+    {% block base_extra_head %}{% endblock %}
 {% endblock %}
 
 
@@ -30,7 +32,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{% url 'index' %}">Menu principal</a></li>
+            <li><a href="{% url 'index' %}">Recherche</a></li>
             {# <li><a href="#">Agenda</a></li> #}
             <li><a href="{% url 'contact' %}">Contactez-nous</a></li>
           </ul>
