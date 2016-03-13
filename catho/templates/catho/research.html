@@ -27,7 +27,7 @@
                 <form role="form" method="post">
                     {% csrf_token %}
                     {%bootstrap_form form %}
-                    {% buttons submit='Enjoy!'%}{% endbuttons %}
+                    {% bootstrap_button "Enjoy!" button_type="submit" size="lg" button_class="btn-success" icon="play" %}
                 </form>
             </div>
         </div>
@@ -35,7 +35,7 @@
 
     <div id="services" class="row">
         <div class="col-sm-12 col-md-12" align="center">
-            <a href="{% url 'nouvel_evenement' %}" role="button" class="btn btn-success btn-lg">
+            <a href="{% url 'nouvel_evenement' %}" role="button" class="btn btn-info btn-md">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>

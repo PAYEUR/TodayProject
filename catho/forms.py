@@ -6,9 +6,11 @@ from __future__ import print_function, unicode_literals
 from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
+from django.forms.widgets import TimeInput
 from django.forms.extras.widgets import SelectDateWidget
 from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin.widgets import AdminTimeWidget
 
 from dateutil import rrule
 from . import swingtime_settings
@@ -116,15 +118,17 @@ class IndexForm(forms.Form):
             required=False,
             empty_label=None,
             widget=forms.widgets.RadioSelect)
+
     quand = forms.DateField(
             required=True,
             initial=datetime.today(),
             widget=DateWidget(
                 options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
                 },
+                usel10n = True,
                 bootstrap_version=3)
             )
 
@@ -243,10 +247,13 @@ class SingleOccurrenceForm(forms.Form):
         label=_('Date'),
         widget=DateWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
-                    },bootstrap_version=3))
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
+                    },
+            usel10n = True,
+            bootstrap_version=3)
+        )
 
 
     start_time = forms.TimeField(
@@ -254,8 +261,11 @@ class SingleOccurrenceForm(forms.Form):
         label =_('Start time'),
         widget=TimeWidget(
             options={
-                    'pickerPosition':'top-left'
-                    },bootstrap_version=3))
+                    'pickerPosition': 'top-left',
+                    'minuteStep': 15,
+                    },
+            bootstrap_version=3)
+        )
 
 
     end_time = forms.TimeField(
@@ -263,8 +273,11 @@ class SingleOccurrenceForm(forms.Form):
         label = _('End time'),
         widget=TimeWidget(
             options={
-                    'pickerPosition':'top-left'
-                    },bootstrap_version=3))
+                    'pickerPosition': 'top-left',
+                    'minuteStep': 15,
+                    },
+            bootstrap_version=3)
+        )
 
 
     def clean(self):
@@ -277,12 +290,12 @@ class SingleOccurrenceForm(forms.Form):
         now = datetime.now()
 
         if start_time < now:
-            raise forms.ValidationError("Verifier que les dates correspondent")
+            raise forms.ValidationError("Verifier que la date correspond")
 
         if cleaned_data.get('end_time') is not None:
             end_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('end_time'))
             if start_time > end_time or end_time < now:
-                raise forms.ValidationError("Verifier que les dates correspondent")
+                raise forms.ValidationError("Verifier que les heures correspondent")
 
         return self.cleaned_data
 
@@ -320,14 +333,20 @@ class MultipleOccurrenceForm(forms.Form):
         initial='14:00',
         widget=TimeWidget(
             options={'pickerPosition':'top-left',
-                    },bootstrap_version=3))
+                     'minuteStep':15,
+                    },
+            bootstrap_version=3)
+        )
 
     end_time_delta = forms.TimeField(
         label=_('Ending hour'),
         initial='16:00',
         widget=TimeWidget(
             options={'pickerPosition':'top-left',
-                    },bootstrap_version=3))
+                     'minuteStep':15,
+                    },
+            bootstrap_version=3)
+        )
 
     ## date options
     day = forms.DateField(
@@ -337,7 +356,10 @@ class MultipleOccurrenceForm(forms.Form):
                     'todayHighlight':True,
                     'weekStart':1,
                     'pickerPosition':'top-left'
-                    },bootstrap_version=3))
+                    },
+            usel10n = True,
+            bootstrap_version=3)
+        )
 
 
     until = forms.DateField(
@@ -347,7 +369,10 @@ class MultipleOccurrenceForm(forms.Form):
                     'todayHighlight':True,
                     'weekStart':1,
                     'pickerPosition':'top-left'
-                    },bootstrap_version=3))
+                    },
+            usel10n = True,
+            bootstrap_version=3)
+        )
 
 
     ### weekly options

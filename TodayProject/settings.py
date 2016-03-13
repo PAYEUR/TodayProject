@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'catho.apps.TodayConfig',
     'bootstrap3',
     'datetimewidget',
-    'easy_maps'
+    'easy_maps',
+    'imagekit',
 
 ]
 
@@ -117,7 +118,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-# do not use TZ so that all times are like datetime.now
+# do not use TZ so that each time is like datetime.now
 USE_TZ = False
 
 
