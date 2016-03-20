@@ -10,7 +10,6 @@ from django.forms.widgets import TimeInput
 from django.forms.extras.widgets import SelectDateWidget
 from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin.widgets import AdminTimeWidget
 
 from dateutil import rrule
 from . import swingtime_settings
