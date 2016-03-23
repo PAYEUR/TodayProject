@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'todayDB'),
+        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
     }
 }
 
