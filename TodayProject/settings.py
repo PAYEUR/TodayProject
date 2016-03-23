@@ -124,8 +124,11 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'catho/static')
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'catho/media')
+MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
@@ -133,8 +136,5 @@ BOOTSTRAP3 = {
 }
 
 SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
-
-MEDIA_ROOT = '/home/payeur/PycharmProject/TodayProject/catho/media/'
-MEDIA_URL = '/media/'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
