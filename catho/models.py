@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from django.contrib.auth.models import User
 
 __all__ = (
     'Note',
@@ -19,7 +20,21 @@ __all__ = (
     'Event',
     'Occurrence',
     'City',
+    'EventPlanner',
 )
+
+# ==============================================================================
+@python_2_unicode_compatible
+class EventPlanner(models.Model):
+    user = models.OneToOneField(User)
+    #other attributes if needed
+
+    class Meta:
+        verbose_name =_('event planner')
+        verbose_name_plural =_('event planners')
+
+    def __str__(self):
+        return "user {0} as event planner".format(self.user.username)
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -108,6 +123,12 @@ class Event(models.Model):
                                 processors=[ResizeToFill(600, 400)],
                                 format='JPEG',
                                 options={'quality': 100})
+    event_planner = models.ForeignKey(EventPlanner,
+                                      null=True,
+                                      blank=True,
+                                      #editable=False,
+                                      verbose_name=_('organisateur'),
+                                      )
 
     # ===========================================================================
     class Meta:
