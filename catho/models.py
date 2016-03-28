@@ -36,6 +36,9 @@ class EventPlanner(models.Model):
     def __str__(self):
         return "user {0} as event planner".format(self.user.username)
 
+    def get_absolute_url(self):
+        return reverse('event_planner_panel', kwargs={'event_planner_id': self.pk})
+
 # ==============================================================================
 @python_2_unicode_compatible
 class City(models.Model):

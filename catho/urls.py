@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),
     url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
     url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
+    url(r'^organisateur(?P<event_planner_id>[0-9]+)$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
     ]

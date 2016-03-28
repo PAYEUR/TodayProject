@@ -11,7 +11,8 @@ from dateutil import parser
 from . import forms
 from forms import EventForm, IndexForm, SingleOccurrenceForm
 from django.forms import formset_factory
-from .models import EventType, Occurrence
+from .models import EventType, Occurrence, Event, EventPlanner
+from django.views.generic import CreateView, UpdateView, ListView
 
 from . import swingtime_settings
 
@@ -69,9 +70,10 @@ def index(request, template='catho/research.html'):
     return render(request, template, context)
 
 
+# TODO use genericview instead of get_occurrence function
 def get_occurrence(request, occurrence_id):
     occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
-
+    # TODO overwrite context to add address
     if occurrence.event.address != "non precise":
         address = occurrence.event.address + ", France"
     else:
@@ -371,3 +373,41 @@ def add_multiple_dates(
 
 def new_event(request):
     return render(request, 'catho/add_event_choice.html', nav_bar())
+
+
+# @login
+# @machin
+class EventPlannerPanel(ListView):
+    ## view parameters
+    model = Event
+    context_object_name = "events"
+    template_name = "catho/event_planner_panel.html"
+    ## context and query parameters
+    # event_planner = recupere depuis les infos de session normalement
+    event_planner = EventPlanner.objects.get(user__username="payeur")
+
+    def get_queryset(self):
+        return Event.objects.filter(event_planner=self.event_planner)
+
+    def get_context_data(self, **kwargs):
+        context = super(EventPlannerPanel, self).get_context_data(**kwargs)
+        # adding the event planner in context
+        context['event_planner'] = self.event_planner
+        return context
+
+
+class EventUpdate(UpdateView):
+    model = Event
+    template_name = 'catho/update_event.html'
+    form_class = forms.EventForm
+    success_url = ""
+
+# oblige de definir l'id de l'evenement a supprimer dans l'url...
+    def get_object(self, queryset=None):
+        code = self.kwargs.get('occurrence_id', None)
+        return get_object_or_404(Event, code=code)
+
+    # probably overwirte form_save also to link event with previous occurrences
+
+# class EventDelete(DeleteView):
+
