@@ -390,9 +390,13 @@ class EventPlannerPanel(ListView):
         return Event.objects.filter(event_planner=self.event_planner)
 
     def get_context_data(self, **kwargs):
-        context = super(EventPlannerPanel, self).get_context_data(**kwargs)
+        context = dict({'event_planner': self.event_planner,
+                }, **nav_bar()
+               )
+        # code supposed to be used
+        # context = super(EventPlannerPanel, self).get_context_data(**kwargs)
         # adding the event planner in context
-        context['event_planner'] = self.event_planner
+        # context['event_planner'] = self.event_planner
         return context
 
 
