@@ -24,4 +24,8 @@ urlpatterns = [
     url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
     url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
     url(r'^organisateur(?P<event_planner_id>[0-9]+)$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
+    url(r'^modifier_evenement(?P<event_id>[0-9]+)$', views.UpdateEvent.as_view(), name="update_event"),
+    url(r'^supprimer_evenement(?P<event_id>[0-9]+)$', views.DeleteEvent.as_view(), name="delete_event"),
+    url(r'^supprimer_echeance(?P<occurrence_id>[0-9]+)$', views.DeleteOccurrence.as_view(), name="delete_occurrence"),
+    url(r'^event(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_multiples_occurrences, name="add_multiples_occurrences"),
     ]

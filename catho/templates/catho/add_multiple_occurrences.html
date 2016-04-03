@@ -1,0 +1,43 @@
+{% extends 'catho/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Ajouter des occurrences
+{% endblock %}
+
+{# to allow recurrence_form.query #}
+{% block base_extra_head %}
+    {{ formset.media }}
+{% endblock %}
+
+{% block content %}
+
+    {% if recurrence_form.errors %}
+        <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
+    {% endif %}
+
+    <div id="description" class="row">
+        <div class="col-sm-12 col-md-8">
+            <div class="thumbnail">
+                <div class="caption">
+                    <img src="{{ event.image_main.url }}" class="img-responsive" alt="..." />
+                    <h2>{{ event.title }}</h2>
+                </div>
+            </div>
+            <h3> Ajouter des occurrences</h3>
+        </div>
+    </div>
+
+
+    <form role="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <h3>Date n°{{forloop.counter}}</h3>
+            {% bootstrap_form form %}
+        {% endfor %}
+        {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
+    </form>
+
+{% endblock %}

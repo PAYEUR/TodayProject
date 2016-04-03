@@ -5,6 +5,7 @@ import logging
 from datetime import datetime, timedelta
 from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
+from django.core.urlresolvers import reverse
 
 from dateutil import parser
 
@@ -12,7 +13,8 @@ from . import forms
 from forms import EventForm, IndexForm, SingleOccurrenceForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence, Event, EventPlanner
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import UpdateView, ListView, DeleteView#, #CreateView
+from django.core.urlresolvers import reverse_lazy
 
 from . import swingtime_settings
 
@@ -390,28 +392,107 @@ class EventPlannerPanel(ListView):
         return Event.objects.filter(event_planner=self.event_planner)
 
     def get_context_data(self, **kwargs):
-        context = dict({'event_planner': self.event_planner,
-                }, **nav_bar()
-               )
-        # code supposed to be used
-        # context = super(EventPlannerPanel, self).get_context_data(**kwargs)
-        # adding the event planner in context
-        # context['event_planner'] = self.event_planner
+        context = super(EventPlannerPanel, self).get_context_data(**kwargs)
+        context['event_planner'] = self.event_planner
+        # instead of navbar()
+        #context['nav_list'] = get_list_or_404(EventType)
+
         return context
 
 
-class EventUpdate(UpdateView):
+#@machin
+#@chose
+class UpdateEvent(UpdateView):
     model = Event
     template_name = 'catho/update_event.html'
     form_class = forms.EventForm
-    success_url = ""
+    event_planner = EventPlanner.objects.get(user__username="payeur")
+    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
+    #success_url = event_planner.get_absolute_url()
 
-# oblige de definir l'id de l'evenement a supprimer dans l'url...
     def get_object(self, queryset=None):
-        code = self.kwargs.get('occurrence_id', None)
-        return get_object_or_404(Event, code=code)
+        pk = self.kwargs.get('event_id')
+        return get_object_or_404(Event, pk=pk)
 
-    # probably overwirte form_save also to link event with previous occurrences
+    def get_context_data(self, **kwargs):
+        context = super(UpdateEvent, self).get_context_data(**kwargs)
+        # instead of navbar()
+        #context['nav_list'] = get_list_or_404(EventType)
 
-# class EventDelete(DeleteView):
+        return context
 
+#@machin
+#@chose
+class DeleteEvent(DeleteView):
+    model = Event
+    template_name = "catho/delete_event.html"
+    event_planner = EventPlanner.objects.get(user__username="payeur")
+    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
+    #success_url = event_planner.get_absolute_url()
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('event_id')
+        return get_object_or_404(Event, pk=pk)
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteEvent, self).get_context_data(**kwargs)
+        context['event_planner'] = self.event_planner
+        # instead of navbar()
+        #context['nav_list'] = get_list_or_404(EventType)
+
+        return context
+
+class DeleteOccurrence(DeleteView):
+    model = Occurrence
+    template_name = "catho/delete_occurrence.html"
+    event_planner = EventPlanner.objects.get(user__username="payeur")
+    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
+    #success_url = event_planner.get_absolute_url()
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('occurrence_id')
+        return get_object_or_404(Occurrence, pk=pk)
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteOccurrence, self).get_context_data(**kwargs)
+        context['event_planner'] = self.event_planner
+        # instead of navbar()
+        #context['nav_list'] = get_list_or_404(EventType)
+
+        return context
+
+
+# has to be rewritten properly
+# @machin
+# @truc
+def add_multiples_occurrences(
+        request,
+        event_id,
+        template='catho/add_multiple_occurrences.html',
+        recurrence_form_class=SingleOccurrenceForm
+        ):
+
+    dtstart = None
+    event = get_object_or_404(Event, pk=int(event_id))
+    event_planner = EventPlanner.objects.get(user__username="payeur")
+    OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
+    if request.method == 'POST':
+        formset = OccurrenceFormSet(request.POST)
+        if formset.is_valid():
+            for occurrence_form in formset:
+                if occurrence_form.is_valid and occurrence_form.cleaned_data:
+                    occurrence_form.save(event)
+            return http.HttpResponseRedirect(reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk}))
+
+    else:
+        dtstart = datetime.now()
+        # initial parameter doesnt work here
+        formset = OccurrenceFormSet()
+
+    context = dict({'dtstart': dtstart,
+                    'formset': formset,
+                    'event': event,
+                    }, **nav_bar()
+                   )
+
+    return render(request, template, context)
