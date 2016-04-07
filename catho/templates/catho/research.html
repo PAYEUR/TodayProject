@@ -26,7 +26,7 @@
             <div class="thumbnail" align="center">
                 <form role="form" method="post">
                     {% csrf_token %}
-                    {%bootstrap_form form %}
+                    {% bootstrap_form form %}
                     {% bootstrap_button "Enjoy!" button_type="submit" size="lg" button_class="btn-success" icon="play" %}
                 </form>
             </div>

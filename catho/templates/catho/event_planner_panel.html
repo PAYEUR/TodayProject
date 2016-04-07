@@ -45,15 +45,15 @@
                                 <p>
                                     <a href="{% url 'add_multiples_occurrences' event_id=event.id %}" role="button" class="btn btn-primary btn-sm">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                                       Ajouter des occurrences
+                                       Ajouter des échéances
                                     </a>
                                 </p>
 
-                                <p> Prochaines échéances</p>
+                                <p> Prochaines échéances:</p>
                                 {%  for occurrence in event.upcoming_occurrences %}
                                     <p role = presentation>
                                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                        {{ occurrence.start_time|date:"l d F" }}
+                                        {{ occurrence.start_time|date:"D d F" }}
 
                                         <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
                                         {{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }} - {{ occurrence.end_time|date:"H" }}h{{ occurrence.end_time|date:"i" }}
@@ -84,7 +84,12 @@
                                        Modifier
                                     </a>
                                 </p>
-                                <p> <a> Ajouter des échéances </a></p>
+                                <p>
+                                    <a href="{% url 'add_multiples_occurrences' event_id=event.id %}" role="button" class="btn btn-primary btn-sm">
+                                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                       Ajouter des échéances
+                                    </a>
+                                </p>
                             </div>
                         </div>
                     </div>

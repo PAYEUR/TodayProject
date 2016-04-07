@@ -5,16 +5,19 @@ import logging
 from datetime import datetime, timedelta
 from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-from django.core.urlresolvers import reverse
 
 from dateutil import parser
 
 from . import forms
-from forms import EventForm, IndexForm, SingleOccurrenceForm
+from forms import EventForm, IndexForm, SingleOccurrenceForm, ConnexionForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence, Event, EventPlanner
-from django.views.generic import UpdateView, ListView, DeleteView#, #CreateView
+from django.views.generic import UpdateView, ListView, DeleteView # TemplateView, CreateView
 from django.core.urlresolvers import reverse_lazy
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from . import swingtime_settings
 
@@ -22,9 +25,7 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-# TODO build a context processor to get event.label for navbar
-# nav-bar functions to call in each context
-
+#TODO: surcharg base template to add nav_list to each context
 def nav_bar():
     return {'nav_list':  get_list_or_404(EventType)}
 
@@ -271,6 +272,7 @@ def single_day_event_type(
     return render(request, template, context)
 
 
+@login_required(login_url='login')
 def _add_event(
         request,
         template='catho/add_event.html',
@@ -324,14 +326,17 @@ def _add_event(
     return render(request, template, context)
 
 
+@login_required(login_url='login')
 def add_multiple_occurrence_event(request):
     return _add_event(request, recurrence_form_class=forms.MultipleOccurrenceForm)
 
 
+@login_required(login_url='login')
 def add_single_event(request):
     return _add_event(request)
 
 
+@login_required(login_url='login')
 def add_multiple_dates(
         request,
         template='catho/add_event_as_dates.html',
@@ -373,41 +378,48 @@ def add_multiple_dates(
     return render(request, template, context)
 
 
+@login_required(login_url='login')
 def new_event(request):
     return render(request, 'catho/add_event_choice.html', nav_bar())
 
 
-# @login
-# @machin
-class EventPlannerPanel(ListView):
+class EventPlannerPanel(LoginRequiredMixin, ListView):
+
+    #mixin parameters
+    login_url = 'login'
+
     ## view parameters
     model = Event
     context_object_name = "events"
     template_name = "catho/event_planner_panel.html"
     ## context and query parameters
     # event_planner = recupere depuis les infos de session normalement
-    event_planner = EventPlanner.objects.get(user__username="payeur")
+    #event_planner = EventPlanner.objects.get(user__username="payeur")
+
+    def get_event_planner(self):
+        return EventPlanner.objects.get(user=self.request.user)
 
     def get_queryset(self):
-        return Event.objects.filter(event_planner=self.event_planner)
+        return Event.objects.filter(event_planner=self.get_event_planner())
 
     def get_context_data(self, **kwargs):
         context = super(EventPlannerPanel, self).get_context_data(**kwargs)
-        context['event_planner'] = self.event_planner
+        context['event_planner'] = self.get_event_planner()
         # instead of navbar()
-        #context['nav_list'] = get_list_or_404(EventType)
+        context['nav_list'] = get_list_or_404(EventType)
 
         return context
 
 
-#@machin
-#@chose
-class UpdateEvent(UpdateView):
+class UpdateEvent(LoginRequiredMixin, UpdateView):
+
+    #mixin parameters
+    login_url = 'login'
+
     model = Event
     template_name = 'catho/update_event.html'
     form_class = forms.EventForm
-    event_planner = EventPlanner.objects.get(user__username="payeur")
-    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
+    success_url = reverse_lazy('event_planner_panel')
     #success_url = event_planner.get_absolute_url()
 
     def get_object(self, queryset=None):
@@ -417,18 +429,20 @@ class UpdateEvent(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateEvent, self).get_context_data(**kwargs)
         # instead of navbar()
-        #context['nav_list'] = get_list_or_404(EventType)
+        context['nav_list'] = get_list_or_404(EventType)
 
         return context
 
-#@machin
-#@chose
-class DeleteEvent(DeleteView):
+
+
+class DeleteEvent(LoginRequiredMixin, DeleteView):
+
+    #mixin parameters
+    login_url = 'login'
+
     model = Event
     template_name = "catho/delete_event.html"
-    event_planner = EventPlanner.objects.get(user__username="payeur")
-    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
-    #success_url = event_planner.get_absolute_url()
+    success_url = reverse_lazy('event_planner_panel')
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
@@ -436,18 +450,22 @@ class DeleteEvent(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteEvent, self).get_context_data(**kwargs)
-        context['event_planner'] = self.event_planner
         # instead of navbar()
-        #context['nav_list'] = get_list_or_404(EventType)
+        context['nav_list'] = get_list_or_404(EventType)
 
         return context
+from django.contrib.auth.decorators import login_required
 
-class DeleteOccurrence(DeleteView):
+
+
+class DeleteOccurrence(LoginRequiredMixin, DeleteView):
+
+    #mixin parameters
+    login_url = 'login'
+
     model = Occurrence
     template_name = "catho/delete_occurrence.html"
-    event_planner = EventPlanner.objects.get(user__username="payeur")
-    success_url = reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk})
-    #success_url = event_planner.get_absolute_url()
+    success_url = reverse_lazy('event_planner_panel')
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('occurrence_id')
@@ -455,16 +473,15 @@ class DeleteOccurrence(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteOccurrence, self).get_context_data(**kwargs)
-        context['event_planner'] = self.event_planner
         # instead of navbar()
-        #context['nav_list'] = get_list_or_404(EventType)
+        context['nav_list'] = get_list_or_404(EventType)
 
         return context
 
 
 # has to be rewritten properly
 # @machin
-# @truc
+@login_required(login_url='login')
 def add_multiples_occurrences(
         request,
         event_id,
@@ -474,7 +491,6 @@ def add_multiples_occurrences(
 
     dtstart = None
     event = get_object_or_404(Event, pk=int(event_id))
-    event_planner = EventPlanner.objects.get(user__username="payeur")
     OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
     if request.method == 'POST':
         formset = OccurrenceFormSet(request.POST)
@@ -482,7 +498,7 @@ def add_multiples_occurrences(
             for occurrence_form in formset:
                 if occurrence_form.is_valid and occurrence_form.cleaned_data:
                     occurrence_form.save(event)
-            return http.HttpResponseRedirect(reverse_lazy('event_planner_panel', kwargs={'event_planner_id': event_planner.pk}))
+            return http.HttpResponseRedirect(reverse_lazy('event_planner_panel'))
 
     else:
         dtstart = datetime.now()
@@ -496,3 +512,40 @@ def add_multiples_occurrences(
                    )
 
     return render(request, template, context)
+
+
+def connexion(request):
+
+    error = False
+    if request.method == "POST":
+        connexion_form = ConnexionForm(request.POST)
+        if connexion_form.is_valid():
+            username = connexion_form.cleaned_data["username"]
+            password = connexion_form.cleaned_data["password"]
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect("logging_success")
+            else:
+                error= True
+
+    else:
+        connexion_form = ConnexionForm()
+
+    context = dict({'connexion_form': connexion_form,
+                    'error': error
+                    }, **nav_bar()
+                    )
+
+    return render(request, 'catho/connexion.html', context)
+
+
+@login_required(login_url='login')
+def deconnexion(request):
+    logout(request)
+    return redirect("index")
+
+
+@login_required(login_url='login')
+def logging_success(request):
+    return render(request, 'catho/logging_success.html', nav_bar())

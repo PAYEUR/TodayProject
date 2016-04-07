@@ -234,6 +234,7 @@ class EventForm(forms.ModelForm):
 
  # ==============================================================================
 
+
 class SingleOccurrenceForm(forms.Form):
     """
     A simple form for adding and updating single Occurrence attributes
@@ -446,3 +447,8 @@ class MultipleOccurrenceForm(forms.Form):
         )
 
         return params
+
+
+class ConnexionForm(forms.Form):
+    username = forms.CharField(label="Nom d'utilisateur", max_length=30)
+    password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput)

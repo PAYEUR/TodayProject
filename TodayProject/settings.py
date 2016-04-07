@@ -138,3 +138,6 @@ BOOTSTRAP3 = {
 SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
+
+# to overwrite when we will properly separate login process from catho
+LOGIN_URL = ''

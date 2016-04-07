@@ -1,6 +1,8 @@
 from django.conf.urls import url
 
 from . import views
+#from django.conf.urls import include, url
+
 
 
 urlpatterns = [
@@ -23,9 +25,12 @@ urlpatterns = [
     url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),
     url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
     url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
-    url(r'^organisateur(?P<event_planner_id>[0-9]+)$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
+    url(r'^tableau_de_bord$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
     url(r'^modifier_evenement(?P<event_id>[0-9]+)$', views.UpdateEvent.as_view(), name="update_event"),
     url(r'^supprimer_evenement(?P<event_id>[0-9]+)$', views.DeleteEvent.as_view(), name="delete_event"),
     url(r'^supprimer_echeance(?P<occurrence_id>[0-9]+)$', views.DeleteOccurrence.as_view(), name="delete_occurrence"),
     url(r'^event(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_multiples_occurrences, name="add_multiples_occurrences"),
+    url(r'^connexion$',views.connexion, name='login'),
+    url(r'^deconnexion$',views.deconnexion, name='logout'),
+    url(r'^connecte$', views.logging_success, name='logging_success'),
     ]
