@@ -34,8 +34,19 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{% url 'index' %}">Recherche</a></li>
-            {# <li><a href="#">Agenda</a></li> #}
             <li><a href="{% url 'contact' %}">Contactez-nous</a></li>
+            {% if user.is_authenticated %}
+             <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Connecté en tant que {{user.username}}  <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{% url 'event_planner_panel' %}">Tableau de bord</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+                  </ul>
+             </li>
+            {%else%}
+                <li><a href="{% url 'login' %}">Se connecter</a></li>
+            {% endif %}
           </ul>
           {# <form class="navbar-form navbar-right"><input type="text" class="form-control" placeholder="Search..."></form> #}
         </div>

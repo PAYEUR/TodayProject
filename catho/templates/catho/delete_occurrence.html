@@ -16,12 +16,10 @@
 
             <p> {% bootstrap_alert "Êtes vous sûr de vouloir supprimer l'échéance?" alert_type='danger' %} </p>
 
-            <p>
                  <form role="form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% bootstrap_button "Oui" button_type="submit" button_class="btn-danger"%}
                  </form>
-            </p>
 
             <p>
                 <a href="{% url "event_planner_panel" %}" role="button" class="btn btn-warning">

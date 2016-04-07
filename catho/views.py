@@ -17,7 +17,8 @@ from django.core.urlresolvers import reverse_lazy
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 
 from . import swingtime_settings
 
@@ -411,10 +412,7 @@ class EventPlannerPanel(LoginRequiredMixin, ListView):
         return context
 
 
-class UpdateEvent(LoginRequiredMixin, UpdateView):
-
-    #mixin parameters
-    login_url = 'login'
+class UpdateEvent(UserPassesTestMixin, UpdateView):
 
     model = Event
     template_name = 'catho/update_event.html'
@@ -422,9 +420,19 @@ class UpdateEvent(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('event_planner_panel')
     #success_url = event_planner.get_absolute_url()
 
+    #mixin parameters
+    raise_exception = True
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
         return get_object_or_404(Event, pk=pk)
+
+    #condition to be authorized to CRUD
+    def test_func(self):
+        if self.get_object().event_planner:
+            return self.request.user == self.get_object().event_planner.user
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         context = super(UpdateEvent, self).get_context_data(**kwargs)
@@ -435,18 +443,26 @@ class UpdateEvent(LoginRequiredMixin, UpdateView):
 
 
 
-class DeleteEvent(LoginRequiredMixin, DeleteView):
+class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     #mixin parameters
-    login_url = 'login'
+    raise_exception = True
 
     model = Event
     template_name = "catho/delete_event.html"
     success_url = reverse_lazy('event_planner_panel')
 
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
         return get_object_or_404(Event, pk=pk)
+
+    #condition to be authorized to CRUD
+    def test_func(self):
+        if self.get_object().event_planner:
+            return self.request.user == self.get_object().event_planner.user
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         context = super(DeleteEvent, self).get_context_data(**kwargs)
@@ -461,15 +477,24 @@ from django.contrib.auth.decorators import login_required
 class DeleteOccurrence(LoginRequiredMixin, DeleteView):
 
     #mixin parameters
-    login_url = 'login'
+    raise_exception = True
 
     model = Occurrence
     template_name = "catho/delete_occurrence.html"
     success_url = reverse_lazy('event_planner_panel')
 
+
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get('occurrence_id')
         return get_object_or_404(Occurrence, pk=pk)
+
+    #condition to be authorized to CRUD
+    def test_func(self):
+        if self.get_object().event.event_planner:
+            return self.request.user == self.get_object().event.event_planner.user
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         context = super(DeleteOccurrence, self).get_context_data(**kwargs)
@@ -479,8 +504,13 @@ class DeleteOccurrence(LoginRequiredMixin, DeleteView):
         return context
 
 
-# has to be rewritten properly
-# @machin
+def test_func(user, Event):
+        if Event.event_planner:
+            return user == Event.event_planner.user
+        else:
+            return False
+
+
 @login_required(login_url='login')
 def add_multiples_occurrences(
         request,
@@ -488,30 +518,42 @@ def add_multiples_occurrences(
         template='catho/add_multiple_occurrences.html',
         recurrence_form_class=SingleOccurrenceForm
         ):
+    """
+    :param request:
+    :param event_id:
+    :param template:
+    :param recurrence_form_class:
+    :return: allow modifying existing event to add more occurrences
+    """
 
     dtstart = None
     event = get_object_or_404(Event, pk=int(event_id))
     OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
-    if request.method == 'POST':
-        formset = OccurrenceFormSet(request.POST)
-        if formset.is_valid():
-            for occurrence_form in formset:
-                if occurrence_form.is_valid and occurrence_form.cleaned_data:
-                    occurrence_form.save(event)
-            return http.HttpResponseRedirect(reverse_lazy('event_planner_panel'))
+    if test_func(request.user, event):
+        if request.method == 'POST':
+            formset = OccurrenceFormSet(request.POST)
+            if formset.is_valid():
+                for occurrence_form in formset:
+                    if occurrence_form.is_valid and occurrence_form.cleaned_data:
+                        occurrence_form.save(event)
+                return http.HttpResponseRedirect(reverse_lazy('event_planner_panel'))
+
+        else:
+            dtstart = datetime.now()
+            # initial parameter doesnt work here
+            formset = OccurrenceFormSet()
+
+
+        context = dict({'dtstart': dtstart,
+                        'formset': formset,
+                        'event': event,
+                        }, **nav_bar()
+                       )
+
+        return render(request, template, context)
 
     else:
-        dtstart = datetime.now()
-        # initial parameter doesnt work here
-        formset = OccurrenceFormSet()
-
-    context = dict({'dtstart': dtstart,
-                    'formset': formset,
-                    'event': event,
-                    }, **nav_bar()
-                   )
-
-    return render(request, template, context)
+        raise PermissionDenied
 
 
 def connexion(request):
