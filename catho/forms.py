@@ -224,7 +224,7 @@ class EventForm(forms.ModelForm):
         model = Event
         if FIELDS_REQUIRED:
             fields = "__all__"
-            #exclude = ['city']
+            exclude = ['event_planner']
 
     #---------------------------------------------------------------------------
     def __init__(self, *args, **kws):

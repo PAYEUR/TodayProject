@@ -32,5 +32,7 @@ urlpatterns = [
     url(r'^evenement(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_multiples_occurrences, name="add_multiples_occurrences"),
     url(r'^connexion$',views.connexion, name='login'),
     url(r'^deconnexion$',views.deconnexion, name='logout'),
-    url(r'^connecte$', views.logging_success, name='logging_success'),
+    url(r'^connection_success$', views.logging_success, name='logging_success'),
+    url(r'^inscription$',views.create_user, name='registration'),
+
     ]

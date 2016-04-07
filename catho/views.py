@@ -12,13 +12,15 @@ from . import forms
 from forms import EventForm, IndexForm, SingleOccurrenceForm, ConnexionForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence, Event, EventPlanner
-from django.views.generic import UpdateView, ListView, DeleteView # TemplateView, CreateView
+from django.views.generic import UpdateView, ListView, DeleteView, CreateView
 from django.core.urlresolvers import reverse_lazy
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
+from django.contrib.auth.models import User
 
 from . import swingtime_settings
 
@@ -300,12 +302,14 @@ def _add_event(
 
     dtstart = None
     if request.method == 'POST':
-        event_form = event_form_class(request.POST, request.FILES)
+        # to add event_planner to event
+        event = Event(event_planner = EventPlanner.objects.get(user=request.user))
+        event_form = event_form_class(request.POST, request.FILES, instance=event)
         recurrence_form = recurrence_form_class(request.POST)
         if event_form.is_valid() and recurrence_form.is_valid():
-            event = event_form.save()
+            event.save()
             recurrence_form.save(event)
-            return http.HttpResponseRedirect(event.next_occurrence().get_absolute_url())
+            return redirect('event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -348,14 +352,16 @@ def add_multiple_dates(
     dtstart = None
     OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
     if request.method == 'POST':
-        event_form = event_form_class(request.POST, request.FILES)
+        # to add event_planner to event
+        event = Event(event_planner = EventPlanner.objects.get(user=request.user))
+        event_form = event_form_class(request.POST, request.FILES, instance=event)
         formset = OccurrenceFormSet(request.POST)
         if event_form.is_valid() and formset.is_valid():
-            event = event_form.save()
+            event.save()
             for occurrence_form in formset:
                 if occurrence_form.is_valid and occurrence_form.cleaned_data:
                     occurrence_form.save(event)
-            return http.HttpResponseRedirect(event.next_occurrence().get_absolute_url())
+            return redirect('event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -474,7 +480,7 @@ from django.contrib.auth.decorators import login_required
 
 
 
-class DeleteOccurrence(LoginRequiredMixin, DeleteView):
+class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
     #mixin parameters
     raise_exception = True
@@ -529,6 +535,7 @@ def add_multiples_occurrences(
     dtstart = None
     event = get_object_or_404(Event, pk=int(event_id))
     OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
+    #passes_test
     if test_func(request.user, event):
         if request.method == 'POST':
             formset = OccurrenceFormSet(request.POST)
@@ -591,3 +598,48 @@ def deconnexion(request):
 @login_required(login_url='login')
 def logging_success(request):
     return render(request, 'catho/logging_success.html', nav_bar())
+
+
+#class UserCreate(CreateView):
+    #model = User
+    #template_name = "catho/inscription.html"
+    #form_class = UserCreationForm
+    #success_url = reverse_lazy('logging_success')
+
+    #def form_valid(self, form):
+        #logout(self.request)
+        #user = form.save()
+        #event_planner = EventPlanner(user=user)
+        #event_planner.save()
+        #login(self.request, user)
+        #return super(UserCreate, self).form_valid(form)
+
+def create_user(
+        request,
+        template="catho/inscription.html",
+        form_class = UserCreationForm,
+        success_url = reverse_lazy('logging_success')
+        ):
+
+    logout(request)
+
+    if request.method == 'POST':
+        registration_form = form_class(request.POST)
+        if registration_form.is_valid():
+            registration_form.save()
+            user = authenticate(password=registration_form.cleaned_data['password1'],
+                                username=registration_form.cleaned_data['username']
+                                )
+            login(request, user)
+            event_planner = EventPlanner(user=user)
+            event_planner.save()
+            return redirect('logging_success')
+
+    else:
+        registration_form = form_class()
+
+    context = dict({'registration_form': registration_form},
+                   **nav_bar()
+                   )
+
+    return render(request, template, context)
