@@ -278,9 +278,9 @@ def single_day_event_type(
 @login_required(login_url='login')
 def _add_event(
         request,
+        recurrence_form_class,
         template='catho/add_event.html',
         event_form_class=EventForm,
-        recurrence_form_class=forms.SingleOccurrenceForm
         ):
 
     """
@@ -297,6 +297,7 @@ def _add_event(
 
     ``recurrence_form``
         a form object for adding occurrences
+        :rtype: object
 
     """
 
@@ -332,13 +333,13 @@ def _add_event(
 
 
 @login_required(login_url='login')
-def add_multiple_occurrence_event(request):
-    return _add_event(request, recurrence_form_class=forms.MultipleOccurrenceForm)
+def add_multiple_occurrence_event(request, recurrence_form_class=forms.MultipleOccurrenceForm):
+    return _add_event(request, recurrence_form_class)
 
 
 @login_required(login_url='login')
-def add_single_event(request):
-    return _add_event(request)
+def add_single_event(request, recurrence_form_class=forms.SingleOccurrenceForm):
+    return _add_event(request, recurrence_form_class)
 
 
 @login_required(login_url='login')
@@ -346,11 +347,10 @@ def add_multiple_dates(
         request,
         template='catho/add_event_as_dates.html',
         event_form_class=EventForm,
-        recurrence_form_class=SingleOccurrenceForm
         ):
 
     dtstart = None
-    OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
+    OccurrenceFormSet = formset_factory(forms.SingleOccurrenceForm, extra=10)
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner = EventPlanner.objects.get(user=request.user))

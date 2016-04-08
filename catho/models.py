@@ -127,6 +127,7 @@ class Event(models.Model):
                                 format='JPEG',
                                 options={'quality': 100})
     event_planner = models.ForeignKey(EventPlanner,
+                                      default=None,
                                       null=True,
                                       blank=True,
                                       #editable=False,
