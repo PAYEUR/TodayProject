@@ -11,7 +11,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+from imagekit.processors import ResizeToFit
 from django.contrib.auth.models import User
 
 __all__ = (
@@ -91,7 +91,7 @@ class EventType(models.Model):
     label = models.CharField(_('label'), max_length=50)
     image = models.ImageField(default=None, upload_to='event_types/')
     image_main = ImageSpecField(source='image',
-                                processors=[ResizeToFill(600, 400)],
+                                processors=[ResizeToFit(600, 400)],
                                 format='JPEG',
                                 options={'quality': 100})
 
@@ -123,7 +123,7 @@ class Event(models.Model):
     city = models.ForeignKey(City, default={'city_name': "Paris"},)#limit_choices_to={'city_name': "Paris"},)
     address = models.CharField(_('address'), max_length=150, default="non precisé")
     image_main = ImageSpecField(source='image',
-                                processors=[ResizeToFill(600, 400)],
+                                processors=[ResizeToFit(600, 400)],
                                 format='JPEG',
                                 options={'quality': 100})
     event_planner = models.ForeignKey(EventPlanner,
