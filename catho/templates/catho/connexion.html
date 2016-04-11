@@ -31,9 +31,12 @@
                     {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
                 </form>
             {% endif %}
-
-             <p><a href="{% url 'registration'%}"> Créer un compte</a> </p>
-
+            <p>
+                <a href="{% url 'registration' %}" role="button" class="btn btn-danger btn-md">
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                   Créer un compte
+                </a>
+            </p>
         </div>
     </div>
 
