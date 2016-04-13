@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Convenience forms for adding and updating ``Event`` and ``Occurrence``s.
 
@@ -114,11 +115,13 @@ class IndexForm(forms.Form):
     #city = forms.ModelChoiceField(City.objects.all())
     quoi = forms.ModelChoiceField(
             EventType.objects.all(),
+            label='quoi',
             required=False,
             empty_label=None,
             widget=forms.widgets.RadioSelect)
 
     quand = forms.DateField(
+            label='quand',
             required=True,
             initial=datetime.today(),
             widget=DateWidget(
@@ -244,7 +247,7 @@ class SingleOccurrenceForm(forms.Form):
      # ==========================================================================
     date = forms.DateField(
         required=True,
-        label=_('Date'),
+        label='Jour',
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -258,7 +261,7 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        label =_('Start time'),
+        label ='Heure de début',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -270,7 +273,7 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=False,
-        label = _('End time'),
+        label = 'Heure de fin',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -329,7 +332,7 @@ class MultipleOccurrenceForm(forms.Form):
     # frequency
     ## hour
     start_time_delta = forms.TimeField(
-        label=_('Starting hour'),
+        label='Horaire de début',
         initial='14:00',
         widget=TimeWidget(
             options={'pickerPosition':'top-left',
@@ -339,7 +342,7 @@ class MultipleOccurrenceForm(forms.Form):
         )
 
     end_time_delta = forms.TimeField(
-        label=_('Ending hour'),
+        label='Horaire de fin',
         initial='16:00',
         widget=TimeWidget(
             options={'pickerPosition':'top-left',
@@ -350,7 +353,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     ## date options
     day = forms.DateField(
-        label=_('From'),
+        label='A partir du',
         widget=DateWidget(
             options={
                     'todayHighlight':True,
@@ -363,7 +366,7 @@ class MultipleOccurrenceForm(forms.Form):
 
 
     until = forms.DateField(
-        label=_('Until'),
+        label='Jusqu\'au',
         widget=DateWidget(
             options={
                     'todayHighlight':True,
@@ -378,7 +381,7 @@ class MultipleOccurrenceForm(forms.Form):
     ### weekly options
     week_days = MultipleIntegerField(
         WEEKDAY_SHORT,
-        label=_('Weekly options'),
+        label='Jours de la semaine',
         widget=forms.CheckboxSelectMultiple
     )
 
