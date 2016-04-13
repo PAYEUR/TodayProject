@@ -7,8 +7,8 @@ from __future__ import print_function, unicode_literals
 from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
-from django.forms.widgets import TimeInput
-from django.forms.extras.widgets import SelectDateWidget
+#from django.forms.widgets import TimeInput
+#from django.forms.extras.widgets import SelectDateWidget
 from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
 from django.utils.translation import ugettext_lazy as _
 
@@ -115,13 +115,13 @@ class IndexForm(forms.Form):
     #city = forms.ModelChoiceField(City.objects.all())
     quoi = forms.ModelChoiceField(
             EventType.objects.all(),
-            label='quoi',
+            label='Quoi?',
             required=False,
             empty_label=None,
             widget=forms.widgets.RadioSelect)
 
     quand = forms.DateField(
-            label='quand',
+            label='Quand?',
             required=True,
             initial=datetime.today(),
             widget=DateWidget(
@@ -232,7 +232,7 @@ class EventForm(forms.ModelForm):
     #---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
-        self.fields['description'].required = False
+        #self.fields['description'].required = False
 
 
  # ==============================================================================
@@ -261,7 +261,7 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        label ='Heure de début',
+        label ='Horaire de début',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -273,7 +273,7 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=False,
-        label = 'Heure de fin',
+        label = 'Horaire de fin',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',

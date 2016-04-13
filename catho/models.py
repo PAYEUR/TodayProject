@@ -3,7 +3,7 @@
 from datetime import datetime
 from dateutil import rrule
 
-from django.utils.translation import ugettext_lazy as _
+#from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.contrib.contenttypes.models import ContentType
@@ -30,8 +30,8 @@ class EventPlanner(models.Model):
     #other attributes if needed
 
     class Meta:
-        verbose_name =_('event planner')
-        verbose_name_plural =_('event planners')
+        verbose_name = 'event planner'
+        verbose_name_plural ='event planners'
 
     def __str__(self):
         return "user {0} as event planner".format(self.user.username)
@@ -45,13 +45,15 @@ class City(models.Model):
     """ Place class. Use to make queries on city.
     """
 
-    city_name = models.CharField(_('city_name'), max_length=255, default="Paris")
+    city_name = models.CharField(verbose_name='city_name',
+                                 max_length=255,
+                                 default="Paris")
     #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
 
     # ==========================================================================
     class Meta:
-        verbose_name =_('city')
-        verbose_name_plural =_('cities')
+        verbose_name ='city'
+        verbose_name_plural ='cities'
 
     # --------------------------------------------------------------------------
     def __str__(self):
@@ -65,16 +67,18 @@ class Note(models.Model):
     A generic model for adding simple, arbitrary notes to other models such as
     ``Event`` or ``Occurrence``.
     """
-    note = models.TextField(_('note'))
-    created = models.DateTimeField(_('created'), auto_now_add=True)
-    content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
-    object_id = models.PositiveIntegerField(_('object id'))
+    note = models.TextField(verbose_name='note')
+    created = models.DateTimeField(verbose_name='created',
+                                   auto_now_add=True)
+    content_type = models.ForeignKey(ContentType,
+                                     verbose_name='content type')
+    object_id = models.PositiveIntegerField(verbose_name='object id')
     content_object = GenericForeignKey('content_type', 'object_id')
 
     # ==========================================================================
     class Meta:
-        verbose_name = _('note')
-        verbose_name_plural = _('notes')
+        verbose_name = 'note'
+        verbose_name_plural = 'notes'
 
     # --------------------------------------------------------------------------
     def __str__(self):
@@ -88,7 +92,7 @@ class EventType(models.Model):
     Simple ``Event`` classification.
     """
 
-    label = models.CharField(_('label'), max_length=50)
+    label = models.CharField(verbose_name='label', max_length=50)
     image = models.ImageField(default=None, upload_to='event_types/')
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFit(600, 400)],
@@ -97,8 +101,8 @@ class EventType(models.Model):
 
     # ==========================================================================
     class Meta:
-        verbose_name = _('event type')
-        verbose_name_plural = _('event types')
+        verbose_name = 'event type'
+        verbose_name_plural = 'event types'
 
     # --------------------------------------------------------------------------
     def __str__(self):
@@ -113,15 +117,24 @@ class Event(models.Model):
     """
     Container model for general metadata and associated ``Occurrence`` entries.
     """
-    title = models.CharField(_('title'), max_length=100)
-    description = models.TextField(_('description'))
-    event_type = models.ForeignKey(EventType, verbose_name=_('event type'))
-    notes = GenericRelation(Note, verbose_name=_('notes'))
-    image = models.ImageField(default=None, upload_to='events/')
-    price = models.PositiveSmallIntegerField(default=0)
+    title = models.CharField(verbose_name="Titre",
+                             max_length=100)
+    description = models.TextField(verbose_name="Description")
+    event_type = models.ForeignKey(EventType,
+                                   verbose_name="Catégorie")
+    notes = GenericRelation(Note, verbose_name="Notes")
+    image = models.ImageField(verbose_name="Image",
+                              default=None,
+                              upload_to='events/')
+    price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
+                                             default=0)
     #For the moment one limits choices to Paris
-    city = models.ForeignKey(City, default={'city_name': "Paris"},)#limit_choices_to={'city_name': "Paris"},)
-    address = models.CharField(_('address'), max_length=150, default="non precisé")
+    city = models.ForeignKey(City,
+                             verbose_name="Ville",
+                             default={'city_name': "Paris"},)#limit_choices_to={'city_name': "Paris"},)
+    address = models.CharField(verbose_name="Adresse",
+                               max_length=150,
+                               default="non précisé")
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFit(600, 400)],
                                 format='JPEG',
@@ -131,13 +144,13 @@ class Event(models.Model):
                                       null=True,
                                       blank=True,
                                       #editable=False,
-                                      verbose_name=_('organisateur'),
+                                      verbose_name='organisateur',
                                       )
 
     # ===========================================================================
     class Meta:
-        verbose_name = _('event')
-        verbose_name_plural = _('events')
+        verbose_name = 'event'
+        verbose_name_plural = 'events'
         ordering = ('title', )
 
     # ---------------------------------------------------------------------------
@@ -249,17 +262,17 @@ class Occurrence(models.Model):
     Represents the start end time for a specific occurrence of a master ``Event``
     object.
     """
-    start_time = models.DateTimeField(_('start time'))
-    end_time = models.DateTimeField(_('end time'))
-    event = models.ForeignKey(Event, verbose_name=_('event'), editable=False)
-    notes = GenericRelation(Note, verbose_name=_('notes'))
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    event = models.ForeignKey(Event, editable=False)
+    notes = GenericRelation(Note)
     objects = OccurrenceManager()
     is_multiple = models.BooleanField(default=False)
 
     # ==========================================================================
     class Meta:
-        verbose_name = _('occurrence')
-        verbose_name_plural = _('occurrences')
+        verbose_name = 'occurrence'
+        verbose_name_plural = 'occurrences'
         ordering = ('start_time', 'end_time')
 
     # --------------------------------------------------------------------------
