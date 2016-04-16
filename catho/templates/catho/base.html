@@ -29,7 +29,6 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="{% url 'index' %}"> <img alt="EnjoyToday" src="{% static "today/logo.png" %}"> </a>
-          <a class="navbar-brand" href="{% url 'index' %}"> Enjoy Today </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -54,13 +53,14 @@
     </nav>
     {% endblock %}
 
-    <div class="container">
+<div class="container">
+
     <div class="row">
         {% block middle %}
-
         <div class="col-sm-9">
         {% block content %}(no content){% endblock %}
         </div>
+
 
         <div class="col-sm-offset-1 col-sm-2">
           <ul class="nav nav-sidebar">
@@ -77,16 +77,14 @@
             <li class="active"><a href="{% url 'nouvel_evenement' %}">Poster un événement <span class="sr-only">(current)</span></a></li>
           </ul>
         </div>
-
         {% endblock %}
-
     </div>
+
 
       <footer>
         <p class="pull-right" ><a href="#">Haut de page</a></p>
         <p><a href="{% url 'contact' %}">&copy; 2015 TodayProjectCompany, Inc. &middot;</a> {# <a href="#">Privacy</a> &middot; <a href="#">Terms</a> #}</p>
       </footer>
-
-    </div>
+ </div>
 
 {% endblock %}
