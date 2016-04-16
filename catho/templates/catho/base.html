@@ -2,11 +2,11 @@
 
 {% load bootstrap3 %}
 {% load static %}
+{% load imagekit %}
 
 {# make shure that childrens of this template don't call bootstrap3_extra_head #}
 {% block bootstrap3_extra_head %}
     <link href="{%  static 'today/base.css' %}" rel="stylesheet">
-
     {% block base_extra_head %}{% endblock %}
 {% endblock %}
 
@@ -28,7 +28,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'index' %}"> <img alt="EnjoyToday" src="{% static "today/logo_petit.jpg" %}"> </a>
+          <a class="navbar-brand" href="{% url 'index' %}"> <img alt="EnjoyToday" src="{% static "today/logo.png" %}"> </a>
           <a class="navbar-brand" href="{% url 'index' %}"> Enjoy Today </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">

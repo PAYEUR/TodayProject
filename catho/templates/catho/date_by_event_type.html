@@ -9,15 +9,16 @@
 
 {% block content %}
 
-    <div class="jumbotron">
-        <img src="{{ event_type.image_main.url }}" class="img-responsive" alt="..." />
-        <h1>{{ event_type.label|capfirst }}</h1>
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+        <img src="{{ event_type.image.url }}" class="img-responsive" alt={{event_type.label}}>
+        </div>
     </div>
 
     {# list_categories and list_events for the selected date only #}
 
     <div id="services" class="row">
-        <h2>Les prochains jours</h2>
+        <h2>Les prochains jours :</h2>
         {% if occurrences %}
             {% for occurrence in occurrences %}
                 <div class="col-sm-12 col-md-4">

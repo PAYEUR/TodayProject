@@ -11,7 +11,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import ResizeToFit, ResizeToFill
 from django.contrib.auth.models import User
 
 __all__ = (
@@ -94,10 +94,10 @@ class EventType(models.Model):
 
     label = models.CharField(verbose_name='label', max_length=50)
     image = models.ImageField(default=None, upload_to='event_types/')
-    image_main = ImageSpecField(source='image',
-                                processors=[ResizeToFit(600, 400)],
-                                format='JPEG',
-                                options={'quality': 100})
+    #image_main = ImageSpecField(source='image',
+                                #processors=[ResizeToFit(450, 300)],
+                                #format='JPEG',
+                                #options={'quality': 100})
 
     # ==========================================================================
     class Meta:
@@ -136,7 +136,7 @@ class Event(models.Model):
                                max_length=150,
                                default="non précisé")
     image_main = ImageSpecField(source='image',
-                                processors=[ResizeToFit(600, 400)],
+                                processors=[ResizeToFill(800, 300)],
                                 format='JPEG',
                                 options={'quality': 100})
     event_planner = models.ForeignKey(EventPlanner,

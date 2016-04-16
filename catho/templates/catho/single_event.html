@@ -11,22 +11,25 @@
 {% block content %}
 
    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-        <img src="{{ occurrence.event.image_main.url }}" class="img-responsive" alt="..." />
-        <h1>{{ occurrence.event.title }}</h1>
+    <div class="row" xmlns="http://www.w3.org/1999/html">
+        <div class="col-sm-12 col-md-12">
+            <div align="center">
+                <img src="{{ occurrence.event.image_main.url }}" class="img-responsive" alt="{{occurrence.event.title}}">
+            </div>
+            <h1>{{ occurrence.event.title }}</h1>
+        </div>
     </div>
 
     <div id="description" class="row">
         <div class="col-sm-12 col-md-8">
             <div class="thumbnail">
                 <div class="caption">
+                    <p>{{ occurrence.event.description|linebreaks }}</p>
+
                     {# Organisateur #}
                     {%  if occurrence.event.event_planner %}
-                        <h3> Organisé par: {{ occurrence.event.event_planner.user.username }}</h3>
+                        <strong> Organisé par: {{ occurrence.event.event_planner.user.username }} </strong>
                     {% endif %}
-
-                    <p>{{ occurrence.event.description }}</p>
-
                 </div>
             </div>
         </div>
