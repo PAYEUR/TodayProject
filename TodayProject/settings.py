@@ -83,14 +83,14 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 DATABASES = {
     'default': {
         # Ancienne BD
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'cathoDB'),
-        #Nouvelle BD (buggs...)
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        #Nouvelle BD
+        #'ENGINE': 'django.db.backends.mysql',
+        #'OPTIONS': {
+            #'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
 
-        }
+        #}
     }
 }
 
