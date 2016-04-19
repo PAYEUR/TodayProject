@@ -19,64 +19,64 @@ from . import utils
 
 FIELDS_REQUIRED = (VERSION[:2] >= (1, 6))
 
-WEEKDAY_SHORT = (
-    (7, _('Sun')),
-    (1, _('Mon')),
-    (2, _('Tue')),
-    (3, _('Wed')),
-    (4, _('Thu')),
-    (5, _('Fri')),
-    (6, _('Sat'))
-)
+# WEEKDAY_SHORT = (
+   # (7, _('Sun')),
+   # (1, _('Mon')),
+   # (2, _('Tue')),
+   # (3, _('Wed')),
+   # (4, _('Thu')),
+   # (5, _('Fri')),
+   # (6, _('Sat'))
+# )
 
 WEEKDAY_LONG = (
-    (7, _('Sunday')),
-    (1, _('Monday')),
-    (2, _('Tuesday')),
-    (3, _('Wednesday')),
-    (4, _('Thursday')),
-    (5, _('Friday')),
-    (6, _('Saturday'))
+    (0, _('Monday')),
+    (1, _('Tuesday')),
+    (2, _('Wednesday')),
+    (3, _('Thursday')),
+    (4, _('Friday')),
+    (5, _('Saturday')),
+    (6, _('Sunday')),
 )
 
-MONTH_LONG = (
-    (1,  _('January')),
-    (2,  _('February')),
-    (3,  _('March')),
-    (4,  _('April')),
-    (5,  _('May')),
-    (6,  _('June')),
-    (7,  _('July')),
-    (8,  _('August')),
-    (9,  _('September')),
-    (10, _('October')),
-    (11, _('November')),
-    (12, _('December')),
-)
+#MONTH_LONG = (
+    #(1,  _('January')),
+    #(2,  _('February')),
+    #(3,  _('March')),
+    #(4,  _('April')),
+    #(5,  _('May')),
+    #(6,  _('June')),
+   # (7,  _('July')),
+    #(8,  _('August')),
+   # (9,  _('September')),
+   # (10, _('October')),
+    #(11, _('November')),
+    #(12, _('December')),
+#)
 
-MONTH_SHORT = (
-    (1,  _('Jan')),
-    (2,  _('Feb')),
-    (3,  _('Mar')),
-    (4,  _('Apr')),
-    (5,  _('May')),
-    (6,  _('Jun')),
-    (7,  _('Jul')),
-    (8,  _('Aug')),
-    (9,  _('Sep')),
-    (10, _('Oct')),
-    (11, _('Nov')),
-    (12, _('Dec')),
-)
+#MONTH_SHORT = (
+    #1,  _('Jan')),
+    #(2,  _('Feb')),
+   # (3,  _('Mar')),
+    #(4,  _('Apr')),
+    #(5,  _('May')),
+    #(6,  _('Jun')),
+    #(7,  _('Jul')),
+    #(8,  _('Aug')),
+    #(9,  _('Sep')),
+    #(10, _('Oct')),
+    #(11, _('Nov')),
+    #(12, _('Dec')),
+#)
 
 
-ORDINAL = (
-    (1,  _('first')),
-    (2,  _('second')),
-    (3,  _('third')),
-    (4,  _('fourth')),
-    (-1, _('last'))
-)
+#ORDINAL = (
+   # (1,  _('first')),
+    #(2,  _('second')),
+    #(3,  _('third')),
+   # (4,  _('fourth')),
+    #(-1, _('last'))
+#)
 
 FREQUENCY_CHOICES = (
     (rrule.DAILY,   _('Day(s)')),
@@ -85,10 +85,10 @@ FREQUENCY_CHOICES = (
     (rrule.YEARLY,  _('Year(s)')),
 )
 
-REPEAT_CHOICES = (
-    ('count', _('By count')),
-    ('until', _('Until date')),
-)
+#REPEAT_CHOICES = (
+    #('count', _('By count')),
+    #('until', _('Until date')),
+#)
 
 ISO_WEEKDAYS_MAP = (
     None,
@@ -254,14 +254,13 @@ class SingleOccurrenceForm(forms.Form):
                     'weekStart': 1,
                     'pickerPosition': 'top-left'
                     },
-            usel10n = True,
+            usel10n=True,
             bootstrap_version=3)
         )
-
 
     start_time = forms.TimeField(
         required=True,
-        label ='Horaire de début',
+        label='Horaire de début',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -269,11 +268,10 @@ class SingleOccurrenceForm(forms.Form):
                     },
             bootstrap_version=3)
         )
-
 
     end_time = forms.TimeField(
         required=False,
-        label = 'Horaire de fin',
+        label='Horaire de fin',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -281,7 +279,6 @@ class SingleOccurrenceForm(forms.Form):
                     },
             bootstrap_version=3)
         )
-
 
     def clean(self):
         """
@@ -331,7 +328,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     # frequency
     ## hour
-    start_time_delta = forms.TimeField(
+    starting_hour = forms.TimeField(
         label='Horaire de début',
         initial='14:00',
         widget=TimeWidget(
@@ -341,7 +338,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    end_time_delta = forms.TimeField(
+    ending_hour = forms.TimeField(
         label='Horaire de fin',
         initial='16:00',
         widget=TimeWidget(
@@ -352,7 +349,7 @@ class MultipleOccurrenceForm(forms.Form):
         )
 
     ## date options
-    day = forms.DateField(
+    start_day = forms.DateField(
         label='A partir du',
         widget=DateWidget(
             options={
@@ -360,12 +357,12 @@ class MultipleOccurrenceForm(forms.Form):
                     'weekStart':1,
                     'pickerPosition':'top-left'
                     },
-            usel10n = True,
+            usel10n=True,
             bootstrap_version=3)
         )
 
 
-    until = forms.DateField(
+    end_day = forms.DateField(
         label='Jusqu\'au',
         widget=DateWidget(
             options={
@@ -373,20 +370,25 @@ class MultipleOccurrenceForm(forms.Form):
                     'weekStart':1,
                     'pickerPosition':'top-left'
                     },
-            usel10n = True,
+            usel10n=True,
             bootstrap_version=3)
         )
 
 
     ### weekly options
     week_days = MultipleIntegerField(
-        WEEKDAY_SHORT,
+        WEEKDAY_LONG,
         label='Jours de la semaine',
         widget=forms.CheckboxSelectMultiple
     )
 
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
+        """
+        :param args:
+        :param kws:
+        :return: prefilling widget with current time. (not ultra useful)
+        """
         super(MultipleOccurrenceForm, self).__init__(*args, **kws)
         dtstart = self.initial.get('dtstart', None)
         if dtstart:
@@ -396,33 +398,30 @@ class MultipleOccurrenceForm(forms.Form):
                 microsecond=0
             )
 
-            weekday = dtstart.isoweekday()
-
-            self.initial.setdefault('day', dtstart)
-            self.initial.setdefault('week_days', '%d' % weekday)
+            self.initial.setdefault('start_day', dtstart)
+            self.initial.setdefault('week_days', '%d' % dtstart.isoweekday())
 
     # ---------------------------------------------------------------------------
     def clean(self):
         cleaned_data = super(MultipleOccurrenceForm, self).clean()
-        start_time_delta = cleaned_data['start_time_delta']
-        end_time_delta = cleaned_data['end_time_delta']
-        day = cleaned_data['day']
-        until = cleaned_data['until']
+        starting_hour = cleaned_data['starting_hour']
+        ending_hour = cleaned_data['ending_hour']
+        start_day = cleaned_data['start_day']
+        end_day = cleaned_data['end_day']
 
-        if start_time_delta and end_time_delta:
-            if start_time_delta > end_time_delta:
+        if starting_hour and ending_hour:
+            if starting_hour > ending_hour:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-        if day and until:
-            if day > until or day < date.today():
+        if start_day and end_day:
+            if start_day > end_day or start_day < date.today():
                 raise forms.ValidationError("Verifier que les dates correspondent")
+            # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
 
-        self.cleaned_data['start_time'] = datetime.combine(day, start_time_delta)
-        self.cleaned_data['end_time'] = datetime.combine(day, end_time_delta)
+        self.cleaned_data['first_day_start_time'] = datetime.combine(start_day, starting_hour)
+        self.cleaned_data['first_day_end_time'] = datetime.combine(start_day, ending_hour)
 
         return self.cleaned_data
-
-
 
     # ---------------------------------------------------------------------------
     def save(self, event):
@@ -430,8 +429,8 @@ class MultipleOccurrenceForm(forms.Form):
         params = self._build_rrule_params()
 
         event.add_occurrences(
-            self.cleaned_data['start_time'],
-            self.cleaned_data['end_time'],
+            self.cleaned_data['first_day_start_time'],
+            self.cleaned_data['first_day_end_time'],
             is_multiple=True,
             **params
         )
@@ -443,7 +442,7 @@ class MultipleOccurrenceForm(forms.Form):
 
         data = self.cleaned_data
         params = dict(
-            until=data['until'],
+            until=data['end_day'],
             byweekday=data['week_days'],
             interval=1,
             freq=rrule.WEEKLY,
