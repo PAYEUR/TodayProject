@@ -18,6 +18,7 @@
     {# list_categories and list_events for the selected date only #}
 
     <div id="services" class="row">
+        {#  Si on ajoute un 'voir plus' <p align="center"><a href = "{% url 'coming_days_events' %}">Retour menu</a></p>#}
         <h2>Les prochains jours :</h2>
         {% if occurrences %}
             {% for occurrence in occurrences %}

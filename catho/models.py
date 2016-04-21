@@ -11,7 +11,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFit, ResizeToFill
+from imagekit.processors import ResizeToFill
 from django.contrib.auth.models import User
 
 __all__ = (

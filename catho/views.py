@@ -101,10 +101,10 @@ def _events_in_a_period(request, days, template='catho/event_by_date.html'):
     """
     # not satisfying because len(moment) times database requests
 
-    # print event_types occurrences except multiples occurrences
+    # print event_types occurrences
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(is_multiple=False)
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day)#.filter(is_multiple=False)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
@@ -112,7 +112,7 @@ def _events_in_a_period(request, days, template='catho/event_by_date.html'):
     events_list = [occurrence.event for occurrence in occurrences]
     event_types_list = list(set([event.event_type for event in events_list]))
 
-    context = dict({'occurrences': occurrences[:5],
+    context = dict({'occurrences': occurrences,
                    'event_types_list': event_types_list,
                     'days': days,
                     },  **nav_bar())
@@ -142,7 +142,7 @@ def tomorrow_events(request, template='catho/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
-def coming_days_events(request, next_days_duration=7, template='catho/event_by_date.html'):
+def coming_days_events(request, next_days_duration=3, template='catho/event_by_date.html'):
     """
 
     :param request:
@@ -224,7 +224,7 @@ def _single_day_event_type(
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
     occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
 
-    context = dict({'occurrences': occurrences[:5],
+    context = dict({'occurrences': occurrences,
                     'event_types_list': [event_type],
                     'days': [dt]
                     },  **nav_bar()
