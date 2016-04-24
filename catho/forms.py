@@ -1,12 +1,11 @@
 # coding=utf-8
-"""
-Convenience forms for adding and updating ``Event`` and ``Occurrence``s.
 
-"""
 from __future__ import print_function, unicode_literals
 from datetime import datetime, date, time, timedelta
 from django import VERSION
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 #from django.forms.widgets import TimeInput
 #from django.forms.extras.widgets import SelectDateWidget
 from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
@@ -123,7 +122,7 @@ class IndexForm(forms.Form):
     quand = forms.DateField(
             label='Quand?',
             required=True,
-            initial=datetime.today(),
+            initial=datetime.today,
             widget=DateWidget(
                 options={
                     'todayHighlight': True,
@@ -452,5 +451,20 @@ class MultipleOccurrenceForm(forms.Form):
 
 
 class ConnexionForm(forms.Form):
-    username = forms.CharField(label="Nom d'utilisateur", max_length=30)
+    username = forms.CharField(label="Login", max_length=30)
     password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput)
+
+
+class MyUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
+
+    def save(self, commit=True):
+        user = super(MyUserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+        return user

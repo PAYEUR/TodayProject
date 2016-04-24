@@ -1,6 +1,7 @@
 {% extends 'catho/bootstrap3.html' %}
 
-{% load bootstrap3 %}
+{% load bootstrap3 %}$
+{% load static %}
 
 
 {% block title %}
@@ -15,30 +16,48 @@
 
 <div class="container">
 
-    <div class="jumbotron">
-        {# image statique par exemple #}
-        <h1>Que faire à Paris?</h1>
-    </div>
-
-    {# Input form #}
-    <div id="services" class="row">
+    <div class=row>
         <div class="col-sm-12 col-md-12">
-            <div class="thumbnail" align="center">
-                <form role="form" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    {% bootstrap_button "Enjoy!" button_type="submit" size="lg" button_class="btn-success" icon="play" %}
-                </form>
-            </div>
+            <img src="{% static 'catho/logo_blanc.png' %}" class="img-responsive" alt="EnjoyToday.fr" />
+            <h1 align="center">Que faire à Paris?</h1>
         </div>
     </div>
 
-    <div id="services" class="row">
+    {# Input form #}
+    <form role="form" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-6 col-md-6">
+                <div class="thumbnail" align="center">
+                    {% bootstrap_field form.quand %}
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-6">
+                <div class="thumbnail" align="center">
+                    {% bootstrap_field form.quoi %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-md-12" align="center">
+                {% bootstrap_button "Enjoy!" button_type="submit" size="lg" button_class="btn-success" icon="play" %}
+            </div>
+        </div>
+
+    </form>
+
+    <div class="row">
         <div class="col-sm-12 col-md-12" align="center">
+            <br>
+            <br>
             <a href="{% url 'nouvel_evenement' %}" role="button" class="btn btn-info btn-md">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>
+
         </div>
     </div>
 

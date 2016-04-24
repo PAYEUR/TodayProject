@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render, redirec
 from dateutil import parser
 
 from . import forms
-from forms import EventForm, IndexForm, SingleOccurrenceForm, ConnexionForm
+from forms import EventForm, IndexForm, SingleOccurrenceForm, ConnexionForm, MyUserCreationForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence, Event, EventPlanner
 from django.views.generic import UpdateView, ListView, DeleteView, CreateView
@@ -19,7 +19,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
 from django.contrib.auth.models import User
 
 from . import swingtime_settings
@@ -476,7 +475,6 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
         context['nav_list'] = get_list_or_404(EventType)
 
         return context
-from django.contrib.auth.decorators import login_required
 
 
 
@@ -600,24 +598,10 @@ def logging_success(request):
     return render(request, 'catho/logging_success.html', nav_bar())
 
 
-#class UserCreate(CreateView):
-    #model = User
-    #template_name = "catho/inscription.html"
-    #form_class = UserCreationForm
-    #success_url = reverse_lazy('logging_success')
-
-    #def form_valid(self, form):
-        #logout(self.request)
-        #user = form.save()
-        #event_planner = EventPlanner(user=user)
-        #event_planner.save()
-        #login(self.request, user)
-        #return super(UserCreate, self).form_valid(form)
-
 def create_user(
         request,
         template="catho/inscription.html",
-        form_class = UserCreationForm,
+        form_class = MyUserCreationForm,
         success_url = reverse_lazy('logging_success')
         ):
 
@@ -628,7 +612,8 @@ def create_user(
         if registration_form.is_valid():
             registration_form.save()
             user = authenticate(password=registration_form.cleaned_data['password1'],
-                                username=registration_form.cleaned_data['username']
+                                username=registration_form.cleaned_data['username'],
+                                email = registration_form.cleaned_data['email']
                                 )
             login(request, user)
             event_planner = EventPlanner(user=user)
