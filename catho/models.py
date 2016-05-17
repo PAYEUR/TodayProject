@@ -13,6 +13,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.contrib.auth.models import User
+from connection.models import EventPlanner
 
 __all__ = (
     'Note',
@@ -23,21 +24,7 @@ __all__ = (
     'EventPlanner',
 )
 
-# ==============================================================================
-@python_2_unicode_compatible
-class EventPlanner(models.Model):
-    user = models.OneToOneField(User)
-    #other attributes if needed
 
-    class Meta:
-        verbose_name = 'event planner'
-        verbose_name_plural ='event planners'
-
-    def __str__(self):
-        return "user {0} as event planner".format(self.user.username)
-
-     #def get_absolute_url(self):
-        #return reverse('event_planner_panel', kwargs={'event_planner_id': self.pk})
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -109,7 +96,7 @@ class EventType(models.Model):
         return self.label
 
     def get_absolute_url(self):
-        return reverse('event_type_coming_days', kwargs={'event_type_id': self.pk})
+        return reverse('catho:event_type_coming_days', kwargs={'event_type_id': self.pk})
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -159,7 +146,7 @@ class Event(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('get_event', kwargs={'event_id': self.pk})
+        return reverse('catho:get_event', kwargs={'event_id': self.pk})
 
     # --------------------------------------------------------------------------
     def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
@@ -277,7 +264,7 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('get_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('catho:get_occurrence', kwargs={'occurrence_id': self.pk})
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

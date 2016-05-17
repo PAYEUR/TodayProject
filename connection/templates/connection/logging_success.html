@@ -16,14 +16,14 @@
             <p> {% bootstrap_alert "Vous êtes à présent connecté" alert_type='info' %} </p>
 
             <p align="center">
-            <a href="{% url 'nouvel_evenement' %}" role="button" class="btn btn-success btn-lg">
+            <a href="{% url 'catho:nouvel_evenement' %}" role="button" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>
             </p>
 
             <p align="center">
-            <a href="{% url 'event_planner_panel' %}" role="button" class="btn btn-warning btn-lg">
+            <a href="{% url 'catho:event_planner_panel' %}" role="button" class="btn btn-warning btn-lg">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 Tableau de bord organisateur
             </a>

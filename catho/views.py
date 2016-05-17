@@ -8,18 +8,17 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render, redirec
 
 from dateutil import parser
 
-from . import forms
-from forms import EventForm, IndexForm, SingleOccurrenceForm, ConnexionForm, MyUserCreationForm
+from .forms import EventForm, IndexForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from django.forms import formset_factory
 from .models import EventType, Occurrence, Event, EventPlanner
-from django.views.generic import UpdateView, ListView, DeleteView, CreateView
+from django.views.generic import UpdateView, ListView, DeleteView #, CreateView
 from django.core.urlresolvers import reverse_lazy
 
-from django.contrib.auth import authenticate, login, logout
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.models import User
+
 
 from . import swingtime_settings
 
@@ -54,17 +53,16 @@ def index(request, template='catho/research.html'):
             date = form.cleaned_data['quand']
 
             if event_type is not None:
-                return redirect("single_day_event_type",
+                return redirect('catho:single_day_event_type',
                                 event_type_id=event_type.pk,
                                 year=date.year,
                                 month=date.month,
                                 day=date.day)
             else:
-                return redirect("daily_events",
+                return redirect('catho:daily_events',
                                 year=date.year,
                                 month=date.month,
                                 day=date.day)
-
     else:
         form = IndexForm()
 
@@ -101,6 +99,7 @@ def _events_in_a_period(request, days, template='catho/event_by_date.html'):
     # not satisfying because len(moment) times database requests
 
     # print event_types occurrences
+    # TODO: verify the following point: enormous bugg: if no event at all in coming days => crash?!
     occurrences = []
     for day in days:
         occurrences_day = Occurrence.objects.daily_occurrences(dt=day)#.filter(is_multiple=False)
@@ -274,7 +273,7 @@ def single_day_event_type(
     return render(request, template, context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='connection:login')
 def _add_event(
         request,
         recurrence_form_class,
@@ -309,7 +308,7 @@ def _add_event(
         if event_form.is_valid() and recurrence_form.is_valid():
             event.save()
             recurrence_form.save(event)
-            return redirect('event_planner_panel')
+            return redirect('catho:event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -331,17 +330,17 @@ def _add_event(
     return render(request, template, context)
 
 
-@login_required(login_url='login')
-def add_multiple_occurrence_event(request, recurrence_form_class=forms.MultipleOccurrenceForm):
+@login_required(login_url='connection:login')
+def add_multiple_occurrence_event(request, recurrence_form_class=MultipleOccurrenceForm):
     return _add_event(request, recurrence_form_class)
 
 
-@login_required(login_url='login')
-def add_single_event(request, recurrence_form_class=forms.SingleOccurrenceForm):
+@login_required(login_url='connection:login')
+def add_single_event(request, recurrence_form_class=SingleOccurrenceForm):
     return _add_event(request, recurrence_form_class)
 
 
-@login_required(login_url='login')
+@login_required(login_url='connection:login')
 def add_multiple_dates(
         request,
         template='catho/add_event_as_dates.html',
@@ -349,7 +348,7 @@ def add_multiple_dates(
         ):
 
     dtstart = None
-    OccurrenceFormSet = formset_factory(forms.SingleOccurrenceForm, extra=10)
+    OccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=10)
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner = EventPlanner.objects.get(user=request.user))
@@ -360,7 +359,7 @@ def add_multiple_dates(
             for occurrence_form in formset:
                 if occurrence_form.is_valid and occurrence_form.cleaned_data:
                     occurrence_form.save(event)
-            return redirect('event_planner_panel')
+            return redirect('catho:event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -384,7 +383,7 @@ def add_multiple_dates(
     return render(request, template, context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='connection:login')
 def new_event(request):
     return render(request, 'catho/add_event_choice.html', nav_bar())
 
@@ -392,7 +391,7 @@ def new_event(request):
 class EventPlannerPanel(LoginRequiredMixin, ListView):
 
     #mixin parameters
-    login_url = 'login'
+    login_url = 'connection:login'
 
     ## view parameters
     model = Event
@@ -421,8 +420,8 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
 
     model = Event
     template_name = 'catho/update_event.html'
-    form_class = forms.EventForm
-    success_url = reverse_lazy('event_planner_panel')
+    form_class = EventForm
+    success_url = reverse_lazy('catho:event_planner_panel')
     #success_url = event_planner.get_absolute_url()
 
     #mixin parameters
@@ -455,7 +454,7 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     model = Event
     template_name = "catho/delete_event.html"
-    success_url = reverse_lazy('event_planner_panel')
+    success_url = reverse_lazy('catho:event_planner_panel')
 
 
     def get_object(self, queryset=None):
@@ -485,7 +484,7 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
     model = Occurrence
     template_name = "catho/delete_occurrence.html"
-    success_url = reverse_lazy('event_planner_panel')
+    success_url = reverse_lazy('catho:event_planner_panel')
 
 
 
@@ -515,7 +514,7 @@ def test_func(user, Event):
             return False
 
 
-@login_required(login_url='login')
+@login_required(login_url='connection:login')
 def add_multiples_occurrences(
         request,
         event_id,
@@ -541,7 +540,7 @@ def add_multiples_occurrences(
                 for occurrence_form in formset:
                     if occurrence_form.is_valid and occurrence_form.cleaned_data:
                         occurrence_form.save(event)
-                return http.HttpResponseRedirect(reverse_lazy('event_planner_panel'))
+                return http.HttpResponseRedirect(reverse_lazy('catho:event_planner_panel'))
 
         else:
             dtstart = datetime.now()
@@ -560,71 +559,3 @@ def add_multiples_occurrences(
     else:
         raise PermissionDenied
 
-
-def connexion(request):
-
-    error = False
-    if request.method == "POST":
-        connexion_form = ConnexionForm(request.POST)
-        if connexion_form.is_valid():
-            username = connexion_form.cleaned_data["username"]
-            password = connexion_form.cleaned_data["password"]
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect("logging_success")
-            else:
-                error= True
-
-    else:
-        connexion_form = ConnexionForm()
-
-    context = dict({'connexion_form': connexion_form,
-                    'error': error
-                    }, **nav_bar()
-                    )
-
-    return render(request, 'catho/connexion.html', context)
-
-
-@login_required(login_url='login')
-def deconnexion(request):
-    logout(request)
-    return redirect("index")
-
-
-@login_required(login_url='login')
-def logging_success(request):
-    return render(request, 'catho/logging_success.html', nav_bar())
-
-
-def create_user(
-        request,
-        template="catho/inscription.html",
-        form_class = MyUserCreationForm,
-        success_url = reverse_lazy('logging_success')
-        ):
-
-    logout(request)
-
-    if request.method == 'POST':
-        registration_form = form_class(request.POST)
-        if registration_form.is_valid():
-            registration_form.save()
-            user = authenticate(password=registration_form.cleaned_data['password1'],
-                                username=registration_form.cleaned_data['username'],
-                                email = registration_form.cleaned_data['email']
-                                )
-            login(request, user)
-            event_planner = EventPlanner(user=user)
-            event_planner.save()
-            return redirect('logging_success')
-
-    else:
-        registration_form = form_class()
-
-    context = dict({'registration_form': registration_form},
-                   **nav_bar()
-                   )
-
-    return render(request, template, context)

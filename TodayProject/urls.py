@@ -21,6 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^catho/', include('catho.urls')),
+    url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
     # media images deployment in development. Need change for production
     ]  + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,7 +4,7 @@ from . import views
 #from django.conf.urls import include, url
 
 
-
+app_name = 'catho'
 urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^evenement(?P<occurrence_id>[0-9]+)$', views.get_occurrence, name="get_occurrence"),
@@ -30,9 +30,6 @@ urlpatterns = [
     url(r'^evenement(?P<event_id>[0-9]+)/supprimer$', views.DeleteEvent.as_view(), name="delete_event"),
     url(r'^supprimer_echeance(?P<occurrence_id>[0-9]+)$', views.DeleteOccurrence.as_view(), name="delete_occurrence"),
     url(r'^evenement(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_multiples_occurrences, name="add_multiples_occurrences"),
-    url(r'^connexion$',views.connexion, name='login'),
-    url(r'^deconnexion$',views.deconnexion, name='logout'),
-    url(r'^connection_success$', views.logging_success, name='logging_success'),
-    url(r'^inscription$',views.create_user, name='registration'),
 
     ]
+

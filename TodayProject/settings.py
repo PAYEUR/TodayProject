@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'catho.apps.TodayConfig',
+    #Attention le nom a change dans la derniere config
+    'catho.apps.CathoConfig',
+    'connection.apps.ConnectionConfig',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
@@ -83,14 +85,14 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 DATABASES = {
     'default': {
         # Ancienne BD
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
         #Nouvelle BD
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+        #'ENGINE': 'django.db.backends.mysql',
+        #'OPTIONS': {
+            #'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
 
-        }
+        #}
     }
 }
 

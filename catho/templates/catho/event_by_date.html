@@ -45,7 +45,7 @@
                             <h3><a href = {{ occurrence.get_absolute_url }}> {{ occurrence.event.title}} </a></h3>
                             <p role = presentation>
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                <a href="{% url 'daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
+                                <a href="{% url 'catho:daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
                             </p>
                             <p role = presentation>
                                 <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
