@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from . import views
-#from django.conf.urls import include, url
+from django.conf.urls import include
 
 
 app_name = 'catho'
@@ -21,15 +21,10 @@ urlpatterns = [
     url(r'^categorie(?P<event_type_id>[0-9]+)/aujourd-hui/$', views.today_event_type, name="today_event_type"),
     url(r'^categorie(?P<event_type_id>[0-9]+)/demain/$', views.tomorrow_event_type, name="tomorrow_event_type"),
     url(r'^contact$', views.contact, name="contact"),
-    url(r'^nouvel_evenement_multiple$', views.add_multiple_occurrence_event, name="nouvel_evenement_multiple"),
-    url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),
-    url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
-    url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
     url(r'^tableau_de_bord$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
-    url(r'^evenement(?P<event_id>[0-9]+)/modifier$', views.UpdateEvent.as_view(), name="update_event"),
-    url(r'^evenement(?P<event_id>[0-9]+)/supprimer$', views.DeleteEvent.as_view(), name="delete_event"),
-    url(r'^supprimer_echeance(?P<occurrence_id>[0-9]+)$', views.DeleteOccurrence.as_view(), name="delete_occurrence"),
-    url(r'^evenement(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_multiples_occurrences, name="add_multiples_occurrences"),
+    url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
+    # add crud_url under catho/gestion/ajouter_evenement for example
+    url(r'^gestion/', include('crud.urls')),
 
     ]
 

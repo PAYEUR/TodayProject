@@ -37,14 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #Attention le nom a change dans la derniere config
-    'catho.apps.CathoConfig',
-    'connection.apps.ConnectionConfig',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
     'imagekit',
-
+    # Attention le nom a change dans la derniere config
+    'catho.apps.CathoConfig',
+    'connection.apps.ConnectionConfig',
+    'crud.apps.CrudConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
