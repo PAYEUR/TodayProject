@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'catho.apps.CathoConfig',
     'connection.apps.ConnectionConfig',
     'crud.apps.CrudConfig',
+    'location.apps.LocationConfig',
 ]
 
 MIDDLEWARE_CLASSES = [

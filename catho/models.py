@@ -14,38 +14,14 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.contrib.auth.models import User
 from connection.models import EventPlanner
+from location.models import City
 
 __all__ = (
     'Note',
     'EventType',
     'Event',
     'Occurrence',
-    'City',
-    'EventPlanner',
 )
-
-
-
-# ==============================================================================
-@python_2_unicode_compatible
-class City(models.Model):
-    """ Place class. Use to make queries on city.
-    """
-
-    city_name = models.CharField(verbose_name='city_name',
-                                 max_length=255,
-                                 default="Paris")
-    #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
-
-    # ==========================================================================
-    class Meta:
-        verbose_name ='city'
-        verbose_name_plural ='cities'
-
-    # --------------------------------------------------------------------------
-    def __str__(self):
-        return self.city_name
-
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -106,33 +82,41 @@ class Event(models.Model):
     """
     title = models.CharField(verbose_name="Titre",
                              max_length=100)
+
     description = models.TextField(verbose_name="Description")
+
     event_type = models.ForeignKey(EventType,
                                    verbose_name="Catégorie")
+
     notes = GenericRelation(Note, verbose_name="Notes")
+
     image = models.ImageField(verbose_name="Image",
                               default=None,
                               upload_to='events/')
+
     price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
                                              default=0)
-    #For the moment one limits choices to Paris
-    city = models.ForeignKey(City,
-                             verbose_name="Ville",
-                             default={'city_name': "Paris"},)#limit_choices_to={'city_name': "Paris"},)
-    address = models.CharField(verbose_name="Adresse",
-                               max_length=150,
-                               default="non précisé")
+
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFill(800, 300)],
                                 format='JPEG',
                                 options={'quality': 100})
+
     event_planner = models.ForeignKey(EventPlanner,
                                       default=None,
                                       null=True,
                                       blank=True,
                                       #editable=False,
-                                      verbose_name='organisateur',
+                                      verbose_name='annonceur',
                                       )
+
+    #Will remove this and use google place API instead
+    city = models.ForeignKey(City,
+                             verbose_name="Ville",
+                             default={'city_name': "Paris"})
+    address = models.CharField(verbose_name="Adresse",
+                               max_length=150,
+                               default="non précisé")
 
     # ===========================================================================
     class Meta:

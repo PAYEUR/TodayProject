@@ -152,7 +152,7 @@ def create_timeslot_table(
       handle the custom output via its __unicode__ method.
     
     '''
-    from swingtime.models import Occurrence
+    from .models import Occurrence
     dt = dt or datetime.now()
     start_time = start_time.replace(tzinfo=dt.tzinfo) if not start_time.tzinfo else start_time
     dtstart = datetime.combine(dt.date(), start_time)
