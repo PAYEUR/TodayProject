@@ -1,26 +1,21 @@
 #crud.views.py
 import logging
-
-
 from datetime import datetime
+
 from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-
 from dateutil import parser
-
-from catho.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from django.forms import formset_factory
-from catho.models import EventType, Occurrence, Event, EventPlanner
 from django.views.generic import UpdateView, DeleteView #, CreateView
 from django.core.urlresolvers import reverse_lazy
-
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-import catho.views as catho_view
-nav_bar = catho_view.nav_bar()
+from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
+from topic.models import EventType, Occurrence, Event, EventPlanner
+
+
 
 
 @login_required(login_url='connection:login')
@@ -58,7 +53,7 @@ def _add_event(
         if event_form.is_valid() and recurrence_form.is_valid():
             event.save()
             recurrence_form.save(event)
-            return redirect('catho:event_planner_panel')
+            return redirect('core:event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -74,7 +69,6 @@ def _add_event(
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
 
     context = dict({'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form},
-                   **nav_bar
                    )
 
     return render(request, template, context)
@@ -109,7 +103,7 @@ def add_multiple_dates(
             for occurrence_form in formset:
                 if occurrence_form.is_valid and occurrence_form.cleaned_data:
                     occurrence_form.save(event)
-            return redirect('catho:event_planner_panel')
+            return redirect('core:event_planner_panel')
 
     else:
         if 'dtstart' in request.GET:
@@ -127,8 +121,7 @@ def add_multiple_dates(
     context = dict({'dtstart': dtstart,
                     'event_form': event_form,
                     'formset': formset,
-                    }, **nav_bar
-                   )
+                    })
 
     return render(request, template, context)
 
@@ -138,7 +131,7 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     model = Event
     template_name = 'crud/update_event.html'
     form_class = EventForm
-    success_url = reverse_lazy('catho:event_planner_panel')
+    success_url = reverse_lazy('core:event_planner_panel')
     #success_url = event_planner.get_absolute_url()
 
     #mixin parameters
@@ -155,12 +148,6 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
         else:
             return False
 
-    def get_context_data(self, **kwargs):
-        context = super(UpdateEvent, self).get_context_data(**kwargs)
-        # instead of navbar()
-        context['nav_list'] = get_list_or_404(EventType)
-
-        return context
 
 
 class DeleteEvent(UserPassesTestMixin, DeleteView):
@@ -170,7 +157,7 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     model = Event
     template_name = 'crud/delete_event.html'
-    success_url = reverse_lazy('catho:event_planner_panel')
+    success_url = reverse_lazy('core:event_planner_panel')
 
 
     def get_object(self, queryset=None):
@@ -184,13 +171,6 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
         else:
             return False
 
-    def get_context_data(self, **kwargs):
-        context = super(DeleteEvent, self).get_context_data(**kwargs)
-        # instead of navbar()
-        context['nav_list'] = get_list_or_404(EventType)
-
-        return context
-
 
 class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
@@ -199,7 +179,7 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
     model = Occurrence
     template_name = 'crud/delete_occurrence.html'
-    success_url = reverse_lazy('catho:event_planner_panel')
+    success_url = reverse_lazy('core:event_planner_panel')
 
 
 
@@ -214,12 +194,6 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
         else:
             return False
 
-    def get_context_data(self, **kwargs):
-        context = super(DeleteOccurrence, self).get_context_data(**kwargs)
-        # instead of navbar()
-        context['nav_list'] = get_list_or_404(EventType)
-
-        return context
 
 
 def test_func(user, Event):
@@ -255,7 +229,7 @@ def add_multiples_occurrences(
                 for occurrence_form in formset:
                     if occurrence_form.is_valid and occurrence_form.cleaned_data:
                         occurrence_form.save(event)
-                return http.HttpResponseRedirect(reverse_lazy('catho:event_planner_panel'))
+                return http.HttpResponseRedirect(reverse_lazy('core:event_planner_panel'))
 
         else:
             dtstart = datetime.now()
@@ -266,7 +240,7 @@ def add_multiples_occurrences(
         context = dict({'dtstart': dtstart,
                         'formset': formset,
                         'event': event,
-                        }, **nav_bar
+                        }
                        )
 
         return render(request, template, context)

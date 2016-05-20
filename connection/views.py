@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
-from forms import ConnexionForm, MyUserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+
+from forms import ConnexionForm, MyUserCreationForm
 from .models import EventPlanner
 
-import catho.views as catho_view
-nav_bar = catho_view.nav_bar()
 
 def connexion(request):
 
@@ -28,7 +27,7 @@ def connexion(request):
 
     context = dict({'connexion_form': connexion_form,
                     'error': error
-                    }, **nav_bar
+                    }
                 )
 
     return render(request, 'connection/connexion.html', context)
@@ -37,12 +36,12 @@ def connexion(request):
 @login_required(login_url='connection:login')
 def deconnexion(request):
     logout(request)
-    return redirect('catho:index')
+    return redirect('core:index')
 
 
 @login_required(login_url='connection:login')
 def logging_success(request):
-    return render(request, 'connection/logging_success.html', nav_bar)
+    return render(request, 'connection/logging_success.html')
 
 
 def create_user(
@@ -71,7 +70,6 @@ def create_user(
         registration_form = form_class()
 
     context = dict({'registration_form': registration_form},
-                   **nav_bar
                    )
 
     return render(request, template, context)

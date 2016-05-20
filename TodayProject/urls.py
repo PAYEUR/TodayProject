@@ -20,6 +20,7 @@ from django.conf import settings
 
 
 urlpatterns = [
+    url(r'^', include('core.urls')),
     url(r'^catho/', include('catho.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),

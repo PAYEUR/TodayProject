@@ -1,0 +1,52 @@
+{% extends 'core/bootstrap3.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+{% load imagekit %}
+
+{# make sure that childrens of this template don't call bootstrap3_extra_head #}
+{% block bootstrap3_extra_head %}
+    <link href="{%  static 'core/base.css' %}" rel="stylesheet">
+    {% block base_extra_head %}{% endblock %}
+{% endblock %}
+
+
+{% block title %}
+    (no content)
+{% endblock %}
+
+
+{% block bootstrap3_content %}
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        {% include "core/topbar.html" %}
+      </div>
+    </nav>
+
+
+<div class="container">
+
+    <div class="row">
+        {# block middle #}
+
+        <div class="col-sm-9">
+            {% block content %}(no content){% endblock %}
+        </div>
+
+        <div class="col-sm-offset-1 col-sm-2">
+            {% block sidebar %}
+                {% include "core/sidebar.html" %}
+            {% endblock %}
+        </div>
+
+        {# endblock #}
+    </div>
+
+    <footer>
+        <p class="pull-right" ><a href="#">Haut de page</a></p>
+        <p><a href="{% url 'core:contact' %}">&copy; 2016 TodayProjectCompany, Inc. &middot;</a> {# <a href="#">Privacy</a> &middot; <a href="#">Terms</a> #}</p>
+    </footer>
+ </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{# has to be written properly: no idea of navbar aims for the moment #}
+{# we have core_sidebar in context processor though #}
+ <ul class="nav nav-sidebar">
+     {% block top_sidebar %}
+     {% endblock %}
+  </ul>
+
+  <ul class="nav nav-sidebar">
+    {% block mid_sidebar %}
+    {% endblock %}
+  </ul>
+
+  <ul class="nav nav-sidebar">
+    {% block bottom_sidebar %}
+    {% endblock %}
+  </ul>

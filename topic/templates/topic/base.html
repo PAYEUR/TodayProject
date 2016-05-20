@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+
+
+{% block search %}
+    <li><a href="{% url 'topic:index' %}">Recherche</a></li>
+{% endblock %}
+
+{% block sidebar %}
+    {#  include "topic/sidebar.html" #}
+{% endblock %}
+

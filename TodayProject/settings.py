@@ -42,10 +42,13 @@ INSTALLED_APPS = [
     'easy_maps',
     'imagekit',
     # Attention le nom a change dans la derniere config
+    # il faut certainement tout faire dependre du seul "catho"
     'catho.apps.CathoConfig',
     'connection.apps.ConnectionConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
+    'topic.apps.TopicConfig',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -72,6 +75,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #added both:
+                'TodayProject.context_processors.topic_sidebar',
+                'TodayProject.context_processors.core_sidebar'
             ],
         },
     },
@@ -134,7 +140,7 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'catho/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'catho/../core/static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'catho/media')
@@ -145,9 +151,9 @@ BOOTSTRAP3 = {
     'include_jquery': True,
 }
 
-SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
+SWINGTIME_SETTINGS_MODULE = 'core.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
 
-# to overwrite when we will properly separate login process from catho
+# to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
