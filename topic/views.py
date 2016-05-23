@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from .forms import IndexForm
-from .models import EventType, Occurrence, Event, EventPlanner
+from .models import EventType, Occurrence, Event, EnjoyTodayUser
 from django.views.generic import DetailView, DayArchiveView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -85,7 +85,7 @@ class OccurrenceDetail(DetailView):
 #    date_field = "end_time"
 #    allow_future = True
 #    allow_empty = True
-#    template_name = 'core/event_by_date.html'
+#    template_name = 'topic/event_by_date.html'
 #    context_object_name = 'occurrences'
 
 #    def get_context_data(self, **kwargs):
@@ -100,7 +100,7 @@ class OccurrenceDetail(DetailView):
    #     return context
 
 
-def _events_in_a_period(request, days, template='core/event_by_date.html'):
+def _events_in_a_period(request, days, template='topic/event_by_date.html'):
     """
 
     :param request:
@@ -129,18 +129,18 @@ def _events_in_a_period(request, days, template='core/event_by_date.html'):
     return render(request, template, context)
 
 
-def today_events(request, template='core/event_by_date.html'):
+def today_events(request, template='topic/event_by_date.html'):
     """
 
     :param request:
     :param template:
-    :return: all events for core
+    :return: all events for topic
     """
     days = [datetime.today()]
     return _events_in_a_period(request, days, template)
 
 
-def tomorrow_events(request, template='core/event_by_date.html'):
+def tomorrow_events(request, template='topic/event_by_date.html'):
     """
 
     :param request:
@@ -151,7 +151,7 @@ def tomorrow_events(request, template='core/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
-def coming_days_events(request, next_days_duration=3, template='core/event_by_date.html'):
+def coming_days_events(request, next_days_duration=3, template='topic/event_by_date.html'):
     """
 
     :param request:
@@ -169,14 +169,14 @@ def coming_days_events(request, next_days_duration=3, template='core/event_by_da
     return _events_in_a_period(request, days, template)
 
 
-def daily_events(request, year, month, day, template='core/event_by_date.html'):
+def daily_events(request, year, month, day, template='topic/event_by_date.html'):
 
     days = [datetime(int(year), int(month), int(day))]
 
     return _events_in_a_period(request, days, template)
 
 
-def monthly_events(request, year, month, template='core/event_by_date.html'):
+def monthly_events(request, year, month, template='topic/event_by_date.html'):
 
     year, month = int(year), int(month)
     cal = calendar.Calendar()
@@ -189,7 +189,7 @@ def monthly_events(request, year, month, template='core/event_by_date.html'):
     return _events_in_a_period(request, days, template)
 
 
-def event_type_coming_days(request, event_type_id, next_days_duration=3, template='core/date_by_event_type.html'):
+def event_type_coming_days(request, event_type_id, next_days_duration=3, template='topic/date_by_event_type.html'):
     """
 
     :param request:
@@ -227,7 +227,7 @@ def _single_day_event_type(
         request,
         event_type_id,
         dt,
-        template='core/event_by_date.html'
+        template='topic/event_by_date.html'
         ):
 
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
@@ -245,7 +245,7 @@ def _single_day_event_type(
 def today_event_type(
         request,
         event_type_id,
-        template='core/event_by_date.html'
+        template='topic/event_by_date.html'
         ):
 
     dt = datetime.today()
@@ -255,7 +255,7 @@ def today_event_type(
 def tomorrow_event_type(
         request,
         event_type_id,
-        template='core/event_by_date.html'
+        template='topic/event_by_date.html'
         ):
 
     dt = datetime.today()+timedelta(days=+1)
@@ -268,7 +268,7 @@ def single_day_event_type(
         year,
         month,
         day,
-        template='core/event_by_date.html'
+        template='topic/event_by_date.html'
         ):
 
     dt = datetime(int(year), int(month), int(day))

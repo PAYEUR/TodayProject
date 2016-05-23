@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from forms import ConnexionForm, MyUserCreationForm
-from .models import EventPlanner
+from .models import EnjoyTodayUser
 
 
 def connexion(request):
@@ -62,7 +62,7 @@ def create_user(
                                 email=registration_form.cleaned_data['email']
                                 )
             login(request, user)
-            event_planner = EventPlanner(user=user)
+            event_planner = EnjoyTodayUser(user=user)
             event_planner.save()
             return redirect('connection:logging_success')
 

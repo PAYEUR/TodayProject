@@ -1,15 +1,13 @@
-from django.conf.urls import url
-from django.conf.urls import include
-
-
+from django.conf.urls import url, include
+from . import views
 
 app_name = 'catho'
 urlpatterns = [
-    url(r'^', include('topic.urls')),
-    # url(r'^tableau_de_bord$', views.EventPlannerPanel.as_view(), name="event_planner_panel"),
+
+    url(r'^truc$', views.truc, name="truc"),
 
     # add crud_url under core/gestion/ajouter_evenement for example
-    url(r'^gestion/', include('crud.urls')),
+    #url(r'^gestion/', include('crud.urls')),
 
     ]
 

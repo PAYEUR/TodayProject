@@ -4,45 +4,18 @@ from datetime import datetime
 from dateutil import rrule
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-from connection.models import EventPlanner
+from connection.models import EnjoyTodayUser
 from location.models import City
 
 __all__ = (
-    'Note',
     'EventType',
     'Event',
     'Occurrence',
 )
-
-# ==============================================================================
-@python_2_unicode_compatible
-class Note(models.Model):
-    """
-    A generic model for adding simple, arbitrary notes to other models such as
-    ``Event`` or ``Occurrence``.
-    """
-    note = models.TextField(verbose_name='note')
-    created = models.DateTimeField(verbose_name='created',
-                                   auto_now_add=True)
-    content_type = models.ForeignKey(ContentType,
-                                     verbose_name='content type')
-    object_id = models.PositiveIntegerField(verbose_name='object id')
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    # ==========================================================================
-    class Meta:
-        verbose_name = 'note'
-        verbose_name_plural = 'notes'
-
-    # --------------------------------------------------------------------------
-    def __str__(self):
-        return self.note
 
 
 # ==============================================================================
@@ -69,7 +42,7 @@ class EventType(models.Model):
         return self.label
 
     def get_absolute_url(self):
-        return reverse('core:event_type_coming_days', kwargs={'event_type_id': self.pk})
+        return reverse('topic:event_type_coming_days', kwargs={'event_type_id': self.pk})
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -85,7 +58,6 @@ class Event(models.Model):
     event_type = models.ForeignKey(EventType,
                                    verbose_name="Catégorie")
 
-    notes = GenericRelation(Note, verbose_name="Notes")
 
     image = models.ImageField(verbose_name="Image",
                               default=None,
@@ -99,18 +71,19 @@ class Event(models.Model):
                                 format='JPEG',
                                 options={'quality': 100})
 
-    event_planner = models.ForeignKey(EventPlanner,
-                                      default=None,
-                                      null=True,
-                                      blank=True,
-                                      #editable=False,
-                                      verbose_name='annonceur',
-                                      )
+    event_planner = models.OneToOneField(EnjoyTodayUser,
+                                        default=None,
+                                        null=True,
+                                        blank=True,
+                                        #editable=False,
+                                        verbose_name='annonceur',
+                                        )
 
     #Will remove this and use google place API instead
     city = models.ForeignKey(City,
                              verbose_name="Ville",
                              default={'city_name': "Paris"})
+
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
                                default="non précisé")
@@ -126,8 +99,8 @@ class Event(models.Model):
         return self.title
 
     # --------------------------------------------------------------------------
-    def get_absolute_url(self):
-        return reverse('core:get_event', kwargs={'event_id': self.pk})
+    #def get_absolute_url(self):
+        #return reverse('topic:get_event', kwargs={'event_id': self.pk})
 
     # --------------------------------------------------------------------------
     def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
@@ -229,7 +202,6 @@ class Occurrence(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     event = models.ForeignKey(Event, editable=False)
-    notes = GenericRelation(Note)
     objects = OccurrenceManager()
     is_multiple = models.BooleanField(default=False)
 
@@ -245,7 +217,7 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('core:get_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('topic:get_occurrence', kwargs={'occurrence_id': self.pk})
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
 from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
-from topic.models import EventType, Occurrence, Event, EventPlanner
+from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 
 
 
@@ -47,7 +47,7 @@ def _add_event(
     dtstart = None
     if request.method == 'POST':
         # to add event_planner to event
-        event = Event(event_planner=EventPlanner.objects.get(user=request.user))
+        event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user))
         event_form = event_form_class(request.POST, request.FILES, instance=event)
         recurrence_form = recurrence_form_class(request.POST)
         if event_form.is_valid() and recurrence_form.is_valid():
@@ -95,7 +95,7 @@ def add_multiple_dates(
     OccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=10)
     if request.method == 'POST':
         # to add event_planner to event
-        event = Event(event_planner = EventPlanner.objects.get(user=request.user))
+        event = Event(event_planner = EnjoyTodayUser.objects.get(user=request.user))
         event_form = event_form_class(request.POST, request.FILES, instance=event)
         formset = OccurrenceFormSet(request.POST)
         if event_form.is_valid() and formset.is_valid():

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 # ==============================================================================
 @python_2_unicode_compatible
-class EventPlanner(models.Model):
+class EnjoyTodayUser(models.Model):
     user = models.OneToOneField(User)
     #other attributes if needed
 

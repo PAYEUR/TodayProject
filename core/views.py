@@ -1,7 +1,7 @@
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from topic.models import Event
-from connection.models import EventPlanner
+from connection.models import EnjoyTodayUser
 # from .models import Topic
 
 
@@ -11,17 +11,7 @@ class ContactView(TemplateView):
     template_name = 'core/contact.html'
 
 
-class IndexView(ListView):
-    # return a list of cities and topics
-    template_name = ''
-
-
-class SecondIndexView(ListView):
-    # return a list of topics for one single city.
-    template_name = ''
-
-
-class EventPlannerPanel(LoginRequiredMixin, ListView):
+class EventPlannerPanelView(LoginRequiredMixin, ListView):
 
     # mixin parameters
     login_url = 'connection:login'
@@ -32,13 +22,13 @@ class EventPlannerPanel(LoginRequiredMixin, ListView):
     template_name = 'core/event_planner_panel.html'
 
     def get_event_planner(self):
-        return EventPlanner.objects.get(user=self.request.user)
+        return EnjoyTodayUser.objects.get(user=self.request.user)
 
     def get_queryset(self):
         return Event.objects.filter(event_planner=self.get_event_planner())
 
     def get_context_data(self, **kwargs):
-        context = super(EventPlannerPanel, self).get_context_data(**kwargs)
+        context = super(EventPlannerPanelView, self).get_context_data(**kwargs)
         context['event_planner'] = self.get_event_planner()
 
         return context

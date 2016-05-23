@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import EventPlanner
+from .models import EnjoyTodayUser
 
-admin.site.register(EventPlanner)
+admin.site.register(EnjoyTodayUser)

@@ -14,6 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+
 from django.conf.urls import include, url, static
 from django.contrib import admin
 from django.conf import settings
@@ -21,8 +22,12 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^', include('core.urls')),
-    url(r'^catho/', include('catho.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
+
+    # need to explicit topic as it is in every template
+    url(r'^catho/', include('topic.urls')),
+    url(r'^catho/', include('catho.urls')),
+
     # media images deployment in development. Need change for production
     ]  + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

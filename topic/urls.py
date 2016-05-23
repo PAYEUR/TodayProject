@@ -1,10 +1,10 @@
-from django.conf.urls import url
-
+# coding="utf-8"
+from crud import urls as crud_urls
+from django.conf.urls import url, include
 from . import views
-from django.conf.urls import include
 
 
-app_name = 'core'
+app_name = 'topic'
 urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^evenement(?P<occurrence_id>[0-9]+)$', views.OccurrenceDetail.as_view(), name="get_occurrence"),
@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^categorie(?P<event_type_id>[0-9]+)/demain/$', views.tomorrow_event_type, name="tomorrow_event_type"),
     url(r'^nouvel_evenement$', views.new_event, name="nouvel_evenement"),
     # add crud_url under core/gestion/ajouter_evenement for example
-    url(r'^gestion/', include('crud.urls')),
+    url(r'^gestion/', include(crud_urls, namespace='crud')),
 
     ]
 

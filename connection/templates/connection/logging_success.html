@@ -1,4 +1,4 @@
-{% extends 'catho/base.html' %}
+{% extends 'core/base.html' %}
 
 {% load bootstrap3 %}
 
@@ -16,7 +16,7 @@
             <p> {% bootstrap_alert "Vous êtes à présent connecté" alert_type='info' %} </p>
 
             <p align="center">
-            <a href="{% url 'core:nouvel_evenement' %}" role="button" class="btn btn-success btn-lg">
+            <a href="{% url 'topic:nouvel_evenement' %}" role="button" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>

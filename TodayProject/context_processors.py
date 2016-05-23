@@ -4,9 +4,9 @@ from topic.models import EventType
 from core.models import Topic
 
 
-def topic_sidebar():
-    return {'topic_sidebar':  get_list_or_404(EventType)}
+def topic_sidebar(request):
+    return {'topic_sidebar':  EventType.objects.all()}
 
 
-def core_sidebar():
-    return {'core_sidebar':  get_list_or_404(Topic)}
+def core_sidebar(request):
+    return {'core_sidebar':  Topic.objects.all()}

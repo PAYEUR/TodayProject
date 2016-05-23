@@ -45,10 +45,11 @@ INSTALLED_APPS = [
     # il faut certainement tout faire dependre du seul "catho"
     'catho.apps.CathoConfig',
     'connection.apps.ConnectionConfig',
+    'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
     'topic.apps.TopicConfig',
-    'core.apps.CoreConfig',
+
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -140,10 +141,10 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'catho/../core/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'catho/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
 MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3
@@ -151,7 +152,7 @@ BOOTSTRAP3 = {
     'include_jquery': True,
 }
 
-SWINGTIME_SETTINGS_MODULE = 'core.swingtime_settings'
+SWINGTIME_SETTINGS_MODULE = 'topic.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
 
