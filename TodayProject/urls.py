@@ -26,8 +26,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # need to explicit topic as it is in every template
-    url(r'^catho/', include('topic.urls')),
     url(r'^catho/', include('catho.urls')),
+    url(r'^catho/', include('topic.urls', namespace='catho_topic')),
+    # need to explicit topic as it is in every template
+    url(r'^petits_jobs/', include('topic.urls', namespace='jobs_topic')),
 
     # media images deployment in development. Need change for production
     ]  + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

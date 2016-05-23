@@ -62,7 +62,7 @@ class OccurrenceDetail(DetailView):
         return context
 
 
-def get_occurrence(request, occurrence_id):
+def get_occurrence(request, occurrence_id, topic='catho'):
     occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
     if occurrence.event.address != "non precise":
         address = occurrence.event.address + ", France"
@@ -71,6 +71,7 @@ def get_occurrence(request, occurrence_id):
 
     context = dict({'occurrence': occurrence,
                     'address': address,
+                    'topic': topic,
                     }
                    )
     return render(request, 'topic/single_event.html', context)
@@ -103,7 +104,7 @@ def get_occurrence(request, occurrence_id):
 def _events_in_a_period(request,
                         days,
                         template='topic/event_by_date.html',
-                       ):
+                        topic='catho'):
     """
 
     :param request:
@@ -127,7 +128,7 @@ def _events_in_a_period(request,
     context = dict({'occurrences': occurrences,
                    'event_types_list': event_types_list,
                     'days': days,
-
+                    'topic': topic
                     })
 
     return render(request, template, context)
@@ -135,7 +136,7 @@ def _events_in_a_period(request,
 
 def today_events(request,
                  template='topic/event_by_date.html',
-                 ):
+                 topic='catho'):
     """
 
     :param request:
@@ -143,12 +144,12 @@ def today_events(request,
     :return: all events for topic
     """
     days = [datetime.today()]
-    return _events_in_a_period(request, days, template)
+    return _events_in_a_period(request, days, template, topic)
 
 
 def tomorrow_events(request,
                     template='topic/event_by_date.html',
-                    ):
+                    topic='catho'):
     """
 
     :param request:
@@ -156,13 +157,13 @@ def tomorrow_events(request,
     :return: all events for tomorrow
     """
     days = [datetime.today() + timedelta(days=+1)]
-    return _events_in_a_period(request, days, template)
+    return _events_in_a_period(request, days, template, topic)
 
 
 def coming_days_events(request,
                        next_days_duration=3,
                        template='topic/event_by_date.html',
-                       ):
+                       topic='catho'):
     """
 
     :param request:
@@ -177,7 +178,7 @@ def coming_days_events(request,
         days.append(today + timedelta(days=+i))
         i += 1
 
-    return _events_in_a_period(request, days, template)
+    return _events_in_a_period(request, days, template, topic)
 
 
 def daily_events(request,
@@ -185,18 +186,18 @@ def daily_events(request,
                  month,
                  day,
                  template='topic/event_by_date.html',
-                 ):
+                 topic='catho'):
 
     days = [datetime(int(year), int(month), int(day))]
 
-    return _events_in_a_period(request, days, template)
+    return _events_in_a_period(request, days, template, topic)
 
 
 def monthly_events(request,
                    year,
                    month,
                    template='topic/event_by_date.html',
-                  ):
+                   topic='catho'):
 
     year, month = int(year), int(month)
     cal = calendar.Calendar()
@@ -206,14 +207,14 @@ def monthly_events(request,
         for day in week:
             days.append(day)
 
-    return _events_in_a_period(request, days, template)
+    return _events_in_a_period(request, days, template, topic)
 
 
 def event_type_coming_days(request,
                            event_type_id,
                            next_days_duration=3,
                            template='topic/date_by_event_type.html',
-                           ):
+                           topic='catho'):
     """
 
     :param request:
@@ -241,7 +242,7 @@ def event_type_coming_days(request,
 
     context = dict({'occurrences': occurrences,
                     'event_type': event_type,
-
+                    'topic': topic
                     }
                    )
 
@@ -253,7 +254,7 @@ def _single_day_event_type(
         event_type_id,
         dt,
         template='topic/event_by_date.html',
-
+        topic='catho'
         ):
 
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
@@ -262,7 +263,7 @@ def _single_day_event_type(
     context = dict({'occurrences': occurrences,
                     'event_types_list': [event_type],
                     'days': [dt],
-
+                    'topic': topic
                     }
                    )
 
@@ -273,22 +274,22 @@ def today_event_type(
         request,
         event_type_id,
         template='topic/event_by_date.html',
-
+        topic='catho'
         ):
 
     dt = datetime.today()
-    return _single_day_event_type(request, event_type_id, dt, template,)
+    return _single_day_event_type(request, event_type_id, dt, template, topic)
 
 
 def tomorrow_event_type(
         request,
         event_type_id,
         template='topic/event_by_date.html',
-
+        topic='catho'
         ):
 
     dt = datetime.today()+timedelta(days=+1)
-    return _single_day_event_type(request, event_type_id, dt, template, )
+    return _single_day_event_type(request, event_type_id, dt, template, topic)
 
 
 def single_day_event_type(
@@ -298,7 +299,7 @@ def single_day_event_type(
         month,
         day,
         template='topic/event_by_date.html',
-
+        topic='catho'
         ):
 
     dt = datetime(int(year), int(month), int(day))
@@ -308,7 +309,7 @@ def single_day_event_type(
     context = dict({'occurrences': occurrences,
                     'event_types_list': [event_type],
                     'days': [dt],
-
+                    'topic': topic
                     }
                    )
 
@@ -316,5 +317,5 @@ def single_day_event_type(
 
 
 @login_required(login_url='connection:login')
-def new_event(request, ):
-    return render(request, 'topic/add_event_choice.html', )
+def new_event(request, topic='catho'):
+    return render(request, 'topic/add_event_choice.html', {'topic': topic})

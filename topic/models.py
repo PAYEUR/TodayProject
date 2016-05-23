@@ -10,6 +10,8 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
+from core.models import Topic
+
 
 __all__ = (
     'EventType',
@@ -24,6 +26,9 @@ class EventType(models.Model):
     """
     Simple ``Event`` classification.
     """
+    topic = models.ForeignKey(Topic,
+                              verbose_name='Thematique',
+                              default=None)
 
     label = models.CharField(verbose_name='label', max_length=50)
     image = models.ImageField(default=None, upload_to='event_types/')
@@ -100,7 +105,14 @@ class Event(models.Model):
 
     # --------------------------------------------------------------------------
     #def get_absolute_url(self):
-        #return reverse('topic:get_event', kwargs={'event_id': self.pk})
+        #return reverse('', kwargs={'event_id': self.pk})
+
+    def delete_url(self):
+        return reverse('topic:crud:delete_event', kwargs={'event_id': self.pk})
+
+    def update_url(self):
+        return reverse('topic:crud:update_event', kwargs={'event_id': self.pk})
+
 
     # --------------------------------------------------------------------------
     def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
@@ -218,6 +230,12 @@ class Occurrence(models.Model):
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
         return reverse('topic:get_occurrence', kwargs={'occurrence_id': self.pk})
+
+    def delete_url(self):
+        return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk})
+
+    #def update_url(self):
+        #return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk})
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

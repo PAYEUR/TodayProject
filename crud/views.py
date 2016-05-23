@@ -149,7 +149,6 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
             return False
 
 
-
 class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     #mixin parameters
@@ -195,6 +194,8 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
             return False
 
 
+#TODO class UpdateOccurrence()
+
 
 def test_func(user, Event):
         if Event.event_planner:
@@ -202,7 +203,7 @@ def test_func(user, Event):
         else:
             return False
 
-
+# TODO: check how to include this in the occurrence manager
 @login_required(login_url='connection:login')
 def add_multiples_occurrences(
         request,
