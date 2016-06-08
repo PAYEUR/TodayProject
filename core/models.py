@@ -1,14 +1,17 @@
 # coding=utf-8
 from __future__ import unicode_literals
-
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible
 class Topic(models.Model):
-    topic_name = models.CharField(verbose_name="Thématique",
-                                  max_length=50)
+    """
+    topic class, for example "catho" or "jobs"
+    """
+    name = models.CharField(verbose_name="Thématique",
+                            max_length=50,
+                            default=None)
 
     class Meta:
         verbose_name = 'topic'
@@ -16,4 +19,4 @@ class Topic(models.Model):
 
     # --------------------------------------------------------------------------
     def __str__(self):
-        return self.topic_name
+        return self.name

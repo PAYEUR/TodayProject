@@ -1,6 +1,6 @@
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from topic.models import Event
+from catho.models import Event
 from connection.models import EnjoyTodayUser
 # from .models import Topic
 

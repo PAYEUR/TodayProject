@@ -12,8 +12,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
-from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
+from catho.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
+from catho.models import EventType, Occurrence, Event, EnjoyTodayUser
 
 
 

@@ -7,9 +7,9 @@ from datetimewidget.widgets import DateWidget, DateTimeWidget, TimeWidget
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil import rrule
-from topic import swingtime_settings
-from topic.models import Event, EventType #,City, Occurrence
-from topic import utils
+from catho import swingtime_settings
+from catho.models import Event, EventType #,City, Occurrence
+from catho import utils
 
 FIELDS_REQUIRED = (VERSION[:2] >= (1, 6))
 

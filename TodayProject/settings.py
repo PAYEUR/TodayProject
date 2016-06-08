@@ -41,14 +41,12 @@ INSTALLED_APPS = [
     'datetimewidget',
     'easy_maps',
     'imagekit',
-    # Attention le nom a change dans la derniere config
-    # il faut certainement tout faire dependre du seul "catho"
+
     'catho.apps.CathoConfig',
     'connection.apps.ConnectionConfig',
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
-    'topic.apps.TopicConfig',
 
 ]
 
@@ -77,7 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 #added both:
-                'TodayProject.context_processors.topic_sidebar',
+                #'TodayProject.context_processors.topic_sidebar',
                 'TodayProject.context_processors.core_sidebar'
             ],
         },
@@ -94,7 +92,7 @@ DATABASES = {
     'default': {
         # Ancienne BD
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        'NAME': os.path.join(BASE_DIR, 'truc2'),
         #Nouvelle BD
         #'ENGINE': 'django.db.backends.mysql',
         #'OPTIONS': {
@@ -144,7 +142,7 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'catho/media')
 MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3
@@ -152,7 +150,7 @@ BOOTSTRAP3 = {
     'include_jquery': True,
 }
 
-SWINGTIME_SETTINGS_MODULE = 'topic.swingtime_settings'
+SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
 

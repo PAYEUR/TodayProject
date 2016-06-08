@@ -11,11 +11,11 @@ class EnjoyTodayUser(models.Model):
     #other attributes if needed
 
     class Meta:
-        verbose_name = 'event planner'
-        verbose_name_plural ='event planners'
+        verbose_name = 'EnjoyToday user'
+        verbose_name_plural ='EnjoyToday users'
 
     def __str__(self):
-        return "user {0} as event planner".format(self.user.username)
+        return "{0} posts in EnjoyToday".format(self.user.username)
 
      #def get_absolute_url(self):
         #return reverse('event_planner_panel', kwargs={'event_planner_id': self.pk})

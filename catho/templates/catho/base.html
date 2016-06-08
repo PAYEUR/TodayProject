@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+
+
+{% block search %}
+    <li><a href="{% url 'catho:index' %}">Recherche</a></li>
+{% endblock %}
+
+{% block sidebar %}
+    {%  include "catho/sidebar.html" %}
+{% endblock %}
+

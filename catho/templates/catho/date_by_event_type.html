@@ -1,0 +1,53 @@
+{% extends 'catho/base.html' %}
+
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block title %}
+    {{ event_type.label|capfirst }}
+{% endblock %}
+
+{% block content %}
+
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+        <img src="{{ event_type.image.url }}" class="img-responsive" alt={{event_type.label}}>
+        </div>
+    </div>
+
+    {# list_categories and list_events for the selected date only #}
+
+    <div id="services" class="row">
+        {#  Si on ajoute un 'voir plus' <p align="center"><a href = "{% url 'coming_days_events' %}">Retour menu</a></p>#}
+        <h2>Les prochains jours :</h2>
+        {% if occurrences %}
+            {% for occurrence in occurrences %}
+                <div class="col-sm-12 col-md-4">
+                    <div class="thumbnail">
+                        <a href = {{ occurrence.get_absolute_url }}><img src="{{ occurrence.event.image_main.url }}" class="img-responsive" alt="..." /></a>
+                        <div class="caption">
+                            <h3><a href = {{ occurrence.get_absolute_url }}> {{ occurrence.event.title }} </a></h3>
+                            <p role = presentation>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <a href="{% url 'catho:daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
+                            </p>
+                            <p role = presentation>
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                {{ occurrence.start_time|date:"H" }}h{{ occurrence.start_time|date:"i" }} - {{ occurrence.end_time|date:"H" }}h{{ occurrence.end_time|date:"i" }}
+                            </p>
+                            <p role = presentation>
+                                <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                                {{ occurrence.event.address }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {# if no content#}
+        {% else %}
+            <h3>Pas de contenu pour la période sélectionnée</h3>
+        {% endif %}
+    </div>
+
+{% endblock %}
