@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 
 from catho.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from catho.models import EventType, Occurrence, Event, EnjoyTodayUser
-
+from catho.apps import EVENT_TYPE_LIST
 
 
 
@@ -68,8 +68,12 @@ def _add_event(
         # Caution: initial is a form_class parameter and not a request parameter.
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
 
-    context = dict({'dtstart': dtstart, 'event_form': event_form, 'recurrence_form': recurrence_form},
+    context = dict({'dtstart': dtstart,
+                    'event_form': event_form,
+                    'recurrence_form': recurrence_form,
+                    },
                    )
+    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
@@ -123,6 +127,8 @@ def add_multiple_dates(
                     'formset': formset,
                     })
 
+    context['topic_sidebar'] = EVENT_TYPE_LIST
+
     return render(request, template, context)
 
 
@@ -148,6 +154,10 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
         else:
             return False
 
+    def get_context_data(self, **kwargs):
+        context = super(UpdateEvent, self).get_context_data(**kwargs)
+        context['topic_sidebar'] = EVENT_TYPE_LIST
+
 
 class DeleteEvent(UserPassesTestMixin, DeleteView):
 
@@ -169,6 +179,10 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
             return self.request.user == self.get_object().event_planner.user
         else:
             return False
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteEvent, self).get_context_data(**kwargs)
+        context['topic_sidebar'] = EVENT_TYPE_LIST
 
 
 class DeleteOccurrence(UserPassesTestMixin, DeleteView):
@@ -192,6 +206,10 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
             return self.request.user == self.get_object().event.event_planner.user
         else:
             return False
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteOccurrence, self).get_context_data(**kwargs)
+        context['topic_sidebar'] = EVENT_TYPE_LIST
 
 
 #TODO class UpdateOccurrence()
@@ -243,6 +261,7 @@ def add_multiples_occurrences(
                         'event': event,
                         }
                        )
+        context['topic_sidebar'] = EVENT_TYPE_LIST
 
         return render(request, template, context)
 

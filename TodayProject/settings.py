@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'datetimewidget',
     'easy_maps',
     'imagekit',
-
     'catho.apps.CathoConfig',
     'connection.apps.ConnectionConfig',
     'core.apps.CoreConfig',

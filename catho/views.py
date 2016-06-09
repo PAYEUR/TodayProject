@@ -6,19 +6,19 @@ from .forms import IndexForm
 from .models import EventType, Occurrence, Event, EnjoyTodayUser
 from core.models import Topic
 from django.views.generic import DetailView, DayArchiveView, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.template import RequestContext
+# from django.views.generic.list import MultipleObjectMixin
+# from django.views.generic.detail import SingleObjectMixin
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.template import RequestContext
 from . import swingtime_settings
+from .apps import EVENT_TYPE_LIST
+
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
-# need to be added in database first
-TOPIC = Topic.objects.get(name='catho')
-EVENT_TYPE_LIST = EventType.objects.filter(topic=TOPIC)
 
-
-def index(request, template='catho/research.html'):
+def index(request, template='catho/research.html', **kwargs):
     """
     :param request:
     :param template:
@@ -82,7 +82,7 @@ def get_occurrence(request, occurrence_id):
                     }
                    )
 
-    context['topic_sidebar'] = EVENT_TYPE_LIST
+  #  context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, 'catho/single_event.html', context)
 
@@ -335,5 +335,7 @@ def single_day_event_type(
 
 
 @login_required(login_url='connection:login')
-def new_event(request, ):
-    return render(request, 'catho/add_event_choice.html', )
+def new_event(request):
+    context = dict()
+    context['topic_sidebar'] = EVENT_TYPE_LIST
+    return render(request, 'catho/add_event_choice.html', context)

@@ -1,4 +1,5 @@
 {# we have catho_sidebar in context processor #}
+{% load catho_extras %}
 <ul class="nav nav-sidebar">
     <li><a href="{% url 'catho:today_events' %}">Aujourd'hui</a></li>
     <li><a href="{% url 'catho:tomorrow_events' %}">Demain</a></li>
@@ -11,6 +12,8 @@
         <li><a href="{{event_type.get_absolute_url}}">{{ event_type.label|capfirst }}</a></li>
       {% endfor %}
     {% endif %}
+  {# TODO complete this #}
+  {% nav_bar %}
   </ul>
 
   <ul class="nav nav-sidebar">
