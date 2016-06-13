@@ -4,7 +4,7 @@ from core.models import Topic
 from django.shortcuts import get_object_or_404
 
 
-def core_sidebar():
+def core_sidebar(request):
     return {'core_sidebar':  Topic.objects.all()}
 
 
