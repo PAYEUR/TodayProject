@@ -25,10 +25,11 @@ WEEKDAY_LONG = (
 
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
-TOPIC = Topic.objects.get(name='catho')
+TOPIC = Topic.objects.filter(name='catho')
+
 
 # IndexForm
-
+# TODO improve this to automatically set the corresponding topic
 class IndexForm(forms.Form):
     """
     Get the 3 main informations to print on the index page

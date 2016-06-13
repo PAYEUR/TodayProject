@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'datetimewidget',
     'easy_maps',
     'imagekit',
-    'catho.apps.CathoConfig',
+    'topic.apps.TopicConfig',
     'connection.apps.ConnectionConfig',
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
@@ -74,7 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 #added both:
-                #'TodayProject.context_processors.topic_sidebar',
+                'TodayProject.context_processors.topic_sidebar',
                 'TodayProject.context_processors.core_sidebar'
             ],
         },
@@ -141,7 +141,7 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'catho/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
 MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3

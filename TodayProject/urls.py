@@ -24,7 +24,8 @@ urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^catho/', include('catho.urls')),
+    url(r'^catho/', include('topic.urls', namespace='catho')),
+    url(r'^jobs/', include('topic.urls', namespace='jobs')),
 
 
     # media images deployment in development. Need change for production

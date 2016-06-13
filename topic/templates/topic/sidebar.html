@@ -1,0 +1,19 @@
+{# we have topic_sidebar in context processor #}
+
+<ul class="nav nav-sidebar">
+    <li><a href="{% url 'topic:today_events' %}">Aujourd'hui</a></li>
+    <li><a href="{% url 'topic:tomorrow_events' %}">Demain</a></li>
+    <li><a href="{% url 'topic:coming_days_events' %}">Les prochains jours</a></li>
+  </ul>
+
+  <ul class="nav nav-sidebar">
+    {% if topic_sidebar %}
+      {% for event_type in topic_sidebar %}
+        <li><a href="{{event_type.get_absolute_url}}">{{ event_type.label|capfirst }}</a></li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+
+  <ul class="nav nav-sidebar">
+      <li class="active"><a href="{% url 'topic:nouvel_evenement' %}">Poster un événement <span class="sr-only">(current)</span></a></li>
+  </ul>

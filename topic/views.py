@@ -11,14 +11,19 @@ from django.views.generic import DetailView, DayArchiveView, ListView
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.template import RequestContext
 from . import swingtime_settings
-from .apps import EVENT_TYPE_LIST
 
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-def index(request, template='catho/research.html', **kwargs):
+class BaseView(ListView):
+    queryset = EventType.objects.filter(topic__name='topic')
+    context_object_name = 'topic_sidebar'
+    template_name = 'topic/base.html'
+
+
+def index(request, template='topic/research.html', **kwargs):
     """
     :param request:
     :param template:
@@ -34,13 +39,13 @@ def index(request, template='catho/research.html', **kwargs):
             date = form.cleaned_data['quand']
 
             if event_type is not None:
-                return redirect('catho:single_day_event_type',
+                return redirect('topic:single_day_event_type',
                                 event_type_id=event_type.pk,
                                 year=date.year,
                                 month=date.month,
                                 day=date.day)
             else:
-                return redirect('catho:daily_events',
+                return redirect('topic:daily_events',
                                 year=date.year,
                                 month=date.month,
                                 day=date.day)
@@ -48,14 +53,13 @@ def index(request, template='catho/research.html', **kwargs):
         form = IndexForm()
 
     context = {'form': form, }
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
 
 class OccurrenceDetail(DetailView):
     model = Occurrence
-    template_name = "catho/single_event.html"
+    template_name = "topic/single_event.html"
 
     def get_context_data(self, **kwargs):
         context = super(OccurrenceDetail, self).get_context_data(**kwargs)
@@ -65,7 +69,6 @@ class OccurrenceDetail(DetailView):
         else:
             address = False
         context['address'] = address
-        context['topic_sidebar'] = EVENT_TYPE_LIST
 
         return context
 
@@ -82,9 +85,8 @@ def get_occurrence(request, occurrence_id):
                     }
                    )
 
-  #  context['topic_sidebar'] = EVENT_TYPE_LIST
 
-    return render(request, 'catho/single_event.html', context)
+    return render(request, 'topic/single_event.html', context)
 
 
 #class OccurrenceDayArchiveView(DayArchiveView, dt='dt'):
@@ -96,7 +98,7 @@ def get_occurrence(request, occurrence_id):
 #    date_field = "end_time"
 #    allow_future = True
 #    allow_empty = True
-#    template_name = 'catho/event_by_date.html'
+#    template_name = 'topic/event_by_date.html'
 #    context_object_name = 'occurrences'
 
 #    def get_context_data(self, **kwargs):
@@ -113,7 +115,7 @@ def get_occurrence(request, occurrence_id):
 
 def _events_in_a_period(request,
                         days,
-                        template='catho/event_by_date.html',
+                        template='topic/event_by_date.html',
                        ):
     """
 
@@ -140,13 +142,12 @@ def _events_in_a_period(request,
                     'days': days,
 
                     })
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
 
 def today_events(request,
-                 template='catho/event_by_date.html',
+                 template='topic/event_by_date.html',
                  ):
     """
 
@@ -160,7 +161,7 @@ def today_events(request,
 
 
 def tomorrow_events(request,
-                    template='catho/event_by_date.html',
+                    template='topic/event_by_date.html',
                     ):
     """
 
@@ -175,7 +176,7 @@ def tomorrow_events(request,
 
 def coming_days_events(request,
                        next_days_duration=3,
-                       template='catho/event_by_date.html',
+                       template='topic/event_by_date.html',
                        ):
     """
 
@@ -191,7 +192,6 @@ def coming_days_events(request,
         days.append(today + timedelta(days=+i))
         i += 1
 
-
     return _events_in_a_period(request, days, template)
 
 
@@ -199,7 +199,7 @@ def daily_events(request,
                  year,
                  month,
                  day,
-                 template='catho/event_by_date.html',
+                 template='topic/event_by_date.html',
                  ):
 
     days = [datetime(int(year), int(month), int(day))]
@@ -210,7 +210,7 @@ def daily_events(request,
 def monthly_events(request,
                    year,
                    month,
-                   template='catho/event_by_date.html',
+                   template='topic/event_by_date.html',
                   ):
 
     year, month = int(year), int(month)
@@ -228,7 +228,7 @@ def monthly_events(request,
 def event_type_coming_days(request,
                            event_type_id,
                            next_days_duration=3,
-                           template='catho/date_by_event_type.html',
+                           template='topic/date_by_event_type.html',
                            ):
     """
 
@@ -260,7 +260,6 @@ def event_type_coming_days(request,
 
                     }
                    )
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
@@ -269,7 +268,7 @@ def _single_day_event_type(
         request,
         event_type_id,
         dt,
-        template='catho/event_by_date.html',
+        template='topic/event_by_date.html',
 
         ):
 
@@ -282,7 +281,6 @@ def _single_day_event_type(
 
                     }
                    )
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
@@ -290,7 +288,7 @@ def _single_day_event_type(
 def today_event_type(
         request,
         event_type_id,
-        template='catho/event_by_date.html',
+        template='topic/event_by_date.html',
 
         ):
 
@@ -301,7 +299,7 @@ def today_event_type(
 def tomorrow_event_type(
         request,
         event_type_id,
-        template='catho/event_by_date.html',
+        template='topic/event_by_date.html',
 
         ):
 
@@ -315,7 +313,7 @@ def single_day_event_type(
         year,
         month,
         day,
-        template='catho/event_by_date.html',
+        template='topic/event_by_date.html',
 
         ):
 
@@ -329,7 +327,6 @@ def single_day_event_type(
 
                     }
                    )
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
@@ -337,5 +334,4 @@ def single_day_event_type(
 @login_required(login_url='connection:login')
 def new_event(request):
     context = dict()
-    context['topic_sidebar'] = EVENT_TYPE_LIST
-    return render(request, 'catho/add_event_choice.html', context)
+    return render(request, 'topic/add_event_choice.html', context)

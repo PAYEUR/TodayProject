@@ -2,12 +2,12 @@ import calendar
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-from catho.forms import IndexForm
-from catho.models import EventType, Occurrence, Event, EnjoyTodayUser
+from topic.forms import IndexForm
+from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 from django.views.generic import DetailView, DayArchiveView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from catho import swingtime_settings
+from topic import swingtime_settings
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
@@ -49,7 +49,7 @@ def index(request, template='topic/research.html'):
 
 class OccurrenceDetail(DetailView):
     model = Occurrence
-    template_name = "catho/single_event.html"
+    template_name = "topic/single_event.html"
 
     def get_context_data(self, **kwargs):
         context = super(OccurrenceDetail, self).get_context_data(**kwargs)
@@ -74,7 +74,7 @@ def get_occurrence(request, occurrence_id, topic='catho'):
                     'topic': topic,
                     }
                    )
-    return render(request, 'catho/single_event.html', context)
+    return render(request, 'topic/single_event.html', context)
 
 
 #class OccurrenceDayArchiveView(DayArchiveView, dt='dt'):
@@ -318,4 +318,4 @@ def single_day_event_type(
 
 @login_required(login_url='connection:login')
 def new_event(request, topic='catho'):
-    return render(request, 'catho/add_event_choice.html', {'topic': topic})
+    return render(request, 'topic/add_event_choice.html', {'topic': topic})

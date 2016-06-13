@@ -73,7 +73,7 @@ def get_occurrence(request, occurrence_id):
                     'address': address,
                     }, **nav_bar()
                    )
-    return render(request, 'catho/single_event.html', context)
+    return render(request, 'topic/single_event.html', context)
 
 
 def _events_in_a_period(request, days, template='core/event_by_date.html'):
@@ -264,4 +264,4 @@ def single_day_event_type(
 
 @login_required(login_url='connection:login')
 def new_event(request):
-    return render(request, 'catho/add_event_choice.html', nav_bar())
+    return render(request, 'topic/add_event_choice.html', nav_bar())

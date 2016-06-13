@@ -8,12 +8,12 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render, redirec
 
 from dateutil import parser
 
-from catho import forms
-from catho.forms import EventForm, IndexForm
+from topic import forms
+from topic.forms import EventForm, IndexForm
 # from . import models
-from catho.models import Event, EventType, Occurrence
+from topic.models import Event, EventType, Occurrence
 
-from catho import swingtime_settings
+from topic import swingtime_settings
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)

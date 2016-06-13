@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from dateutil import rrule
 from non_used_stuff import swingtime_settings
 from non_used_stuff.models import Event, EventType #,City, Occurrence
-from catho import utils
+from topic import utils
 
 FIELDS_REQUIRED = (VERSION[:2] >= (1, 6))
 

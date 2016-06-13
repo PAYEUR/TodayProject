@@ -12,9 +12,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from catho.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
-from catho.models import EventType, Occurrence, Event, EnjoyTodayUser
-from catho.apps import EVENT_TYPE_LIST
+from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
+from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 
 
 
@@ -73,7 +72,6 @@ def _add_event(
                     'recurrence_form': recurrence_form,
                     },
                    )
-    context['topic_sidebar'] = EVENT_TYPE_LIST
 
     return render(request, template, context)
 
@@ -127,8 +125,6 @@ def add_multiple_dates(
                     'formset': formset,
                     })
 
-    context['topic_sidebar'] = EVENT_TYPE_LIST
-
     return render(request, template, context)
 
 
@@ -156,7 +152,6 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateEvent, self).get_context_data(**kwargs)
-        context['topic_sidebar'] = EVENT_TYPE_LIST
 
 
 class DeleteEvent(UserPassesTestMixin, DeleteView):
@@ -182,7 +177,6 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteEvent, self).get_context_data(**kwargs)
-        context['topic_sidebar'] = EVENT_TYPE_LIST
 
 
 class DeleteOccurrence(UserPassesTestMixin, DeleteView):
@@ -209,7 +203,6 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteOccurrence, self).get_context_data(**kwargs)
-        context['topic_sidebar'] = EVENT_TYPE_LIST
 
 
 #TODO class UpdateOccurrence()
@@ -261,7 +254,6 @@ def add_multiples_occurrences(
                         'event': event,
                         }
                        )
-        context['topic_sidebar'] = EVENT_TYPE_LIST
 
         return render(request, template, context)
 

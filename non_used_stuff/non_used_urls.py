@@ -1,7 +1,7 @@
 # coding="utf-8"
 from crud import urls as crud_urls
 from django.conf.urls import url, include
-from catho import views
+from topic import views
 
 
 app_name = 'topic'
