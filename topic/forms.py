@@ -25,7 +25,6 @@ WEEKDAY_LONG = (
 
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
-TOPIC = Topic.objects.filter(name='catho')
 
 
 # IndexForm
@@ -33,15 +32,20 @@ TOPIC = Topic.objects.filter(name='catho')
 class IndexForm(forms.Form):
     """
     Get the 3 main informations to print on the index page
+    The field "quoi" corresponding to EventTypes is dynamically dispatched
     """
 
-    # city = forms.ModelChoiceField(City.objects.all())
-    quoi = forms.ModelChoiceField(
-            EventType.objects.filter(topic=TOPIC),
+    def __init__(self, topic, *args, **kwargs):
+        super(IndexForm, self).__init__(*args, **kwargs)
+        self.topic = topic
+        self.fields['quoi'] = forms.ModelChoiceField(
+            EventType.objects.filter(topic=topic),
             label='Quoi?',
             required=False,
             empty_label=None,
             widget=forms.widgets.RadioSelect)
+
+    # city = forms.ModelChoiceField(City.objects.all())
 
     quand = forms.DateField(
             label='Quand?',

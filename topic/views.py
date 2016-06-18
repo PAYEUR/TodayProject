@@ -17,11 +17,6 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-class BaseView(ListView):
-    queryset = EventType.objects.filter(topic__name='topic')
-    context_object_name = 'topic_sidebar'
-    template_name = 'topic/base.html'
-
 
 def index(request, template='topic/research.html', **kwargs):
     """
@@ -30,31 +25,36 @@ def index(request, template='topic/research.html', **kwargs):
     :return: home template with index form
     """
 
-    if request.method == 'POST':
-        form = IndexForm(request.POST)
+    mother_namespace = request.resolver_match.namespaces[0]
+    topic_names = [topic.name for topic in Topic.objects.all()]
+    if mother_namespace in topic_names:
+        topic = get_object_or_404(Topic, name=mother_namespace)
 
-        if form.is_valid():
-            # dont use city from now
-            event_type = form.cleaned_data['quoi']
-            date = form.cleaned_data['quand']
+        if request.method == 'POST':
+            form = IndexForm(topic, request.POST)
 
-            if event_type is not None:
-                return redirect('topic:single_day_event_type',
-                                event_type_id=event_type.pk,
-                                year=date.year,
-                                month=date.month,
-                                day=date.day)
-            else:
-                return redirect('topic:daily_events',
-                                year=date.year,
-                                month=date.month,
-                                day=date.day)
-    else:
-        form = IndexForm()
+            if form.is_valid():
+                # dont use city from now
+                event_type = form.cleaned_data['quoi']
+                date = form.cleaned_data['quand']
 
-    context = {'form': form, }
+                if event_type is not None:
+                    return redirect('topic:single_day_event_type',
+                                    event_type_id=event_type.pk,
+                                    year=date.year,
+                                    month=date.month,
+                                    day=date.day)
+                else:
+                    return redirect('topic:daily_events',
+                                    year=date.year,
+                                    month=date.month,
+                                    day=date.day)
+        else:
+            form = IndexForm(topic)
 
-    return render(request, template, context)
+        context = {'form': form, }
+
+        return render(request, template, context)
 
 
 class OccurrenceDetail(DetailView):

@@ -17,7 +17,7 @@ def topic_sidebar(request):
     topic_names = [topic.name for topic in Topic.objects.all()]
     context = dict()
     # print mother_namespace
-    # print names
+    # print topic_names
     if mother_namespace in topic_names:
         topic = get_object_or_404(Topic, name=mother_namespace)
         context['topic'] = topic
