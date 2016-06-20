@@ -11,6 +11,7 @@ from django.views.generic import DetailView, DayArchiveView, ListView
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.template import RequestContext
 from . import swingtime_settings
+from django.conf import settings
 
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
@@ -24,6 +25,9 @@ def index(request, template='topic/research.html', **kwargs):
     :param template:
     :return: home template with index form
     """
+
+    context= dict()
+    #context['city']=request.site.name
 
     mother_namespace = request.resolver_match.namespaces[0]
     topic_names = [topic.name for topic in Topic.objects.all()]
@@ -52,7 +56,7 @@ def index(request, template='topic/research.html', **kwargs):
         else:
             form = IndexForm(topic)
 
-        context = {'form': form, }
+        context['form']= form
 
         return render(request, template, context)
 
@@ -129,7 +133,7 @@ def _events_in_a_period(request,
     # TODO: verify the following point: if no event at all in coming days => crash?!
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day)#.filter(is_multiple=False)
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__site=settings.SITE_ID)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
@@ -251,7 +255,8 @@ def event_type_coming_days(request,
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type)
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type,
+                                                                              event__site=settings.SITE_ID)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 

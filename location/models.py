@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
-
+from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 
 # here gonna be also site configuration, as there is one website for each different city.
-
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -16,6 +15,7 @@ class City(models.Model):
     city_name = models.CharField(verbose_name='city_name',
                                  max_length=255,
                                  default="Paris")
+
     #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
 
     # ==========================================================================

@@ -7,6 +7,10 @@ from connection.models import EnjoyTodayUser
 
 # core's views
 # -------------------------------------------------------------------------------
+class IndexView(TemplateView):
+    template_name = 'core/contact.html'
+
+
 class ContactView(TemplateView):
     template_name = 'core/contact.html'
 

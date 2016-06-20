@@ -2,7 +2,7 @@
 from topic.models import EventType
 from core.models import Topic
 from django.shortcuts import get_object_or_404
-
+#from django.contrib.sites.models import Site
 
 def core_sidebar(request):
     return {'core_sidebar':  Topic.objects.all()}

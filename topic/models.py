@@ -11,7 +11,8 @@ from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
 from core.models import Topic
-
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 
 __all__ = (
     'EventType',
@@ -76,13 +77,14 @@ class Event(models.Model):
                                 format='JPEG',
                                 options={'quality': 100})
 
-    event_planner = models.OneToOneField(EnjoyTodayUser,
-                                        default=None,
-                                        null=True,
-                                        blank=True,
-                                        #editable=False,
-                                        verbose_name='annonceur',
-                                        )
+    event_planner = models.ForeignKey(EnjoyTodayUser,
+                                      on_delete=models.SET_NULL,
+                                      default=None,
+                                      null=True,
+                                      blank=True,
+                                      # editable=False,
+                                      verbose_name='annonceur',
+                                      )
 
     #Will remove this and use google place API instead
     city = models.ForeignKey(City,
@@ -92,6 +94,10 @@ class Event(models.Model):
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
                                default="non précisé")
+
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     # ===========================================================================
     class Meta:
@@ -183,6 +189,7 @@ class OccurrenceManager(models.Manager):
 
         * ``event`` can be an ``Event`` instance for further filtering.
         """
+
         dt = dt or datetime.now()
         start = datetime(dt.year, dt.month, dt.day)
         end = start.replace(hour=23, minute=59, second=59)
@@ -216,6 +223,9 @@ class Occurrence(models.Model):
     event = models.ForeignKey(Event, editable=False)
     objects = OccurrenceManager()
     is_multiple = models.BooleanField(default=False)
+
+    #site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    #on_site = CurrentSiteManager()
 
     # ==========================================================================
     class Meta:

@@ -122,7 +122,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = "__all__"
-        exclude = ['event_planner']
+        exclude = ['event_planner', 'site']
 
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):

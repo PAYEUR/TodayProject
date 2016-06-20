@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
+    'django.contrib.sites'
 
 ]
 
@@ -58,6 +59,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
 ROOT_URLCONF = 'TodayProject.urls'
@@ -142,14 +144,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
-MEDIA_URL = '/media/'
+MEDIA_URL = 'topic/media/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
     'include_jquery': True,
 }
 
-SWINGTIME_SETTINGS_MODULE = 'catho.swingtime_settings'
+SWINGTIME_SETTINGS_MODULE = 'topic.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
 
