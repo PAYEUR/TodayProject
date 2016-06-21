@@ -1,14 +1,19 @@
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from topic.models import Event
 from connection.models import EnjoyTodayUser
-# from .models import Topic
+from .models import Topic
 
 
 # core's views
 # -------------------------------------------------------------------------------
 class IndexView(TemplateView):
     template_name = 'core/contact.html'
+
+# TODO write this properly
+#class TopicView(DetailView):
+    #model = Topic
+    #template_name =
 
 
 class ContactView(TemplateView):

@@ -7,8 +7,8 @@
   </ul>
 
   <ul class="nav nav-sidebar">
-    {% if topic_sidebar %}
-      {% for event_type in topic_sidebar %}
+    {% if topic_event_type_list %}
+      {% for event_type in topic_event_type_list %}
         <li><a href="{{event_type.get_absolute_url}}">{{ event_type.label|capfirst }}</a></li>
       {% endfor %}
     {% endif %}

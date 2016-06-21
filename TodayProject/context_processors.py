@@ -4,8 +4,8 @@ from core.models import Topic
 from django.shortcuts import get_object_or_404
 #from django.contrib.sites.models import Site
 
-def core_sidebar(request):
-    return {'core_sidebar':  Topic.objects.all()}
+def topic_list(request):
+    return {'topic_list':  Topic.objects.all()}
 
 
 def topic_sidebar(request):
@@ -21,5 +21,6 @@ def topic_sidebar(request):
     if mother_namespace in topic_names:
         topic = get_object_or_404(Topic, name=mother_namespace)
         context['topic'] = topic
-        context['topic_sidebar'] = EventType.objects.filter(topic=topic)
+        context['other_topics'] = Topic.objects.exclude(name=mother_namespace)
+        context['topic_event_type_list'] = EventType.objects.filter(topic=topic)
     return context

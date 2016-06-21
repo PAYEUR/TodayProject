@@ -239,10 +239,10 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('catho:get_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('topic:get_occurrence', kwargs={'occurrence_id': self.pk})
 
     def delete_url(self):
-        return reverse('catho:crud:delete_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk})
 
     #def update_url(self):
         #return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk})

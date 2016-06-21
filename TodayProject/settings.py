@@ -77,7 +77,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 #added both:
                 'TodayProject.context_processors.topic_sidebar',
-                'TodayProject.context_processors.core_sidebar'
+                'TodayProject.context_processors.topic_list'
             ],
         },
     },

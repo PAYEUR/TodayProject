@@ -1,4 +1,4 @@
-{% extends 'core/bootstrap3.html' %}
+{% extends 'core/base.html' %}
 
 {% load bootstrap3 %}$
 {% load static %}
@@ -12,7 +12,10 @@
     {{ form.media }}
 {% endblock %}
 
-{% block bootstrap3_content %}
+{% block sidebar %}
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
 
@@ -63,4 +66,7 @@
 
 </div>
 
+{% endblock %}
+
+{% block footer %}
 {% endblock %}
