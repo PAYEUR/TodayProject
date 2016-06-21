@@ -10,6 +10,7 @@ from dateutil import rrule
 from . import swingtime_settings
 from .models import Event, EventType  #,City, Occurrence
 from core.models import Topic
+from django.shortcuts import get_object_or_404
 
 
 WEEKDAY_LONG = (
@@ -24,7 +25,6 @@ WEEKDAY_LONG = (
 
 
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
-
 
 
 # IndexForm
@@ -125,8 +125,15 @@ class EventForm(forms.ModelForm):
         exclude = ['event_planner', 'site']
 
     # ---------------------------------------------------------------------------
-    def __init__(self, *args, **kws):
+    def __init__(self, topic, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
+        self.topic = topic
+        self.fields['event_type'] = forms.ModelChoiceField(
+            EventType.objects.filter(topic=topic),
+            label='Catégorie',
+            #required=False,
+            #empty_label=None,
+            widget=forms.widgets.Select)
         #self.fields['description'].required = False
 
 

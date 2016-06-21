@@ -18,7 +18,6 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-
 def index(request, template='topic/research.html', **kwargs):
     """
     :param request:
@@ -26,9 +25,11 @@ def index(request, template='topic/research.html', **kwargs):
     :return: home template with index form
     """
 
-    context= dict()
+    context = dict()
     #context['city']=request.site.name
 
+    # bloc get_topic
+    # TODO: improve this
     mother_namespace = request.resolver_match.namespaces[0]
     topic_names = [topic.name for topic in Topic.objects.all()]
     if mother_namespace in topic_names:
@@ -56,7 +57,7 @@ def index(request, template='topic/research.html', **kwargs):
         else:
             form = IndexForm(topic)
 
-        context['form']= form
+        context['form'] = form
 
         return render(request, template, context)
 

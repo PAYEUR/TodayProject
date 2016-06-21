@@ -14,8 +14,8 @@ from django.core.exceptions import PermissionDenied
 
 from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
+from core.models import Topic
 from django.contrib.sites.shortcuts import get_current_site
-
 
 
 @login_required(login_url='connection:login')
@@ -46,37 +46,46 @@ def _add_event(
 
     dtstart = None
 
-    if request.method == 'POST':
-        # to add event_planner to event
-        event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
-                      site=get_current_site(request))
-        event_form = event_form_class(request.POST, request.FILES, instance=event)
-        recurrence_form = recurrence_form_class(request.POST)
-        if event_form.is_valid() and recurrence_form.is_valid():
-            event.save()
-            recurrence_form.save(event)
-            return redirect('core:event_planner_panel')
+    # bloc get_topic
+    # TODO: remove this and add topic field and eventtype field to forms
+    mother_namespace = request.resolver_match.namespaces[0]
+    topic_names = [topic.name for topic in Topic.objects.all()]
+    if mother_namespace in topic_names:
+        topic = get_object_or_404(Topic, name=mother_namespace)
 
-    else:
-        if 'dtstart' in request.GET:
-            try:
-                dtstart = parser.parse(request.GET['dtstart'])
-            except(TypeError, ValueError) as exc:
-                # TODO: A badly formatted date is passed to add_event
-                logging.warning(exc)
+        if request.method == 'POST':
+            # to add event_planner to event
+            event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
+                          site=get_current_site(request)
+                          )
 
-        dtstart = dtstart or datetime.now()
-        event_form = event_form_class()
-        # Caution: initial is a form_class parameter and not a request parameter.
-        recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
+            event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
+            recurrence_form = recurrence_form_class(request.POST)
+            if event_form.is_valid() and recurrence_form.is_valid():
+                event.save()
+                recurrence_form.save(event)
+                return redirect('core:event_planner_panel')
 
-    context = dict({'dtstart': dtstart,
-                    'event_form': event_form,
-                    'recurrence_form': recurrence_form,
-                    },
-                   )
+        else:
+            if 'dtstart' in request.GET:
+                try:
+                    dtstart = parser.parse(request.GET['dtstart'])
+                except(TypeError, ValueError) as exc:
+                    # TODO: A badly formatted date is passed to add_event
+                    logging.warning(exc)
 
-    return render(request, template, context)
+            dtstart = dtstart or datetime.now()
+            event_form = event_form_class(topic)
+            # Caution: initial is a form_class parameter and not a request parameter.
+            recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
+
+        context = dict({'dtstart': dtstart,
+                        'event_form': event_form,
+                        'recurrence_form': recurrence_form,
+                        },
+                       )
+
+        return render(request, template, context)
 
 
 @login_required(login_url='connection:login')
@@ -101,7 +110,7 @@ def add_multiple_dates(
     OccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=10)
     if request.method == 'POST':
         # to add event_planner to event
-        event = Event(event_planner = EnjoyTodayUser.objects.get(user=request.user),
+        event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
                       site=get_current_site(request))
 
         event_form = event_form_class(request.POST, request.FILES, instance=event)

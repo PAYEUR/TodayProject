@@ -5,7 +5,8 @@
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/truc2</jdbc-url>
+      <jdbc-url>jdbc:sqlite:D:\TodayProject\truc2</jdbc-url>
+      <libraries />
     </data-source>
   </component>
 </project>
