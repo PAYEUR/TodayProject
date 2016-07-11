@@ -6,7 +6,7 @@ from django import http
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from dateutil import parser
 from django.forms import formset_factory
-from django.views.generic import UpdateView, DeleteView #, CreateView
+from django.views.generic import UpdateView, DeleteView, FormView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -16,6 +16,7 @@ from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 from core.utils import get_current_topic
 from django.contrib.sites.shortcuts import get_current_site
+from django.forms.models import model_to_dict
 
 
 
@@ -161,29 +162,28 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     template_name = 'crud/update_event.html'
     form_class = EventForm
     success_url = reverse_lazy('core:event_planner_panel')
-    #success_url = event_planner.get_absolute_url()
 
-    #mixin parameters
+    # mixin parameters
     raise_exception = True
+
+    def get_form(self, form_class=form_class):
+        return form_class(topic=get_current_topic(self.request), **self.get_form_kwargs())
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
         return get_object_or_404(Event, pk=pk)
 
-    #condition to be authorized to CRUD
+    # condition to be authorized to CRUD
     def test_func(self):
         if self.get_object().event_planner:
             return self.request.user == self.get_object().event_planner.user
         else:
             return False
 
-    def get_context_data(self, **kwargs):
-        context = super(UpdateEvent, self).get_context_data(**kwargs)
-
 
 class DeleteEvent(UserPassesTestMixin, DeleteView):
 
-    #mixin parameters
+    # mixin parameters
     raise_exception = True
 
     model = Event
@@ -195,7 +195,7 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
         pk = self.kwargs.get('event_id')
         return get_object_or_404(Event, pk=pk)
 
-    #condition to be authorized to CRUD
+    # condition to be authorized to CRUD
     def test_func(self):
         if self.get_object().event_planner:
             return self.request.user == self.get_object().event_planner.user
@@ -216,7 +216,6 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('core:event_planner_panel')
 
 
-
     def get_object(self, queryset=None):
         pk = self.kwargs.get('occurrence_id')
         return get_object_or_404(Occurrence, pk=pk)
@@ -228,11 +227,44 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
         else:
             return False
 
-    def get_context_data(self, **kwargs):
-        context = super(DeleteOccurrence, self).get_context_data(**kwargs)
+
+class UpdateOccurrence(UserPassesTestMixin, UpdateView):
+    """ not possible to use form_class = SingleOccurrenceForm, as SingleOccurrenceForm is not a ModelForm
+    """
+
+    template_name = 'crud/update_occurrence.html'
+    fields = ['start_time', 'end_time']
+    #form_class = SingleOccurrenceForm
+    success_url = reverse_lazy('core:event_planner_panel')
+    raise_exception = True
+
+    #condition to be authorized to CRUD
+    def test_func(self):
+        if self.get_object().event.event_planner:
+            return self.request.user == self.get_object().event.event_planner.user
+        else:
+            return False
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('occurrence_id')
+        return get_object_or_404(Occurrence, pk=pk)
+
+    # doesnt work because of differences between Occurrence.fields and
+    #def get_initial(self):
+        #initial = super(UpdateOccurrence,self).get_initial()
+       # initial['date'] = self.get_object()['start_time']
+        #initial['start_time'] = self.get_object()['start_time']
+       # initial['end_time'] = self.get_object()['end_time']
 
 
-#TODO class UpdateOccurrence()
+    #def form_valid(self, form):
+        # use the SingleOccurrence.save function
+       # form.save(self.get_object().event)
+       # return super(UpdateOccurrence, self).form_valid(form)
+
+    #def get_context_data(self, **kwargs):
+        #context = super(UpdateOccurrence,self).get_context_data(**kwargs)
+        #context['occurrence'] = self.get_object()
 
 
 def test_func(user, Event):

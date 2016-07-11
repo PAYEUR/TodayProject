@@ -259,8 +259,8 @@ class Occurrence(models.Model):
     def delete_url(self):
         return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk})
 
-    #def update_url(self):
-        #return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk})
+    def update_url(self):
+        return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk})
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):
