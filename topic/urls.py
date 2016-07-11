@@ -7,7 +7,7 @@ from . import views
 app_name = 'topic'
 urlpatterns = [
     url(r'^$', views.index, name="index"),
-    url(r'^evenement(?P<occurrence_id>[0-9]+)$', views.get_occurrence, name="get_occurrence"),
+    url(r'^evenement(?P<pk>[0-9]+)$', views.OccurrenceDetail.as_view(), name="get_occurrence"),
     url(r'^toutes-categories/aujourd-hui/$', views.today_events, name="today_events"),
     url(r'^toutes-categories/demain/$', views.tomorrow_events, name="tomorrow_events"),
     url(r'^toutes-categories/prochains-jours/$', views.coming_days_events, name="coming_days_events"),

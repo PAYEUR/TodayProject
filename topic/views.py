@@ -13,7 +13,7 @@ from django.views.generic import DetailView, DayArchiveView, ListView
 # from django.template import RequestContext
 from . import swingtime_settings
 from django.conf import settings
-from core.views import get_current_topic
+from core.utils import get_current_topic
 
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
@@ -28,7 +28,6 @@ def index(request, template='topic/research.html', **kwargs):
     """
 
     context = dict()
-    #context['city']=request.site.name
     topic = get_current_topic(request)
 
     if request.method == 'POST':
@@ -46,11 +45,11 @@ def index(request, template='topic/research.html', **kwargs):
                                             'month': date.month,
                                             'day': date.day,
                                             },
-                                    current_app=request.resolver_match.namespace))
+                                    current_app=topic.name))
 
             else:
                 return redirect(reverse('topic:daily_events',
-                                    current_app=request.resolver_match.namespace,
+                                    current_app=topic.name,
                                     kwargs={'year': date.year,
                                             'month': date.month,
                                             'day': date.day,
@@ -79,22 +78,6 @@ class OccurrenceDetail(DetailView):
         context['address'] = address
 
         return context
-
-
-def get_occurrence(request, occurrence_id):
-    occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
-    if occurrence.event.address != "non precise":
-        address = occurrence.event.address + ", France"
-    else:
-        address = False
-
-    context = dict({'occurrence': occurrence,
-                    'address': address,
-                    }
-                   )
-
-
-    return render(request, 'topic/single_event.html', context)
 
 
 #class OccurrenceDayArchiveView(DayArchiveView, dt='dt'):
@@ -135,9 +118,16 @@ def _events_in_a_period(request,
 
     # print event_types occurrences
     # TODO: verify the following point: if no event at all in coming days => crash?!
+
+    topic = get_current_topic(request)
+    site_id = settings.SITE_ID
+
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__site=settings.SITE_ID)
+
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__site=site_id,
+                                                                     event__event_type__topic=topic)
+
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
@@ -257,10 +247,12 @@ def event_type_coming_days(request,
 
     # sort event_type.occurrences by day
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
+    topic= get_current_topic(request)
     occurrences = []
     for day in days:
         occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type,
-                                                                              event__site=settings.SITE_ID)
+                                                                              event__site=settings.SITE_ID,
+                                                                              event__event_type__topic=topic)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 

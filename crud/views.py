@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 
 from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
-from core.views import get_current_topic
+from core.utils import get_current_topic
 from django.contrib.sites.shortcuts import get_current_site
 
 
@@ -28,8 +28,8 @@ def _add_event(
         ):
 
         topic = get_current_topic(request)
-        return _add_event_by_topic(topic,
-                                   request,
+        return _add_event_by_topic(request,
+                                   topic,
                                    recurrence_form_class,
                                    template,
                                    event_form_class)
@@ -37,8 +37,8 @@ def _add_event(
 
 @login_required(login_url='connection:login')
 def _add_event_by_topic(
-        topic,
         request,
+        topic,
         recurrence_form_class,
         template='crud/add_event.html',
         event_form_class=EventForm,
