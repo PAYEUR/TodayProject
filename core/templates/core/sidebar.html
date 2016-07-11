@@ -8,13 +8,13 @@
   <ul class="nav nav-sidebar">
     {% if topic_list %}
       {% for topic in topic_list %}
-        <li><a href="{# event_type.get_absolute_url #}">{{ topic.name|capfirst }}</a></li>
+        <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
       {% endfor %}
     {% endif %}
   </ul>
 
   <ul class="nav nav-sidebar">
     {% block bottom_sidebar %}
-        <li class="active"><a href="{% url 'core:new_event' %}">Poster un événement <span class="sr-only">(current)</span></a></li>
+        <li class="active"><a href="{% url 'core:new_event' %}">Poster une annonce <span class="sr-only">(current)</span></a></li>
     {% endblock %}
   </ul>

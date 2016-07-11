@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
+    #the following namespaces have to be the same as topic.names in core.models.topic
     url(r'^catho/', include('topic.urls', namespace='catho')),
     url(r'^jobs/', include('topic.urls', namespace='jobs')),
 

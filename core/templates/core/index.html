@@ -1,20 +1,16 @@
-{% extends 'core/bootstrap3.html' %}
+{% extends 'core/base.html' %}
 
 {% load bootstrap3 %}$
-{% load static %}
-
 
 {% block title %}
     Menu Principal
 {% endblock %}
 
-{% block bootstrap3_extra_head %}
-    {{ form.media }}
-{% endblock %}
 
-{% block bootstrap3_content %}
+{% block content %}
 
-    {# choice of city, topic... has to be written properly #}
+    {# map with city has to be written properly #}
     <p>This is the main page</p>
+    <p>You are in <strong>{{request.site.name}}</strong></p>
 
 {% endblock %}

@@ -1,5 +1,6 @@
 import calendar
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from .forms import IndexForm
@@ -12,6 +13,7 @@ from django.views.generic import DetailView, DayArchiveView, ListView
 # from django.template import RequestContext
 from . import swingtime_settings
 from django.conf import settings
+from core.views import get_current_topic
 
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
@@ -27,39 +29,40 @@ def index(request, template='topic/research.html', **kwargs):
 
     context = dict()
     #context['city']=request.site.name
+    topic = get_current_topic(request)
 
-    # bloc get_topic
-    # TODO: improve this
-    mother_namespace = request.resolver_match.namespaces[0]
-    topic_names = [topic.name for topic in Topic.objects.all()]
-    if mother_namespace in topic_names:
-        topic = get_object_or_404(Topic, name=mother_namespace)
+    if request.method == 'POST':
+        form = IndexForm(topic, request.POST)
 
-        if request.method == 'POST':
-            form = IndexForm(topic, request.POST)
+        if form.is_valid():
+            # dont use city from now
+            event_type = form.cleaned_data['quoi']
+            date = form.cleaned_data['quand']
 
-            if form.is_valid():
-                # dont use city from now
-                event_type = form.cleaned_data['quoi']
-                date = form.cleaned_data['quand']
+            if event_type is not None:
+                return redirect(reverse('topic:single_day_event_type',
+                                    kwargs={'event_type_id': event_type.pk,
+                                            'year': date.year,
+                                            'month': date.month,
+                                            'day': date.day,
+                                            },
+                                    current_app=request.resolver_match.namespace))
 
-                if event_type is not None:
-                    return redirect('topic:single_day_event_type',
-                                    event_type_id=event_type.pk,
-                                    year=date.year,
-                                    month=date.month,
-                                    day=date.day)
-                else:
-                    return redirect('topic:daily_events',
-                                    year=date.year,
-                                    month=date.month,
-                                    day=date.day)
-        else:
-            form = IndexForm(topic)
+            else:
+                return redirect(reverse('topic:daily_events',
+                                    current_app=request.resolver_match.namespace,
+                                    kwargs={'year': date.year,
+                                            'month': date.month,
+                                            'day': date.day,
+                                            }
+                                    ))
 
-        context['form'] = form
+    else:
+        form = IndexForm(topic)
 
-        return render(request, template, context)
+    context['form'] = form
+
+    return render(request, template, context)
 
 
 class OccurrenceDetail(DetailView):

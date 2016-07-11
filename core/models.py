@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 class Topic(models.Model):
     """
     topic class, for example "catho" or "jobs"
+    the name has to be the same as the corresponding namespace
     """
     name = models.CharField(verbose_name="Thématique",
                             max_length=50,
@@ -22,5 +23,5 @@ class Topic(models.Model):
         return self.name
 
     # --------------------------------------------------------------------------
-    #def get_absolute_url(self):
-        #return reverse('topic:index')
+    def get_absolute_url(self):
+        return reverse('topic:index', current_app=self.name)

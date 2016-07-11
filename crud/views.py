@@ -32,8 +32,7 @@ def _add_event(
                                    request,
                                    recurrence_form_class,
                                    template,
-                                   event_form_class
-                                  )
+                                   event_form_class)
 
 
 @login_required(login_url='connection:login')
@@ -65,8 +64,6 @@ def _add_event_by_topic(
 
     dtstart = None
 
-    # bloc get_topic
-    # TODO: remove this and add topic field and eventtype field to forms
 
     if request.method == 'POST':
         # to add event_planner to event
