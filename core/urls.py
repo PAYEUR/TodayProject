@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import ContactView, EventPlannerPanelView, IndexView
+from .views import ContactView, EventPlannerPanelView, IndexView, NewEventView
 
 
 # here is the main application:
@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index"),
     url(r'^contact$', ContactView.as_view(), name="contact"),
     url(r'^tableau_de_bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
-
+    url(r'^nouvel_evenement$', NewEventView.as_view(), name="new_event"),
     ]
