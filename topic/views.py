@@ -5,9 +5,8 @@ from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from .forms import IndexForm
 from .models import EventType, Occurrence, Event, EnjoyTodayUser
-from core.models import Topic
 from django.views.generic import DetailView, DayArchiveView, ListView
-# from django.views.generic.list import MultipleObjectMixin
+
 # from django.views.generic.detail import SingleObjectMixin
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.template import RequestContext
@@ -80,28 +79,38 @@ class OccurrenceDetail(DetailView):
         return context
 
 
-#class OccurrenceDayArchiveView(DayArchiveView, dt='dt'):
- #   """
- #   All occurrences from every event_types in one day
-  #  """
-   # queryset = Occurrence.objects.daily_occurrences(dt='dt')
-    # the research is based on occurrence end_time of the current day
-#    date_field = "end_time"
-#    allow_future = True
-#    allow_empty = True
-#    template_name = 'topic/event_by_date.html'
-#    context_object_name = 'occurrences'
+# doesn't work
+class EventsInAPeriod(DayArchiveView):
+    allow_empty = True
+    allow_future = True
+    date_field = 'start_time'
+    queryset =  Occurrence.objects.all()
+    context_object_name = 'occurrences'
+    template_name = 'topic/event_by_date.html'
+    # fix it depending on the request
+    # start_time = datetime.now()
+    # end_time = datetime.now() + timedelta(hours=200)
 
-#    def get_context_data(self, **kwargs):
-#        context = super(OccurrenceDayArchiveView, self).get_context_data(**kwargs)
 
-#        events_list = [occurrence.event for occurrence in self.object_list]
-#        event_types_list = list(set([event.event_type for event in events_list]))
 
- #       context['event_types_list'] = event_types_list
-        # inutile normalement
-  #      context['days'] = self.get_day()
-   #     return context
+    # query on the model
+    # def get_queryset(self):
+       # qs = super(EventsInAPeriod, self).get_queryset()
+       # return qs.filter(event__event_type__topic=get_current_topic(self.request),
+       #                  event__site=settings.SITE_ID)
+
+    # query on the date
+   # def get_dated_queryset(self, **lookup):
+       # qs = super(EventsInAPeriod, self).get_dated_queryset(**lookup)
+       # filter = self.get_date_field() + '__range'
+       # return qs.filter(**{filter:[self.start_time, self.end_time]})
+
+
+    # def get_context_data(self, **kwargs):
+       # context = super(EventsInAPeriod, self).get_context_data(**kwargs)
+       # context['event_type_list']= list(set([event.event_type for event in self.get_queryset()]))
+       # return context
+
 
 
 def _events_in_a_period(request,

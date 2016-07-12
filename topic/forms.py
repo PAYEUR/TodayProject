@@ -43,7 +43,8 @@ class IndexForm(forms.Form):
             label='Quoi?',
             required=False,
             empty_label=None,
-            widget=forms.widgets.RadioSelect)
+            widget=forms.widgets.CheckboxSelectMultiple)
+        #TODO modify the autocorrection due to CheckBox
 
     # city = forms.ModelChoiceField(City.objects.all())
 
@@ -132,7 +133,7 @@ class EventForm(forms.ModelForm):
             EventType.objects.filter(topic=topic),
             label='Catégorie',
             #required=False,
-            #empty_label=None,
+            empty_label=None,
             widget=forms.widgets.Select)
         #self.fields['description'].required = False
 

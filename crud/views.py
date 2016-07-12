@@ -249,23 +249,6 @@ class UpdateOccurrence(UserPassesTestMixin, UpdateView):
         pk = self.kwargs.get('occurrence_id')
         return get_object_or_404(Occurrence, pk=pk)
 
-    # doesnt work because of differences between Occurrence.fields and
-    #def get_initial(self):
-        #initial = super(UpdateOccurrence,self).get_initial()
-       # initial['date'] = self.get_object()['start_time']
-        #initial['start_time'] = self.get_object()['start_time']
-       # initial['end_time'] = self.get_object()['end_time']
-
-
-    #def form_valid(self, form):
-        # use the SingleOccurrence.save function
-       # form.save(self.get_object().event)
-       # return super(UpdateOccurrence, self).form_valid(form)
-
-    #def get_context_data(self, **kwargs):
-        #context = super(UpdateOccurrence,self).get_context_data(**kwargs)
-        #context['occurrence'] = self.get_object()
-
 
 def test_func(user, Event):
         if Event.event_planner:
