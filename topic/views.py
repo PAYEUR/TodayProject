@@ -79,12 +79,10 @@ class OccurrenceDetail(DetailView):
         return context
 
 
-# doesn't work
-class EventsInAPeriod(DayArchiveView):
+# queryset has to be properly written to take date and hour into account
+class EventsInAPeriod(ListView):
     allow_empty = True
-    allow_future = True
-    date_field = 'start_time'
-    queryset =  Occurrence.objects.all()
+    queryset = Occurrence.objects.all()
     context_object_name = 'occurrences'
     template_name = 'topic/event_by_date.html'
     # fix it depending on the request
@@ -92,24 +90,18 @@ class EventsInAPeriod(DayArchiveView):
     # end_time = datetime.now() + timedelta(hours=200)
 
 
-
     # query on the model
-    # def get_queryset(self):
-       # qs = super(EventsInAPeriod, self).get_queryset()
-       # return qs.filter(event__event_type__topic=get_current_topic(self.request),
-       #                  event__site=settings.SITE_ID)
-
-    # query on the date
-   # def get_dated_queryset(self, **lookup):
-       # qs = super(EventsInAPeriod, self).get_dated_queryset(**lookup)
-       # filter = self.get_date_field() + '__range'
-       # return qs.filter(**{filter:[self.start_time, self.end_time]})
+    def get_queryset(self):
+       qs = super(EventsInAPeriod, self).get_queryset()
+       return qs.filter(event__event_type__topic=get_current_topic(self.request),
+                        event__site=settings.SITE_ID)
 
 
-    # def get_context_data(self, **kwargs):
-       # context = super(EventsInAPeriod, self).get_context_data(**kwargs)
-       # context['event_type_list']= list(set([event.event_type for event in self.get_queryset()]))
-       # return context
+    def get_context_data(self, **kwargs):
+       context = super(EventsInAPeriod, self).get_context_data(**kwargs)
+       context['event_types_list']= list(set([event.event_type for event in self.get_queryset()]))
+       print context
+       return context
 
 
 

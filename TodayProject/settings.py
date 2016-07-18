@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        # Ancienne BD
+        # BD test
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'truc2'),
-        #Nouvelle BD
+        # BD prod
         #'ENGINE': 'django.db.backends.mysql',
         #'OPTIONS': {
             #'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),

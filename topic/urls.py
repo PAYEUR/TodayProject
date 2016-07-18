@@ -26,7 +26,7 @@ urlpatterns = [
 
     #test
     #doesn't work
-    #url(r'^test/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/$',views.EventsInAPeriod.as_view(), name="test"),
+    url(r'^test/$',views.EventsInAPeriod.as_view(), name="test"),
 
     ]
 
