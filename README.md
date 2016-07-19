@@ -10,7 +10,7 @@ access it at:
 # Organization
 The project concerns different topics ("thèmes" in french, such as 'catho', 'jobs') for differents cities.
 A single website is dedicated to each city, using django sites framework.
-Each topic concerns different categories ("catégories" in french)
+Each topic concerns different event types ("catégories" in french)
 
 # Architecture
 The project is currently divided in 6 different applications (folders)
