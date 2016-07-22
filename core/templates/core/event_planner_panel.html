@@ -18,7 +18,7 @@
             <div class="thumbnail">
                 <p>Votre login: {{ event_planner.user.username }}</p>
                 <p>Votre email: {{ event_planner.user.email }}</p>
-                <p><a href="">Modifier mon mot de passe</a></p>
+                {#<p><a href="">Modifier mon mot de passe</a></p>#}
             </div>
         </div>
         <h2>Mes événements:</h2>
@@ -28,7 +28,7 @@
                 {% if event.next_occurrence %}
                     <div class="col-sm-12 col-md-4">
                         <div class="thumbnail">
-                            <a href = "{{event.next_occurrence.get_absolute_url}}" ><img src="{{event.image_main.url }}" class="img-responsive" alt="..." /></a>
+                            <a href = "{{event.next_occurrence.get_absolute_url}}" ><img src="{{event.image_main.url }}" class="img-responsive" alt="{{event.title}}" /></a>
                             <div class="caption">
                                 <h3><a href = "{{event.next_occurrence.get_absolute_url}}"> {{ event.title }} </a></h3>
                                 <p>
