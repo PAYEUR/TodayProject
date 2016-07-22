@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 
-{% load bootstrap3 %}$
+{% load bootstrap3 %}
+{% load staticfiles %}
 
 {% block title %}
     Menu Principal
@@ -9,8 +10,19 @@
 
 {% block content %}
 
-    {# map with city has to be written properly #}
-    <p>This is the main page</p>
-    <p>You are in <strong>{{request.site.name}}</strong></p>
+<div class="container">
+    <div class=row>
+        <div class="col-sm-12 col-md-12" align="center">
+            <h1>This is the main page</h1>
+            <img src="{% static 'core/carte_noms.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map" />
+            {# mapping according to http://imagemap-generator.dariodomi.de/ #}
+            {# TODO rewrite links according to actual cities websites #}
+            <map name="Map" id="Map">
+                <area alt="Paris" title="Paris" href="http://127.0.0.1:8000/catho" shape="poly" coords="195,56,197,103,317,105,312,57" />
+                <area alt="Nice" title="Nice" href="http://127.0.0.1:8001/catho" shape="poly" coords="349,292,355,352,467,351,463,301" />
+            </map>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

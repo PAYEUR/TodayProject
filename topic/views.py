@@ -86,6 +86,7 @@ class OccurrenceDetail(DetailView):
 ## Events sorted by date
 
 # queryset has to be properly written to take date and hour into account
+# unused
 class EventsInAPeriod(ListView):
     allow_empty = True
     queryset = Occurrence.objects.all()
