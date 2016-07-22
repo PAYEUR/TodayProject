@@ -240,13 +240,13 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('topic:get_occurrence', kwargs={'pk': self.pk})
+        return reverse('topic:get_occurrence', kwargs={'pk': self.pk}, current_app=self.event.event_type.topic.name)
 
     def delete_url(self):
-        return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
 
     def update_url(self):
-        return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk})
+        return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):
