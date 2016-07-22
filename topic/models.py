@@ -212,20 +212,6 @@ class OccurrenceManager(models.Manager):
 
         return qs.filter(event=event) if event else qs
 
-    #--------------------------------------------------------------------------
-    def by_topic(self, topic):
-        """Returns a queryset of for instances that have any overlap with a
-        particular topic.
-        """
-        return self.filter(event__event_type__topic=topic)
-
-    #--------------------------------------------------------------------------
-    def by_site(self, site_id):
-        """
-        :param SITE_ID: SITE_ID in settings for the chosen city
-        :return:
-        """
-        return self.filter(event__site=site_id)
 # ==============================================================================
 @python_2_unicode_compatible
 class Occurrence(models.Model):
