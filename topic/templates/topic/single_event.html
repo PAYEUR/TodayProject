@@ -7,7 +7,7 @@
 {% block title %}
     événement{{ occurrence.event.id }}
 {% endblock %}
-
+{
 {% block content %}
 
    <!-- Main jumbotron for a primary marketing message or call to action -->
@@ -36,7 +36,7 @@
         <div class="col-sm-12 col-md-4">
             <div class="thumbnail">
             <div class="caption">
-                <p role = presentation>Prochaine date:</p>
+                <p role = presentation>Date de l'événement:</p>
                 <p role = presentation>
                     <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                     <a href="{% url 'topic:daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>

@@ -28,7 +28,7 @@
 
   <ul class="nav navbar-nav navbar-right">
 
-    {% block search %}{% endblock %}
+    {% block research %}{% endblock %}
 
     <li><a href="{% url 'core:contact' %}">Contactez-nous</a></li>
     {% if user.is_authenticated %}
@@ -45,9 +45,5 @@
     {% endif %}
   </ul>
 
-  {# TODO #}
-    {% block change_city %}{% endblock %}
-    {% block change_category %}{% endblock %}
-  {# <form class="navbar-form navbar-right"><input type="text" class="form-control" placeholder="Search..."></form> #}
 
 </div>

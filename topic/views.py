@@ -19,7 +19,6 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-# TODO send event_type_list in a GET way to have a single url for a single event_type_list
 def index(request, template='topic/research.html', **kwargs):
     """
     :param request:
