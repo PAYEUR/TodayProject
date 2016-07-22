@@ -38,11 +38,12 @@ class IndexForm(forms.Form):
     def __init__(self, topic, *args, **kwargs):
         super(IndexForm, self).__init__(*args, **kwargs)
         self.topic = topic
-        self.fields['quoi'] = forms.ModelChoiceField(
+
+        self.fields['quoi'] = forms.ModelMultipleChoiceField(
             EventType.objects.filter(topic=topic),
             label='Quoi?',
             required=False,
-            empty_label=None,
+            #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
         #TODO modify the autocorrection due to CheckBox
 

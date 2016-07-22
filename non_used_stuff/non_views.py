@@ -264,4 +264,4 @@ def single_day_event_type(
 
 @login_required(login_url='connection:login')
 def new_event(request):
-    return render(request, 'topic/add_event_choice.html', nav_bar())
+    return render(request, 'topic/../crud/templates/add_event_choice.html', nav_bar())
