@@ -1,7 +1,22 @@
 {% extends 'core/topbar.html' %}
 
-{% load static %}
+ {% block city %}
+    <a class="navbar-brand" href="{% url 'core:index' %}"> <strong>{{request.site.name}}</strong></a>
+ {% endblock %}
 
 {% block research %}
     <li><a href="{% url 'topic:index' %}">Rechercher</a></li>
+{% endblock %}
+
+{% block topics %}
+    {% if topic %}
+      <li class="active"><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
+      {% for topic in other_topics %}
+        <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
+      {% endfor %}
+    {% elif topic_list%}
+      {% for topic in topic_list %}
+        <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
+      {% endfor %}
+    {% endif %}
 {% endblock %}
