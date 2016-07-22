@@ -36,10 +36,11 @@ def index(request, template='topic/research.html', **kwargs):
         if form.is_valid():
             # dont use city from now
             event_type_list = form.cleaned_data['quoi']
+            print event_type_list is False
             event_type_id_string = '&'.join([str(event_type.id) for event_type in event_type_list])
             date = form.cleaned_data['quand']
 
-            if event_type_list is not None:# and len(event_type_list)>1:
+            if event_type_list:
                 return redirect(reverse('topic:single_day_event_type_list',
                                         kwargs={'year': date.year,
                                             'month': date.month,
@@ -48,16 +49,6 @@ def index(request, template='topic/research.html', **kwargs):
                                             },
                                     current_app=topic.name),
                                 )
-
-            #elif len(event_type_list)==1:
-                #return redirect(reverse('topic:single_day_event_type',
-                                        #current_app=topic.name,
-                                        #kwargs={'year':date.year,
-                                                #'month': date.month,
-                                                #'day': date.day,
-                                                #'event_type_id': event_type_list[0].id
-                                                #}
-                                        #))
 
             else:
                 return redirect(reverse('topic:daily_events',
@@ -306,7 +297,7 @@ def _single_day_event_type(
 
 def single_day_event_type_list(
         request,
-        match_string,
+        event_type_id_string,
         year,
         month,
         day,
@@ -314,7 +305,7 @@ def single_day_event_type_list(
         ):
 
     dt = datetime(int(year), int(month), int(day))
-    event_type_id_list = match_string.split('&')
+    event_type_id_list = event_type_id_string.split('&')
     event_type_list=[EventType.objects.get(id=id) for id in event_type_id_list]
     return _single_day_event_type(request, event_type_list, dt, template)
 
@@ -361,7 +352,4 @@ def single_day_event_type(
 #---------------------------------------------------------------------------------------------------------------
 # Event_choice
 
-@login_required(login_url='connection:login')
-def new_event(request):
-    context = dict()
-    return render(request, 'topic/../crud/templates/add_event_choice.html', context)
+

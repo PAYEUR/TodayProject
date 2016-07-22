@@ -119,6 +119,7 @@ def add_multiple_dates(
         ):
 
     dtstart = None
+    topic = get_current_topic(request)
 
     OccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=10)
     if request.method == 'POST':
@@ -126,7 +127,7 @@ def add_multiple_dates(
         event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
                       site=get_current_site(request))
 
-        event_form = event_form_class(request.POST, request.FILES, instance=event)
+        event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
         formset = OccurrenceFormSet(request.POST)
         if event_form.is_valid() and formset.is_valid():
             event.save()
@@ -144,7 +145,7 @@ def add_multiple_dates(
                 logging.warning(exc)
 
         dtstart = dtstart or datetime.now()
-        event_form = event_form_class()
+        event_form = event_form_class(topic)
         # initial parameter doesnt work here
         formset = OccurrenceFormSet()
 
@@ -302,3 +303,8 @@ def add_multiples_occurrences(
     else:
         raise PermissionDenied
 
+
+@login_required(login_url='connection:login')
+def new_event(request):
+    context = dict()
+    return render(request, 'crud/add_event_choice.html', context)
