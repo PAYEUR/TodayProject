@@ -3,7 +3,6 @@ from topic.models import EventType
 from core.models import Topic
 from django.shortcuts import get_object_or_404
 
-#from django.contrib.sites.models import Site
 
 def topic_list(request):
     return {'topic_list':  Topic.objects.all()}
@@ -12,7 +11,7 @@ def topic_list(request):
 def topic_sidebar(request):
     """
     :param request: search the mother_namespace
-    :return: add topic and topic_sidebar to the context depending on the called namaspace
+    :return: add current_topic and current_topic_event_type_list to the context depending on the called namespace
     """
 
     # TODO mix this with core.utils.get_current_topic function
@@ -22,8 +21,7 @@ def topic_sidebar(request):
     # print mother_namespace
     # print topic_names
     if mother_namespace in topic_names:
-        topic = get_object_or_404(Topic, name=mother_namespace)
-        context['topic'] = topic
-        context['other_topics'] = Topic.objects.exclude(name=mother_namespace)
-        context['topic_event_type_list'] = EventType.objects.filter(topic=topic)
+        current_topic = get_object_or_404(Topic, name=mother_namespace)
+        context['current_topic'] = current_topic
+        context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context

@@ -144,7 +144,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
-MEDIA_URL = '/media/'
+# modify this if not on the same computer to avoid error 500
+MEDIA_URL = 'topic/media/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {

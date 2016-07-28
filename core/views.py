@@ -43,3 +43,7 @@ class EventPlannerPanelView(LoginRequiredMixin, ListView):
 
 class NewEventView(TemplateView):
     template_name = 'core/add_event_topic.html'
+
+
+class CGUView(TemplateView):
+    template_name = 'core/CGU.html'
