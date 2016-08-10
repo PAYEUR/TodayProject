@@ -6,10 +6,6 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render, redirec
 from .forms import IndexForm
 from .models import EventType, Occurrence, Event, EnjoyTodayUser
 from django.views.generic import DetailView, DayArchiveView, ListView
-
-# from django.views.generic.detail import SingleObjectMixin
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.template import RequestContext
 from . import swingtime_settings
 from django.conf import settings
 from core.utils import get_current_topic
@@ -84,32 +80,6 @@ class OccurrenceDetail(DetailView):
 
 #---------------------------------------------------------------------------------------------------------------
 ## Events sorted by date
-
-# queryset has to be properly written to take date and hour into account
-# unused
-class EventsInAPeriod(ListView):
-    allow_empty = True
-    queryset = Occurrence.objects.all()
-    context_object_name = 'occurrences'
-    template_name = 'topic/event_by_date.html'
-    # fix it depending on the request
-    # start_time = datetime.now()
-    # end_time = datetime.now() + timedelta(hours=200)
-
-
-    # query on the model
-    def get_queryset(self):
-       qs = super(EventsInAPeriod, self).get_queryset()
-       return qs.filter(event__event_type__topic=get_current_topic(self.request),
-                        event__site=settings.SITE_ID)
-
-
-    def get_context_data(self, **kwargs):
-       context = super(EventsInAPeriod, self).get_context_data(**kwargs)
-       context['event_types_list']= list(set([event.event_type for event in self.get_queryset()]))
-       return context
-
-
 
 def _events_in_a_period(request,
                         days,

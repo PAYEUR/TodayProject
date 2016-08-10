@@ -45,7 +45,6 @@ class IndexForm(forms.Form):
             required=False,
             #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
-        #TODO modify the autocorrection due to CheckBox
 
     # city = forms.ModelChoiceField(City.objects.all())
 
