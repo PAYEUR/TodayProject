@@ -49,7 +49,7 @@ class IndexForm(forms.Form):
     # city = forms.ModelChoiceField(City.objects.all())
 
     quand = forms.DateField(
-            label='Quand?',
+            label='Quand ?',
             required=True,
             initial=datetime.today,
             widget=DateWidget(
