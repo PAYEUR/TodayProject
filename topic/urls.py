@@ -16,6 +16,9 @@ urlpatterns = [
     url(r'^categorie(?P<event_type_id_string>.+)/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/$',
          views.single_day_event_type_list, name="single_day_event_type_list"),
 
+    url(r'^categorie(?P<event_type_id_string>.+)/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/(?P<start_hour_string>.+)-(?P<end_hour_string>.+)$',
+     views.single_time_event_type_list, name="single_time_event_type_list"),
+
     # add crud_url under catho/ajouter_evenement for example
     url(r'^', include(crud_urls, namespace='crud')),
 

@@ -30,30 +30,29 @@ def index(request, template='topic/research.html'):
         form = IndexForm(topic, request.POST)
 
         if form.is_valid():
-            # don't use city from now
-            event_type_list = form.cleaned_data['quoi']
-            print event_type_list is False
-            event_type_id_string = '&'.join([str(event_type.id) for event_type in event_type_list])
+            # required
             query_date = form.cleaned_data['quand']
+            # blank allowed
+            event_type_list = form.cleaned_data['quoi']
+            # hour by default else.
+            start_hour = form.cleaned_data['start_hour']
+            end_hour = form.cleaned_data['end_hour']
 
             if event_type_list:
-                return redirect(reverse('topic:single_day_event_type_list',
-                                        kwargs={'year': query_date.year,
-                                                'month': query_date.month,
-                                                'day': query_date.day,
-                                                'event_type_id_string': event_type_id_string
-                                                },
-                                        current_app=topic.name),
-                                )
-
+                event_type_id_string = utils.create_id_string(event_type_list)
             else:
-                return redirect(reverse('topic:daily_events',
-                                        current_app=topic.name,
-                                        kwargs={'year': query_date.year,
-                                                'month': query_date.month,
-                                                'day': query_date.day,
-                                                }
-                                        ))
+                event_type_id_string = utils.create_id_string(EventType.objects.filter(topic=topic))
+
+            return redirect(reverse('topic:single_time_event_type_list',
+                                    kwargs={'year': query_date.year,
+                                            'month': query_date.month,
+                                            'day': query_date.day,
+                                            'event_type_id_string': event_type_id_string,
+                                            'start_hour_string': utils.construct_hour_string(start_hour),
+                                            'end_hour_string': utils.construct_hour_string(end_hour),
+                                            },
+                                    current_app=topic.name),
+                            )
 
     else:
         form = IndexForm(topic)
@@ -139,11 +138,11 @@ def single_day_event_type_list(request, event_type_id_string, year, month, day):
     return _event_by_event_type(request, event_type_list, start_time, end_time)
 
 
-def single_time_event_type_list(request, event_type_id_string, year, month, day, start_hour, end_hour):
+def single_time_event_type_list(request, event_type_id_string, year, month, day, start_hour_string, end_hour_string):
     event_type_list = utils.get_event_type_list(event_type_id_string, current_topic=get_current_topic(request))
     date_day = utils.construct_day(year, month, day)
-    start_time = utils.construct_time(date_day, utils.construct_hour(start_hour))
-    end_time = utils.construct_time(date_day, utils.construct_hour(end_hour))
+    start_time = utils.construct_time(date_day, utils.construct_hour(start_hour_string))
+    end_time = utils.construct_time(date_day, utils.construct_hour(end_hour_string))
 
     return _event_by_event_type(request, event_type_list, start_time, end_time)
 
@@ -156,10 +155,16 @@ def event_type_coming_days(request, event_type_id_string):
     return _event_by_event_type(request, event_type_list, start_time, end_time)
 
 
-def daily_events(request, year, month, day):
+def daily_events(request, year, month, day, start_hour_string, end_hour_string):
     event_type_list = EventType.objects.filter(topic=get_current_topic(request))
     date_day = utils.construct_day(year, month, day)
-    start_time = utils.construct_time(date_day, time.min)
-    end_time = utils.construct_time(date_day, time.max)
+    if start_hour_string:
+        start_time = utils.construct_time(date_day, utils.construct_hour(start_hour_string))
+    else:
+        start_time = utils.construct_time(date_day, time.min)
+    if end_hour_string:
+        end_time = utils.construct_time(date_day, utils.construct_hour(end_hour_string))
+    else:
+        end_time = utils.construct_time(date_day, time.max)
 
     return _event_by_event_type(request, event_type_list, start_time, end_time)

@@ -62,6 +62,30 @@ class IndexForm(forms.Form):
                 bootstrap_version=3)
             )
 
+    start_hour = forms.TimeField(
+                label="Horaire de début",
+                required="False",
+                initial=time.min,
+                widget=TimeWidget(
+                    options={
+                        'pickerPosition': 'top-left'
+                    },
+                    usel10n=False,
+                    bootstrap_version=3)
+                )
+
+    end_hour = forms.TimeField(
+                label="Horaire de fin",
+                required="False",
+                initial=time.max,
+                widget=TimeWidget(
+                    options={
+                        'pickerPosition': 'top-left'
+                    },
+                    usel10n=False,
+                    bootstrap_version=3)
+                )
+
 
 # -------------------------------------------------------------------------------
 def timeslot_options(

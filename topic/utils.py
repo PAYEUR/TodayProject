@@ -46,7 +46,13 @@ def construct_day(year, month, day):
 
 def construct_hour(hour_string):
     number = hour_string.split('h')
-    return time(hour=number[0], minute=number[1])
+    return time(hour=int(number[0]), minute=int(number[1]))
+
+
+def construct_hour_string(datetime_hour):
+    hour = "%02d" % datetime_hour.hour
+    minutes = "%02d" % datetime_hour.minute
+    return "h".join([hour, minutes])
 
 
 # management of event_types useful functions
@@ -68,3 +74,7 @@ def get_event_type_list(event_type_id_string, current_topic):
     else:
         return EventType.objects.filter(id__in=[int(i) for i in id_list],
                                         event__event_type__topic=current_topic)
+
+
+def create_id_string(object_list):
+    return '&'.join([str(thing.id) for thing in object_list])
