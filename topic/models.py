@@ -89,15 +89,18 @@ class Event(models.Model):
                                       )
 
     #Will remove this and use google place API instead
-    city = models.ForeignKey(City,
-                             verbose_name="Ville",
-                             default={'city_name': "Paris"})
+    #city = models.ForeignKey(City,
+                             #verbose_name="Ville",
+                             #default={'city_name': "Paris"})
 
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
                                default="non précisé")
 
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site,
+                             on_delete=models.CASCADE,
+                             )
+
     objects = models.Manager()
     on_site = CurrentSiteManager()
 

@@ -4,13 +4,15 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 
-# here gonna be also site configuration, as there is one website for each different city.
+# rewrite this to properly take into account site and related cities
 
 # ==============================================================================
 @python_2_unicode_compatible
 class City(models.Model):
     """ Place class. Use to make queries on city.
     """
+
+    #site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
     city_name = models.CharField(verbose_name='city_name',
                                  max_length=255,

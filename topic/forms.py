@@ -11,6 +11,7 @@ from . import swingtime_settings
 from .models import Event, EventType  #,City, Occurrence
 from core.models import Topic
 from django.shortcuts import get_object_or_404
+from django.contrib.sites.models import Site
 
 
 WEEKDAY_LONG = (
@@ -144,22 +145,33 @@ class EventForm(forms.ModelForm):
     """
 
     # ==========================================================================
+
     class Meta:
         model = Event
         fields = "__all__"
-        exclude = ['event_planner', 'site']
+        exclude = ['event_planner', 'objects', 'on_site']
+
 
     # ---------------------------------------------------------------------------
     def __init__(self, topic, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
         self.topic = topic
+
         self.fields['event_type'] = forms.ModelChoiceField(
             EventType.objects.filter(topic=topic),
             label='Catégorie',
             #required=False,
             empty_label=None,
             widget=forms.widgets.Select)
-        #self.fields['description'].required = False
+
+        # TODO print name of the city instead of the domain_name
+        self.fields['site'] = forms.ModelChoiceField(
+            Site.objects.all(),
+            label='Ville',
+            empty_label=None,
+            to_field_name='name', # doesn't work...
+        )
+
 
 
 # ==============================================================================

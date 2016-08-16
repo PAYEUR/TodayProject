@@ -69,7 +69,7 @@ def _add_event_by_topic(
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
-                      site=get_current_site(request)
+                      #site=get_current_site(request)
                       )
 
         event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
@@ -125,7 +125,8 @@ def add_multiple_dates(
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
-                      site=get_current_site(request))
+                      #site=get_current_site(request)
+                      )
 
         event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
         formset = OccurrenceFormSet(request.POST)
