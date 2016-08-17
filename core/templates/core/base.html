@@ -7,6 +7,7 @@
 {# make sure that childrens of this template don't call bootstrap3_extra_head #}
 {% block bootstrap3_extra_head %}
     <link href="{%  static 'core/base.css' %}" rel="stylesheet">
+    <link href="{%  static 'core/footer.css' %}" rel="stylesheet">
     <link rel="icon" type="image/png" href="{% static 'core/logo_carre.png'%}" />
     {% block base_extra_head %}{% endblock %}
 {% endblock %}
@@ -29,7 +30,6 @@
 
 
 <div class="container">
-
     <div class="row">
 
         <div class="col-sm-9">
@@ -41,15 +41,26 @@
                 {% include "core/sidebar.html" %}
             {% endblock %}
         </div>
-
     </div>
+</div>
 
-    {% block footer %}
-        <footer>
-        <p class="pull-left"> <a href="{% url 'core:contact' %}">&copy; 2016 TodayProject</a> </p>
-        <p class="pull-right" > <a href="{% url 'core:CGU' %}">Conditions Générales d'Utilisation</a></p>
-        </footer>
-    {% endblock %}
+{% block footer %}
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                <a class="text-muted" href="{% url 'core:team' %}">&copy; 2016 TodayProject</a>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <a class="text-muted" href="{% url 'core:contact' %}">Nous contacter</a>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <a class="text-muted" href="{% url 'core:CGU' %}">Conditions Générales d'Utilisation</a>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
  </div>
-
 {% endblock %}
