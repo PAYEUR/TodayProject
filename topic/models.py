@@ -31,8 +31,11 @@ class EventType(models.Model):
                               verbose_name='Thematique',
                               default=None)
 
-    label = models.CharField(verbose_name='label', max_length=50)
-    image = models.ImageField(default=None, upload_to='event_types/')
+    label = models.CharField(verbose_name='label',
+                             max_length=50,
+                             default='autres')
+    image = models.ImageField(default=None,
+                              upload_to='event_types/')
     #image_main = ImageSpecField(source='image',
                                 #processors=[ResizeToFit(450, 300)],
                                 #format='JPEG',
@@ -59,12 +62,16 @@ class Event(models.Model):
     Container model for general metadata and associated ``Occurrence`` entries.
     """
     title = models.CharField(verbose_name="Titre",
-                             max_length=100)
+                             max_length=100,
+                             default=None)
 
-    description = models.TextField(verbose_name="Description")
+    description = models.TextField(verbose_name="Description",
+                                   default=None)
 
     event_type = models.ForeignKey(EventType,
-                                   verbose_name="Catégorie")
+                                   verbose_name="Catégorie",
+                                   default=None
+                                   )
 
 
     image = models.ImageField(verbose_name="Image",
@@ -77,7 +84,8 @@ class Event(models.Model):
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFill(800, 300)],
                                 format='JPEG',
-                                options={'quality': 100})
+                                options={'quality': 100},
+                                )
 
     event_planner = models.ForeignKey(EnjoyTodayUser,
                                       on_delete=models.SET_NULL,
@@ -99,6 +107,7 @@ class Event(models.Model):
 
     site = models.ForeignKey(Site,
                              on_delete=models.CASCADE,
+                             default=Site.objects.get(name__contains='paris')
                              )
 
     objects = models.Manager()
