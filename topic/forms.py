@@ -55,7 +55,7 @@ class IndexForm(forms.Form):
             initial=datetime.today,
             #widget=DateWidget(
                 #options={
-                   # 'todayHighlight': True,
+                    #'todayHighlight': True,
                     #'weekStart': 1,
                     #'pickerPosition': 'top-left'
                 #},
