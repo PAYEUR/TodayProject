@@ -1,48 +1,63 @@
 import calendar
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-from topic.forms import IndexForm
-from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
+from .forms import IndexForm
+from .models import EventType, Occurrence, Event, EnjoyTodayUser
 from django.views.generic import DetailView, DayArchiveView, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from . import swingtime_settings
+from django.conf import settings
+from core.utils import get_current_topic
 
-from topic import swingtime_settings
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-def index(request, template='topic/research.html'):
+def index(request, template='topic/research.html', **kwargs):
     """
     :param request:
     :param template:
     :return: home template with index form
     """
 
+    context = dict()
+    topic = get_current_topic(request)
+
     if request.method == 'POST':
-        form = IndexForm(request.POST)
+        form = IndexForm(topic, request.POST)
 
         if form.is_valid():
             # dont use city from now
-            event_type = form.cleaned_data['quoi']
+            event_type_list = form.cleaned_data['quoi']
+            print event_type_list is False
+            event_type_id_string = '&'.join([str(event_type.id) for event_type in event_type_list])
             date = form.cleaned_data['quand']
 
-            if event_type is not None:
-                return redirect('topic:single_day_event_type',
-                                event_type_id=event_type.pk,
-                                year=date.year,
-                                month=date.month,
-                                day=date.day)
-            else:
-                return redirect('topic:daily_events',
-                                year=date.year,
-                                month=date.month,
-                                day=date.day)
-    else:
-        form = IndexForm()
+            if event_type_list:
+                return redirect(reverse('topic:single_day_event_type_list',
+                                        kwargs={'year': date.year,
+                                            'month': date.month,
+                                            'day': date.day,
+                                            'event_type_id_string': event_type_id_string
+                                            },
+                                    current_app=topic.name),
+                                )
 
-    context = {'form': form, }
+            else:
+                return redirect(reverse('topic:daily_events',
+                                    current_app=topic.name,
+                                    kwargs={'year': date.year,
+                                            'month': date.month,
+                                            'day': date.day,
+                                            }
+                                    ))
+
+    else:
+        form = IndexForm(topic)
+
+    context['form'] = form
 
     return render(request, template, context)
 
@@ -59,52 +74,17 @@ class OccurrenceDetail(DetailView):
         else:
             address = False
         context['address'] = address
+
         return context
 
 
-def get_occurrence(request, occurrence_id, topic='catho'):
-    occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
-    if occurrence.event.address != "non precise":
-        address = occurrence.event.address + ", France"
-    else:
-        address = False
-
-    context = dict({'occurrence': occurrence,
-                    'address': address,
-                    'topic': topic,
-                    }
-                   )
-    return render(request, 'topic/single_event.html', context)
-
-
-#class OccurrenceDayArchiveView(DayArchiveView, dt='dt'):
- #   """
- #   All occurrences from every event_types in one day
-  #  """
-   # queryset = Occurrence.objects.daily_occurrences(dt='dt')
-    # the research is based on occurrence end_time of the current day
-#    date_field = "end_time"
-#    allow_future = True
-#    allow_empty = True
-#    template_name = 'topic/event_by_date.html'
-#    context_object_name = 'occurrences'
-
-#    def get_context_data(self, **kwargs):
-#        context = super(OccurrenceDayArchiveView, self).get_context_data(**kwargs)
-
-#        events_list = [occurrence.event for occurrence in self.object_list]
-#        event_types_list = list(set([event.event_type for event in events_list]))
-
- #       context['event_types_list'] = event_types_list
-        # inutile normalement
-  #      context['days'] = self.get_day()
-   #     return context
-
+#---------------------------------------------------------------------------------------------------------------
+## Events sorted by date
 
 def _events_in_a_period(request,
                         days,
                         template='topic/event_by_date.html',
-                        topic='catho'):
+                       ):
     """
 
     :param request:
@@ -115,9 +95,16 @@ def _events_in_a_period(request,
 
     # print event_types occurrences
     # TODO: verify the following point: if no event at all in coming days => crash?!
+
+    topic = get_current_topic(request)
+    site_id = settings.SITE_ID
+
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day)#.filter(is_multiple=False)
+
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__site=site_id,
+                                                                     event__event_type__topic=topic)
+
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
@@ -128,7 +115,7 @@ def _events_in_a_period(request,
     context = dict({'occurrences': occurrences,
                    'event_types_list': event_types_list,
                     'days': days,
-                    'topic': topic
+
                     })
 
     return render(request, template, context)
@@ -136,7 +123,7 @@ def _events_in_a_period(request,
 
 def today_events(request,
                  template='topic/event_by_date.html',
-                 topic='catho'):
+                 ):
     """
 
     :param request:
@@ -144,12 +131,13 @@ def today_events(request,
     :return: all events for topic
     """
     days = [datetime.today()]
-    return _events_in_a_period(request, days, template, topic)
+
+    return _events_in_a_period(request, days, template)
 
 
 def tomorrow_events(request,
                     template='topic/event_by_date.html',
-                    topic='catho'):
+                    ):
     """
 
     :param request:
@@ -157,13 +145,14 @@ def tomorrow_events(request,
     :return: all events for tomorrow
     """
     days = [datetime.today() + timedelta(days=+1)]
-    return _events_in_a_period(request, days, template, topic)
+
+    return _events_in_a_period(request, days, template)
 
 
 def coming_days_events(request,
                        next_days_duration=3,
                        template='topic/event_by_date.html',
-                       topic='catho'):
+                       ):
     """
 
     :param request:
@@ -178,7 +167,7 @@ def coming_days_events(request,
         days.append(today + timedelta(days=+i))
         i += 1
 
-    return _events_in_a_period(request, days, template, topic)
+    return _events_in_a_period(request, days, template)
 
 
 def daily_events(request,
@@ -186,18 +175,18 @@ def daily_events(request,
                  month,
                  day,
                  template='topic/event_by_date.html',
-                 topic='catho'):
+                 ):
 
     days = [datetime(int(year), int(month), int(day))]
 
-    return _events_in_a_period(request, days, template, topic)
+    return _events_in_a_period(request, days, template)
 
 
 def monthly_events(request,
                    year,
                    month,
                    template='topic/event_by_date.html',
-                   topic='catho'):
+                  ):
 
     year, month = int(year), int(month)
     cal = calendar.Calendar()
@@ -207,21 +196,22 @@ def monthly_events(request,
         for day in week:
             days.append(day)
 
-    return _events_in_a_period(request, days, template, topic)
+
+    return _events_in_a_period(request, days, template)
 
 
 def event_type_coming_days(request,
                            event_type_id,
                            next_days_duration=3,
                            template='topic/date_by_event_type.html',
-                           topic='catho'):
+                           ):
     """
 
     :param request:
     :param event_type_id:
     :param next_days_duration:
     :param template:
-    :return: every occurrences of a single event_type within next_day_duration days
+    :return: every occurrences of a single event_type within next_days_duration days
     """
 
     # list of next_day_duration days
@@ -234,64 +224,86 @@ def event_type_coming_days(request,
 
     # sort event_type.occurrences by day
     event_type = get_object_or_404(EventType, pk=int(event_type_id))
+    topic= get_current_topic(request)
     occurrences = []
     for day in days:
-        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type)
+        occurrences_day = Occurrence.objects.daily_occurrences(dt=day).filter(event__event_type=event_type,
+                                                                              event__site=settings.SITE_ID,
+                                                                              event__event_type__topic=topic)
         for occurrence_day in occurrences_day:
             occurrences.append(occurrence_day)
 
     context = dict({'occurrences': occurrences,
                     'event_type': event_type,
-                    'topic': topic
+
                     }
                    )
 
     return render(request, template, context)
 
 
+#--------------------------------------------------------------------------------------------------------------
+#  Events sorted by event_type
 def _single_day_event_type(
         request,
-        event_type_id,
+        event_type_list,
         dt,
         template='topic/event_by_date.html',
-        topic='catho'
+
         ):
 
-    event_type = get_object_or_404(EventType, pk=int(event_type_id))
-    occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
+    #event_type_list = get_list_or_404(EventType.objects.filter(pk__in=event_type_id_list))
+    occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type__in=event_type_list)
 
     context = dict({'occurrences': occurrences,
-                    'event_types_list': [event_type],
+                    'event_types_list': event_type_list,
                     'days': [dt],
-                    'topic': topic
+
                     }
                    )
 
     return render(request, template, context)
 
 
+def single_day_event_type_list(
+        request,
+        event_type_id_string,
+        year,
+        month,
+        day,
+        template='topic/event_by_date.html',
+        ):
+
+    dt = datetime(int(year), int(month), int(day))
+    event_type_id_list = event_type_id_string.split('&')
+    event_type_list=[EventType.objects.get(id=id) for id in event_type_id_list]
+    return _single_day_event_type(request, event_type_list, dt, template)
+
+
+# Non used
 def today_event_type(
         request,
-        event_type_id,
+        event_type_list,
         template='topic/event_by_date.html',
-        topic='catho'
+
         ):
 
     dt = datetime.today()
-    return _single_day_event_type(request, event_type_id, dt, template, topic)
+    return _single_day_event_type(request, event_type_list, dt, template,)
 
-
+# Non used
 def tomorrow_event_type(
         request,
-        event_type_id,
+        event_type_list,
         template='topic/event_by_date.html',
-        topic='catho'
+
         ):
 
     dt = datetime.today()+timedelta(days=+1)
-    return _single_day_event_type(request, event_type_id, dt, template, topic)
+    return _single_day_event_type(request, event_type_list, dt, template, )
 
 
+# non used
 def single_day_event_type(
         request,
         event_type_id,
@@ -299,23 +311,15 @@ def single_day_event_type(
         month,
         day,
         template='topic/event_by_date.html',
-        topic='catho'
         ):
 
     dt = datetime(int(year), int(month), int(day))
-    event_type = get_object_or_404(EventType, pk=int(event_type_id))
-    occurrences = Occurrence.objects.daily_occurrences(dt=dt).filter(event__event_type=event_type)
+    return _single_day_event_type(request,
+                                  [EventType.objects.get(pk=event_type_id)],
+                                  dt,
+                                  template)
 
-    context = dict({'occurrences': occurrences,
-                    'event_types_list': [event_type],
-                    'days': [dt],
-                    'topic': topic
-                    }
-                   )
-
-    return render(request, template, context)
+#---------------------------------------------------------------------------------------------------------------
+# Event_choice
 
 
-@login_required(login_url='connection:login')
-def new_event(request, topic='catho'):
-    return render(request, 'topic/../crud/templates/add_event_choice.html', {'topic': topic})
