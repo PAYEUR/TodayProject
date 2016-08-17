@@ -1,4 +1,3 @@
-#crud.views.py
 import logging
 from datetime import datetime
 
