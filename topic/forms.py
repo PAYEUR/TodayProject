@@ -45,12 +45,11 @@ class IndexForm(forms.Form):
             required=False,
             #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
-        #TODO modify the autocorrection due to CheckBox
 
     # city = forms.ModelChoiceField(City.objects.all())
 
     quand = forms.DateField(
-            label='Quand?',
+            label='Quand ?',
             required=True,
             initial=datetime.today,
             widget=DateWidget(
@@ -62,6 +61,30 @@ class IndexForm(forms.Form):
                 usel10n=True,
                 bootstrap_version=3)
             )
+
+    start_hour = forms.TimeField(
+                label="Horaire de début",
+                required="False",
+                initial=time.min,
+                widget=TimeWidget(
+                    options={
+                        'pickerPosition': 'top-left'
+                    },
+                    usel10n=False,
+                    bootstrap_version=3)
+                )
+
+    end_hour = forms.TimeField(
+                label="Horaire de fin",
+                required="False",
+                initial=time.max,
+                widget=TimeWidget(
+                    options={
+                        'pickerPosition': 'top-left'
+                    },
+                    usel10n=False,
+                    bootstrap_version=3)
+                )
 
 
 # -------------------------------------------------------------------------------

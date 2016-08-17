@@ -49,7 +49,7 @@ class EventType(models.Model):
 
     def get_absolute_url(self):
         return reverse('topic:event_type_coming_days',
-                       kwargs={'event_type_id': self.pk},
+                       kwargs={'event_type_id_string': str(self.pk)},
                        current_app=self.topic.name)
 
 # ==============================================================================
