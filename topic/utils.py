@@ -32,8 +32,8 @@ def list_days(start_time, end_time):
     :param end_time:
     :return: list of datetimes corresponding to days
     """
-    diff = start_time - end_time
-    return [start_time + datetime.timedelta(days=+i) for i in range(diff.days + 1)]
+    diff = end_time - start_time
+    return [start_time + timedelta(days=+i) for i in range(diff.days + 1)]
 
 
 def construct_time(day, hour):

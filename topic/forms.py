@@ -11,6 +11,7 @@ from . import swingtime_settings
 from .models import Event, EventType  #,City, Occurrence
 from core.models import Topic
 from django.shortcuts import get_object_or_404
+from django.contrib.sites.models import Site
 
 
 WEEKDAY_LONG = (
@@ -28,7 +29,7 @@ MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
 # IndexForm
-# TODO improve this to automatically set the corresponding topic
+
 class IndexForm(forms.Form):
     """
     Get the 3 main informations to print on the index page
@@ -46,7 +47,6 @@ class IndexForm(forms.Form):
             #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
 
-    # city = forms.ModelChoiceField(City.objects.all())
 
     quand = forms.DateField(
             label='Quand ?',
@@ -68,7 +68,8 @@ class IndexForm(forms.Form):
                 initial=time.min,
                 widget=TimeWidget(
                     options={
-                        'pickerPosition': 'top-left'
+                        'pickerPosition': 'top-left',
+                        'minuteStep': 15,
                     },
                     usel10n=False,
                     bootstrap_version=3)
@@ -80,12 +81,28 @@ class IndexForm(forms.Form):
                 initial=time.max,
                 widget=TimeWidget(
                     options={
-                        'pickerPosition': 'top-left'
+                        'pickerPosition': 'top-left',
+                        'minuteStep': 15,
                     },
                     usel10n=False,
                     bootstrap_version=3)
                 )
 
+    # ---------------------------------------------------------------------------
+    def clean(self):
+        cleaned_data = super(IndexForm, self).clean()
+        quand = cleaned_data['quand']
+        starting_hour = cleaned_data['start_hour']
+        ending_hour = cleaned_data['end_hour']
+
+        if starting_hour and ending_hour:
+            if starting_hour > ending_hour:
+                raise forms.ValidationError("Verifier que les heures correspondent")
+
+        if quand < date.today():
+            raise forms.ValidationError("Verifier que les dates correspondent")
+
+        return self.cleaned_data
 
 # -------------------------------------------------------------------------------
 def timeslot_options(
@@ -144,22 +161,32 @@ class EventForm(forms.ModelForm):
     """
 
     # ==========================================================================
+
     class Meta:
         model = Event
         fields = "__all__"
-        exclude = ['event_planner', 'site']
+        exclude = ['event_planner', 'objects', 'on_site']
+
 
     # ---------------------------------------------------------------------------
     def __init__(self, topic, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
         self.topic = topic
+
         self.fields['event_type'] = forms.ModelChoiceField(
             EventType.objects.filter(topic=topic),
             label='Catégorie',
             #required=False,
             empty_label=None,
             widget=forms.widgets.Select)
-        #self.fields['description'].required = False
+
+        # TODO print name of the city instead of the domain_name
+        self.fields['site'] = forms.ModelChoiceField(
+            Site.objects.all(),
+            label='Ville',
+            empty_label=None,
+            to_field_name='name' # doesn't work...
+        )
 
 
 # ==============================================================================
@@ -258,8 +285,8 @@ class MultipleOccurrenceForm(forms.Form):
         label='Horaire de début',
         initial='14:00',
         widget=TimeWidget(
-            options={'pickerPosition':'top-left',
-                     'minuteStep':15,
+            options={'pickerPosition': 'top-left',
+                     'minuteStep': 15,
                     },
             bootstrap_version=3)
         )
@@ -268,8 +295,8 @@ class MultipleOccurrenceForm(forms.Form):
         label='Horaire de fin',
         initial='16:00',
         widget=TimeWidget(
-            options={'pickerPosition':'top-left',
-                     'minuteStep':15,
+            options={'pickerPosition': 'top-left',
+                     'minuteStep': 15,
                     },
             bootstrap_version=3)
         )
@@ -279,9 +306,9 @@ class MultipleOccurrenceForm(forms.Form):
         label='A partir du',
         widget=DateWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
                     },
             usel10n=True,
             bootstrap_version=3)
@@ -292,9 +319,9 @@ class MultipleOccurrenceForm(forms.Form):
         label='Jusqu\'au',
         widget=DateWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
                     },
             usel10n=True,
             bootstrap_version=3)

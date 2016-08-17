@@ -28,11 +28,17 @@
     </div>
 
     {# Input form #}
-    <form role="form" method="post">
+    <form role="form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
         <div class="row">
             <div class="col-sm-6 col-md-6">
                 <div class="thumbnail" align="center">
+
+                    {% if form.errors %}
+                        <p> {% bootstrap_alert "Merci de vérifer la date et les  horaires" alert_type='warning' %} </p>
+                    {% endif %}
+
                     {% bootstrap_field form.quand %}
                     {% bootstrap_field form.start_hour %}
                     {% bootstrap_field form.end_hour %}
