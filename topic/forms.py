@@ -29,7 +29,7 @@ MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
 # IndexForm
-# TODO improve this to automatically set the corresponding topic
+
 class IndexForm(forms.Form):
     """
     Get the 3 main informations to print on the index page
@@ -47,7 +47,6 @@ class IndexForm(forms.Form):
             #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
 
-    # city = forms.ModelChoiceField(City.objects.all())
 
     quand = forms.DateField(
             label='Quand ?',
@@ -69,7 +68,8 @@ class IndexForm(forms.Form):
                 initial=time.min,
                 widget=TimeWidget(
                     options={
-                        'pickerPosition': 'top-left'
+                        'pickerPosition': 'top-left',
+                        'minuteStep': 15,
                     },
                     usel10n=False,
                     bootstrap_version=3)
@@ -81,12 +81,28 @@ class IndexForm(forms.Form):
                 initial=time.max,
                 widget=TimeWidget(
                     options={
-                        'pickerPosition': 'top-left'
+                        'pickerPosition': 'top-left',
+                        'minuteStep': 15,
                     },
                     usel10n=False,
                     bootstrap_version=3)
                 )
 
+    # ---------------------------------------------------------------------------
+    def clean(self):
+        cleaned_data = super(IndexForm, self).clean()
+        quand = cleaned_data['quand']
+        starting_hour = cleaned_data['start_hour']
+        ending_hour = cleaned_data['end_hour']
+
+        if starting_hour and ending_hour:
+            if starting_hour > ending_hour:
+                raise forms.ValidationError("Verifier que les heures correspondent")
+
+        if quand < date.today():
+            raise forms.ValidationError("Verifier que les dates correspondent")
+
+        return self.cleaned_data
 
 # -------------------------------------------------------------------------------
 def timeslot_options(
@@ -169,9 +185,8 @@ class EventForm(forms.ModelForm):
             Site.objects.all(),
             label='Ville',
             empty_label=None,
-            to_field_name='name', # doesn't work...
+            to_field_name='name' # doesn't work...
         )
-
 
 
 # ==============================================================================
@@ -270,8 +285,8 @@ class MultipleOccurrenceForm(forms.Form):
         label='Horaire de début',
         initial='14:00',
         widget=TimeWidget(
-            options={'pickerPosition':'top-left',
-                     'minuteStep':15,
+            options={'pickerPosition': 'top-left',
+                     'minuteStep': 15,
                     },
             bootstrap_version=3)
         )
@@ -280,8 +295,8 @@ class MultipleOccurrenceForm(forms.Form):
         label='Horaire de fin',
         initial='16:00',
         widget=TimeWidget(
-            options={'pickerPosition':'top-left',
-                     'minuteStep':15,
+            options={'pickerPosition': 'top-left',
+                     'minuteStep': 15,
                     },
             bootstrap_version=3)
         )
@@ -291,9 +306,9 @@ class MultipleOccurrenceForm(forms.Form):
         label='A partir du',
         widget=DateWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
                     },
             usel10n=True,
             bootstrap_version=3)
@@ -304,9 +319,9 @@ class MultipleOccurrenceForm(forms.Form):
         label='Jusqu\'au',
         widget=DateWidget(
             options={
-                    'todayHighlight':True,
-                    'weekStart':1,
-                    'pickerPosition':'top-left'
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
                     },
             usel10n=True,
             bootstrap_version=3)
