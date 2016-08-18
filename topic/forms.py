@@ -51,15 +51,16 @@ class IndexForm(forms.Form):
     quand = forms.DateField(
             label='Quand ?',
             required=True,
-            initial=datetime.today,
-            widget=DateWidget(
-                options={
-                    'todayHighlight': True,
-                    'weekStart': 1,
-                    'pickerPosition': 'top-left'
-                },
-                usel10n=True,
-                bootstrap_version=3)
+            #initial=datetime.today,
+            #widget=DateWidget(
+                #options={
+                    #'todayHighlight': True,
+                    #'weekStart': 1,
+                    #'pickerPosition': 'top-left'
+                #},
+                #usel10n=True,
+                #bootstrap_version=3)
+            widget=forms.widgets.HiddenInput
             )
 
     start_hour = forms.TimeField(
