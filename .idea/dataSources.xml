@@ -6,6 +6,7 @@
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:D:\TodayProject\cathoDB</jdbc-url>
+      <libraries />
     </data-source>
   </component>
 </project>

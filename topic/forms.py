@@ -12,7 +12,6 @@ from .models import Event, EventType  #,City, Occurrence
 from core.models import Topic
 from django.shortcuts import get_object_or_404
 from django.contrib.sites.models import Site
-from . import widgets
 
 
 WEEKDAY_LONG = (
@@ -52,7 +51,7 @@ class IndexForm(forms.Form):
     quand = forms.DateField(
             label='Quand ?',
             required=True,
-            initial=datetime.today,
+            #initial=datetime.today,
             #widget=DateWidget(
                 #options={
                     #'todayHighlight': True,
@@ -61,7 +60,7 @@ class IndexForm(forms.Form):
                 #},
                 #usel10n=True,
                 #bootstrap_version=3)
-            widget=widgets.CalendarWidget()
+            widget=forms.widgets.HiddenInput
             )
 
     start_hour = forms.TimeField(
