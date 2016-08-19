@@ -47,3 +47,7 @@ class NewEventView(TemplateView):
 
 class CGUView(TemplateView):
     template_name = 'core/CGU.html'
+
+
+class TeamView(TemplateView):
+    template_name = 'core/team.html'

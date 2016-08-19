@@ -13,10 +13,12 @@ class ConnexionForm(forms.Form):
 
 class MyUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    cgu_checked = forms.BooleanField(required=True,
+                                     label='J\'accepte les Conditions Générales d\'Utilisation')
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["username", "email", "password1", "password2", "cgu_checked"]
 
     def save(self, commit=True):
         user = super(MyUserCreationForm, self).save(commit=False)

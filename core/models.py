@@ -12,7 +12,7 @@ class Topic(models.Model):
     """
     name = models.CharField(verbose_name="Thématique",
                             max_length=50,
-                            default=None)
+                            default='catho')
 
     class Meta:
         verbose_name = 'topic'
