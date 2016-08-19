@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
-    'django.contrib.sites'
+    'django.contrib.sites',
+    'widget.apps.WidgetConfig',
 
 ]
 

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User, AnonymousUser
 @python_2_unicode_compatible
 class EnjoyTodayUser(models.Model):
     user = models.OneToOneField(User,
-                                default=AnonymousUser)
+                                default=None)
 
     #other attributes if needed
 

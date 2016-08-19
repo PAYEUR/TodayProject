@@ -186,7 +186,7 @@ class EventForm(forms.ModelForm):
             Site.objects.all(),
             label='Ville',
             empty_label=None,
-            to_field_name='name' # doesn't work...
+            #to_field_name='name'  # doesn't work...
         )
 
 

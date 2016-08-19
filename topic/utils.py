@@ -57,23 +57,12 @@ def construct_hour_string(datetime_hour):
 
 # management of event_types useful functions
 # -------------------------------------------------------------------------------
-def is_event_type_list(id_list):
-    event_type_id_list = [str(event_type.id) for event_type in EventType.objects.all()]
-    for elt in id_list:
-        if elt not in event_type_id_list:
-            raise ValueError("'string' must be on event_type_list_string format")
-
 
 def get_event_type_list(event_type_id_string, current_topic):
     """unsplit event_type_list_string such as 1&2&3 into event_type_id and return corresponding EventTypes"""
-    id_list = event_type_id_string.split('&')
-    try:
-        is_event_type_list(id_list)
-    except ValueError:
-        return EventType.objects.filter(event__event_type__topic=current_topic)
-    else:
-        return EventType.objects.filter(id__in=[int(i) for i in id_list],
-                                        event__event_type__topic=current_topic)
+    id_list = [int(i) for i in event_type_id_string.split('&')]
+    return EventType.objects.filter(id__in=id_list,
+                                    topic=current_topic)
 
 
 def create_id_string(object_list):

@@ -29,38 +29,41 @@
     </nav>
 
 
-<div class="container">
-    <div class="row">
-
-        <div class="col-sm-9">
-            {% block content %}(no content){% endblock %}
-        </div>
-
-        <div class="col-sm-offset-1 col-sm-2">
-            {% block sidebar %}
-                {% include "core/sidebar.html" %}
-            {% endblock %}
-        </div>
-    </div>
-</div>
-
-{% block footer %}
-<footer class="footer">
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-md-4">
-                <a class="text-muted" href="{% url 'core:team' %}">&copy; 2016 TodayProject</a>
+
+            <div class="col-sm-9">
+                {% block content %}(no content){% endblock %}
             </div>
-            <div class="col-sm-12 col-md-4">
-                <a class="text-muted" href="{% url 'core:contact' %}">Nous contacter</a>
-            </div>
-            <div class="col-sm-12 col-md-4">
-                <a class="text-muted" href="{% url 'core:CGU' %}">Conditions Générales d'Utilisation</a>
+
+            <div class="col-sm-offset-1 col-sm-2">
+                {% block sidebar %}
+                    {% include "core/sidebar.html" %}
+                {% endblock %}
             </div>
         </div>
     </div>
-</footer>
+
+    {% block footer %}
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4">
+                        <a class="text-muted" href="{% url 'core:team' %}">&copy; 2016 TodayProject</a>
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <a class="text-muted" href="{% url 'core:contact' %}">Nous contacter</a>
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <a class="text-muted" href="{% url 'core:CGU' %}">Conditions Générales d'Utilisation</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
+
 {% endblock %}
 
- </div>
+{% block bootstrap3_extra_script %}
+    {% block base_extra_script %}{% endblock %}
 {% endblock %}

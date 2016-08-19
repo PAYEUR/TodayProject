@@ -73,7 +73,6 @@ class Event(models.Model):
                                    default=None
                                    )
 
-
     image = models.ImageField(verbose_name="Image",
                               default=None,
                               upload_to='events/')
@@ -107,7 +106,8 @@ class Event(models.Model):
 
     site = models.ForeignKey(Site,
                              on_delete=models.CASCADE,
-                             default=Site.objects.get(name__contains='paris')
+                             # if affected, breaks
+                             # default=None,
                              )
 
     objects = models.Manager()

@@ -4,18 +4,23 @@
 {% load static %}
 
 
-{% block title %}
-    Menu Principal
-{% endblock %}
+{% block title %}Menu Principal{% endblock %}
 
+<!-- Bootstrap Date-Picker Plugin -->
 {% block base_extra_head %}
     {{ form.media }}
-     <!-- Bootstrap Date-Picker Plugin -->
-    {%  include "topic/calendar_js.html" %}
+    {%  include "widget/calendar_css.html" %}
+{% endblock %}
+
+{% block base_extra_script %}
+    {%  include "widget/calendar_js.html" %}
 {% endblock %}
 
 {# removed sidebar here #}
 {% block sidebar %}{% endblock %}
+
+{# removed sidebar here #}
+{% block footer %}{% endblock %}
 
 
 {% block content %}
@@ -84,5 +89,3 @@
 
 {% endblock %}
 
-{% block footer %}
-{% endblock %}
