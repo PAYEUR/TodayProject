@@ -25,11 +25,6 @@
             <div class="thumbnail">
                 <div class="caption">
                     <p>{{ occurrence.event.description|linebreaks }}</p>
-
-                    {# Organisateur #}
-                    {%  if occurrence.event.event_planner.user.email %}
-                        <strong> Posté par: {{ occurrence.event.event_planner.user.username }} ({{ occurrence.event.event_planner.user.email }})</strong>
-                    {% endif %}
                 </div>
             </div>
         </div>
