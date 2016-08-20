@@ -42,7 +42,7 @@ class IndexForm(forms.Form):
 
         self.fields['quoi'] = forms.ModelMultipleChoiceField(
             EventType.objects.filter(topic=topic),
-            label='Quoi?',
+            label='Quoi ?',
             required=False,
             #empty_label=None,
             widget=forms.widgets.CheckboxSelectMultiple)
@@ -64,7 +64,7 @@ class IndexForm(forms.Form):
             )
 
     start_hour = forms.TimeField(
-                label="Horaire de début",
+                label="Début",
                 required="False",
                 initial=time.min,
                 widget=TimeWidget(
@@ -77,7 +77,7 @@ class IndexForm(forms.Form):
                 )
 
     end_hour = forms.TimeField(
-                label="Horaire de fin",
+                label="Fin",
                 required="False",
                 initial=time.max,
                 widget=TimeWidget(

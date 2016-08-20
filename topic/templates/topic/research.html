@@ -33,6 +33,7 @@
     <br>
     <form role="form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    {% bootstrap_field form.quand %}{# hidden field #}
 
         <div class=row>
             {% if form.errors %}
@@ -40,23 +41,28 @@
             {% endif %}
 
             <div class="col-md-4 col-sm-12" align="center">
-                <p><strong>Où ?</strong></p>
-                <p><strong>{{request.site.name}}</strong></p>
+                <h2> Où ? </h2><br>
+                <a href="{% url 'core:index' %}" role="button" class="btn btn-danger btn-lg">
+                    <span class="glyphicon glyphicon-map-marker"></span>
+                    {{request.site.name}}
+                </a>
             </div>
 
             <div class="col-md-4 col-sm-12" align="center">
+                <div id="calendar"> <h2> Quand ?</h2></div><br>
                 <div class="row">
-                    <div id="calendar" align="center"><p class="col-12 text-center"> <strong>Quand ?</strong></p></div>
-                    <div class="col-5">{% bootstrap_field form.start_hour %}</div>
-                    <div class="col-5">{% bootstrap_field form.end_hour %}</div>
+                    <div class="col-md-6 col-sm-6">{% bootstrap_field form.start_hour %}</div>
+                    <div class="col-md-6 col-sm-6">{% bootstrap_field form.end_hour %}</div>
                 </div>
             </div>
 
             <div class="col-md-4 col-sm-12" align="center">
-                {% bootstrap_field form.quoi %}
+                 <h2> Quoi ?</h2><br>
+                {% bootstrap_field form.quoi show_label=False size="large"%}
             </div>
         </div>
 
+        <br>
 
         <div class="row">
             <div class="col-sm-12 col-md-12" align="center">
@@ -66,15 +72,15 @@
 
     </form>
 
+        <br>
+        <br>
+
     <div class="row">
         <div class="col-sm-12 col-md-12" align="center">
-            <br>
-            <br>
             <a href="{% url 'topic:crud:nouvel_evenement' %}" role="button" class="btn btn-info btn-md">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>
-
         </div>
     </div>
     <br>
