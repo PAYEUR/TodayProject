@@ -9,17 +9,20 @@
 
 {% block content %}
 
-    <div class="jumbotron">
-        <h1>
-            {% if days|length > 1 and days|length <= 25 %}
-                Les prochains jours
-            {% elif days|length > 25 %}
-                {{ days|first|date:"F Y"|capfirst}}
-            {% else %}
-                {{ days|first|date:"l d F Y"|capfirst }}
-             {% endif %}
-        </h1>
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <h1>
+                {% if days|length > 1 and days|length <= 25 %}
+                    Les prochains jours
+                {% elif days|length > 25 %}
+                    {{ days|first|date:"F Y"|capfirst}}
+                {% else %}
+                    {{ days|first|date:"l d F Y"|capfirst }}
+                 {% endif %}
+            </h1>
+        </div>
     </div>
+
 
 
     {% for event_type, occurrences in sorted_occurrences.items %}
