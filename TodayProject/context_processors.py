@@ -1,7 +1,9 @@
 # coding = utf8
 from topic.models import EventType
 from core.models import Topic
+from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 
 def topic_list(request):
@@ -25,3 +27,7 @@ def topic_sidebar(request):
         context['current_topic'] = current_topic
         context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context
+
+
+def site(request):
+    return {'site': Site.objects.get(id=settings.SITE_ID)}

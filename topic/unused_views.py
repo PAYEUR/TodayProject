@@ -1,15 +1,15 @@
 import calendar
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
-from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-from .forms import IndexForm
-from .models import EventType, Occurrence, Event, EnjoyTodayUser
-from django.views.generic import DetailView, DayArchiveView, ListView
-from . import swingtime_settings
-from django.conf import settings
-from core.utils import get_current_topic
 
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404, render, redirect
+from django.views.generic import DetailView
+
+from core import swingtime_settings
+from core.utils import get_current_topic
+from .forms import IndexForm
+from .models import EventType, Occurrence
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)

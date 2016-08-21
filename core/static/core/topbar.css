@@ -69,13 +69,12 @@
 }
 
 /*-------------------------------------*/
-/* doesn't work
 .navbar-default .navbar-city {
-  color: black;
+  color: white;
   background-color: #c52022;
 }
 .navbar-default .navbar-city:hover,
 .navbar-default .navbar-city:focus {
-  color: black;
+  color: #c52022;
+  background-color: white;
 }
-*/

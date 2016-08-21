@@ -13,6 +13,9 @@ from location.models import City
 from core.models import Topic
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
+from core.utils import get_current_site
+
+
 
 __all__ = (
     'EventType',
@@ -95,10 +98,6 @@ class Event(models.Model):
                                       verbose_name='annonceur',
                                       )
 
-    #Will remove this and use google place API instead
-    #city = models.ForeignKey(City,
-                             #verbose_name="Ville",
-                             #default={'city_name': "Paris"})
 
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
@@ -179,12 +178,6 @@ class Event(models.Model):
         upcoming = self.upcoming_occurrences()
         return upcoming[0] if upcoming else None
 
-    # --------------------------------------------------------------------------
-    def daily_occurrences(self, dt=None):
-        """
-        Convenience method wrapping ``Occurrence.objects.daily_occurrences``.
-        """
-        return Occurrence.objects.daily_occurrences(dt=dt, event=self)
 
 
 # ==============================================================================
@@ -248,7 +241,7 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def __str__(self):
-        return u'{}: {}'.format(self.title, self.start_time.isoformat())
+        return u'{}: {}'.format(self.event.title, self.start_time.isoformat())
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
@@ -263,14 +256,3 @@ class Occurrence(models.Model):
     # --------------------------------------------------------------------------
     def __lt__(self, other):
         return self.start_time < other.start_time
-
-    # -------------------------------------
-    # Pas bien sur de ces deux proprietes
-    @cached_property
-    def title(self):
-        return self.event.title
-
-    # --------------------------------------------------------------------------
-    @cached_property
-    def event_type(self):
-        return self.event.event_type

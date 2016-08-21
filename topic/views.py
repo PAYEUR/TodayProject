@@ -1,16 +1,16 @@
-from .models import Occurrence, EventType
-from django.shortcuts import render, redirect
-
-from django.conf import settings
-from core.utils import get_current_topic
-from . import utils
+# coding=utf-8
+import calendar
 from datetime import datetime, date, time
 
-from .forms import IndexForm
-import calendar
-from . import swingtime_settings
-from django.views.generic import DetailView
 from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
+from django.views.generic import DetailView
+
+from core import swingtime_settings
+from core.utils import get_current_topic, get_current_site
+from . import utils
+from .forms import IndexForm
+from .models import Occurrence, EventType
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
@@ -68,11 +68,11 @@ class OccurrenceDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OccurrenceDetail, self).get_context_data(**kwargs)
+        address = self.object.event.address
         # TODO improve this using location.address
-        if self.object.event.address != "non precise":
-            address = self.object.event.address + ", France"
-        else:
-            address = False
+        if address == u'non précisé':
+            address += str(", " + str(get_current_site(self.request).name))
+
         context['address'] = address
 
         return context
@@ -81,7 +81,7 @@ class OccurrenceDetail(DetailView):
 # mother function
 def _get_events(request, event_type_list, start_time, end_time):
 
-    site = settings.SITE_ID
+    site = get_current_site(request)
     topic = get_current_topic(request)
     title = ' - '.join([event.label for event in event_type_list])
     template = 'topic/sorted_events.html'
