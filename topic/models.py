@@ -64,6 +64,10 @@ class Event(models.Model):
     """
     Container model for general metadata and associated ``Occurrence`` entries.
     """
+    image = models.ImageField(verbose_name="Image",
+                          default=None,
+                          upload_to='events/')
+
     title = models.CharField(verbose_name="Titre",
                              max_length=100,
                              default=None)
@@ -76,12 +80,25 @@ class Event(models.Model):
                                    default=None
                                    )
 
-    image = models.ImageField(verbose_name="Image",
-                              default=None,
-                              upload_to='events/')
-
     price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
                                              default=0)
+
+    #-------------------------------------------------------------
+    # Not for today
+
+    #contact = models.CharField(verbose_name="Contact éventuel",
+    #                           max_length=350,
+    #                           default=None,
+    #                           null=True,
+    #                           blank=True)
+
+    #website = models.CharField(verbose_name="Site internet officiel",
+    #                           max_length=100,
+    #                           default=None,
+    #                           null=True,
+    #                           blank=True)
+
+    #--------------------------------------------------------------------
 
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFill(800, 300)],
@@ -97,7 +114,6 @@ class Event(models.Model):
                                       # editable=False,
                                       verbose_name='annonceur',
                                       )
-
 
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
