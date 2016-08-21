@@ -1,7 +1,7 @@
 {% extends 'core/topbar.html' %}
 
  {% block city %}
-     <a class="navbar-brand" href="{% url 'core:index' %}" xmlns:color="http://www.w3.org/1999/xhtml"> <strong>{{request.site.name}}</strong></a>
+    <strong>{{request.site.name}}</strong>
  {% endblock %}
 
 {% block research %}
@@ -18,6 +18,13 @@
           <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
         {% endif %}
       {% endfor %}
+
+        {# remove jobs temporarly #}
+        <li><a href="{% url 'not_implemented:not_implemented' %}">jobs</a></li>
+
     {% endif %}
+
+
+
 
 {% endblock %}

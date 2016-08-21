@@ -3,12 +3,13 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 # from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 # ==============================================================================
 @python_2_unicode_compatible
 class EnjoyTodayUser(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User,
+                                default=None)
 
     #other attributes if needed
 

@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
-    'django.contrib.sites'
+    'django.contrib.sites',
+    'widget.apps.WidgetConfig',
+    'not_implemented.apps.NotImplementedConfig',
 
 ]
 
@@ -75,9 +77,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                #added both:
+                #added :
                 'TodayProject.context_processors.topic_sidebar',
-                'TodayProject.context_processors.topic_list'
+                'TodayProject.context_processors.topic_list',
+                'TodayProject.context_processors.site',
             ],
         },
     },

@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 
 {% block title %}
-    Ajouter des occurrences
+    Nouvel événement {{ current_topic }}
 {% endblock %}
 
 {# to allow recurrence_form.query #}
@@ -13,21 +13,15 @@
 
 {% block content %}
 
+    <div class="jumbotron">
+        <h1>Ajouter un événement {{ current_topic }}</h1>
+    </div>
+
     {% if recurrence_form.errors %}
         <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
     {% endif %}
 
-    <div id="description" class="row">
-        <div class="col-sm-12 col-md-8">
-            <div class="thumbnail">
-                <div class="caption">
-                    <img src="{{ event.image_main.url }}" class="img-responsive" alt="..." />
-                    <h2>{{ event.title }}</h2>
-                </div>
-            </div>
-            <h3> Ajouter des occurrences</h3>
-        </div>
-    </div>
+    <p> {% bootstrap_alert "Choisissez une image qui met en valeur votre annonce" alert_type='danger' %} </p>
 
 
     <form role="form" method="post" enctype="multipart/form-data">
@@ -37,7 +31,7 @@
             <h3>Date n°{{forloop.counter}}</h3>
             {% bootstrap_form form %}
         {% endfor %}
-        {% buttons submit='OK' reset="Cancel" %}{% endbuttons %}
+        {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
     </form>
 
 {% endblock %}

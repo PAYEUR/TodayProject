@@ -13,7 +13,8 @@ app_name = 'core'
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index"),
     url(r'^contact$', ContactView.as_view(), name="contact"),
-    url(r'^tableau_de_bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
-    url(r'^nouvel_evenement$', NewEventView.as_view(), name="new_event"),
-    url(r'^conditions_generales_d_utilisation', CGUView.as_view(), name="CGU"),
+    url(r'^l-equipe-enjoytoday', TeamView.as_view(), name="team"),
+    url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
+    url(r'^nouvel-evenement$', NewEventView.as_view(), name="new_event"),
+    url(r'^conditions-generales-d-utilisation', CGUView.as_view(), name="CGU"),
     ]

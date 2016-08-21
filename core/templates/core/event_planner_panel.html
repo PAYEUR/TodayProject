@@ -18,10 +18,12 @@
             <div class="thumbnail">
                 <p>Votre login: {{ event_planner.user.username }}</p>
                 <p>Votre email: {{ event_planner.user.email }}</p>
-                {#<p><a href="">Modifier mon mot de passe</a></p>#}
+                <p> <em> Pour modifier des paramètres liés à votre compte, ou pour toute question, merci de nous contacter:</em><br>
+                    <a href="mailto:enjoytodayproject@gmail.com">enjoytodayproject@gmail.com</a>
+                </p>
             </div>
         </div>
-        <h2>Mes événements:</h2>
+        <h2>Vos événements:</h2>
 
         {% if events %}
             {% for event in events %}
@@ -55,7 +57,7 @@
                                     <p role = presentation>
 
                                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                            <a href="{{ occurrence.get_absolute_url }}">{{ occurrence.start_time|date:"D d F" }}
+                                            <a href="{{ occurrence.get_absolute_url }}">{{ occurrence.start_time|date:"D d N" }}
                                             {# </a> #}
 
                                             {#<span class="glyphicon glyphicon-time" aria-hidden="true"></span>#}

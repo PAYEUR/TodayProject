@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from topic.forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
+from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
 from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 from core.utils import get_current_topic
 from django.contrib.sites.shortcuts import get_current_site

@@ -1,5 +1,7 @@
 from .models import Topic
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.contrib.sites.models import Site
 
 def get_current_topic(request):
     """
@@ -13,3 +15,6 @@ def get_current_topic(request):
         return get_object_or_404(Topic, name=mother_namespace)
     else:
         return None
+
+def get_current_site(request):
+    return Site.objects.get(id=settings.SITE_ID)
