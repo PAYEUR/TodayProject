@@ -16,12 +16,14 @@
 
             <p> {% bootstrap_alert "Êtes vous sûr de vouloir supprimer l'événement?" alert_type='danger' %} </p>
 
-            <p>
-                 <form role="form" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
+
+            <form role="form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+                 <p>
                     {% bootstrap_button "Oui" button_type="submit" button_class="btn-danger"%}
-                 </form>
-            </p>
+                 </p>
+            </form>
+
 
             <p>
                 <a href="{% url 'core:event_planner_panel' %}" role="button" class="btn btn-warning">

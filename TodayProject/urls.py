@@ -27,8 +27,7 @@ urlpatterns = [
     #the following namespaces have to be the same as topic.names in core.models.topic
     url(r'^catho/', include('topic.urls', namespace='catho')),
     url(r'^jobs/', include('topic.urls', namespace='jobs')),
-    #for name in list_topic_name:
-        #url(r'name, include(topic.urls, namespace=name))
+    url(r'^', include('not_implemented.urls')),
 
 
     # media images deployment in development. Need change for production

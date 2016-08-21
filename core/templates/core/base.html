@@ -7,6 +7,7 @@
 {# make sure that childrens of this template don't call bootstrap3_extra_head #}
 {% block bootstrap3_extra_head %}
     <link href="{%  static 'core/base.css' %}" rel="stylesheet">
+    <link href="{%  static 'core/topbar.css' %}" rel="stylesheet">
     <link href="{%  static 'core/footer.css' %}" rel="stylesheet">
     <link rel="icon" type="image/png" href="{% static 'core/logo_carre.png'%}" />
     {% block base_extra_head %}{% endblock %}
@@ -20,13 +21,9 @@
 
 {% block bootstrap3_content %}
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-          {% block topbar %}
-            {% include "core/topbar.html" %}
-          {% endblock %}
-      </div>
-    </nav>
+    {% block topbar %}
+        {% include "topic/topbar.html" %}
+    {% endblock %}
 
 
     <div class="container">
@@ -38,31 +35,14 @@
 
             <div class="col-sm-offset-1 col-sm-2">
                 {% block sidebar %}
-                    {% include "core/sidebar.html" %}
+                    {# include "core/sidebar.html" #}
                 {% endblock %}
             </div>
         </div>
     </div>
 
     {% block footer %}
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12 col-md-3">
-                        <a class="text-muted" href="{% url 'core:team' %}">&copy; 2016 EnjoyToday</a>
-                    </div>
-                    <div class="col-sm-12 col-md-3">
-                        <a class="text-muted" href="{% url 'core:team' %}">Qui sommes-nous ?</a>
-                    </div>
-                    <div class="col-sm-12 col-md-3">
-                        <a class="text-muted" href="{% url 'core:contact' %}">Nous contacter</a>
-                    </div>
-                    <div class="col-sm-12 col-md-3">
-                        <a class="text-muted" href="{% url 'core:CGU' %}">Conditions Générales d'Utilisation</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
+    {% include "core/footer.html" %}
     {% endblock %}
 
 {% endblock %}
