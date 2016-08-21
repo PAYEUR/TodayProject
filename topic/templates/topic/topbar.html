@@ -18,6 +18,13 @@
           <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
         {% endif %}
       {% endfor %}
+
+        {# remove jobs temporarly #}
+        <li><a href="{% url 'not_implemented:not_implemented' %}">jobs</a></li>
+
     {% endif %}
+
+
+
 
 {% endblock %}

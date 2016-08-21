@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'location.apps.LocationConfig',
     'django.contrib.sites',
     'widget.apps.WidgetConfig',
+    'not_implemented.apps.NotImplementedConfig',
 
 ]
 

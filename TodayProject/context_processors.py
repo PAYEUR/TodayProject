@@ -7,7 +7,8 @@ from django.conf import settings
 
 
 def topic_list(request):
-    return {'topic_list':  Topic.objects.all()}
+    # modified to only take into account catho event
+    return {'topic_list':  Topic.objects.filter(name__contains='catho')}
 
 
 def topic_sidebar(request):
