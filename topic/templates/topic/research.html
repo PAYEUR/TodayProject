@@ -33,7 +33,7 @@
     <br>
     <form role="form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% bootstrap_field form.quand %}{# hidden field #}
+    {% bootstrap_field form.quand %}{# hidden field that receive calendar input#}
 
         <div class=row>
             {% if form.errors %}
@@ -42,9 +42,9 @@
 
             <div class="col-md-4 col-sm-12" align="center">
                 <h2> Où ? </h2><br>
-                <a href="{% url 'core:index' %}" role="button" class="btn btn-danger btn-lg">
+                <a href="http://wwww.enjoytoday.fr" role="button" class="btn btn-danger btn-lg">
                     <span class="glyphicon glyphicon-map-marker"></span>
-                    {{request.site.name}}
+                    {{site.name}}
                 </a>
             </div>
 
