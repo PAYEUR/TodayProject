@@ -4,6 +4,7 @@ from core.models import Topic
 from django.contrib.sites.models import Site
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from core import utils
 
 
 def topic_list(request):
@@ -31,5 +32,4 @@ def topic_sidebar(request):
 
 
 def site(request):
-    Site.objects.clear_cache()
-    return {'site': Site.objects.get(id=settings.SITE_ID)}
+    return {'site': utils.get_current_site(request)}
