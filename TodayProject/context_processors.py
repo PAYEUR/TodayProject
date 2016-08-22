@@ -31,4 +31,5 @@ def topic_sidebar(request):
 
 
 def site(request):
+    Site.objects.clear_cache()
     return {'site': Site.objects.get(id=settings.SITE_ID)}
