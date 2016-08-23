@@ -246,8 +246,8 @@ class Occurrence(models.Model):
     objects = OccurrenceManager()
     is_multiple = models.BooleanField(default=False)
 
-    #site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    #on_site = CurrentSiteManager()
+    # site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    # on_site = CurrentSiteManager()
 
     # ==========================================================================
     class Meta:
