@@ -14,7 +14,7 @@ from core.models import Topic
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from core.utils import get_current_site
-
+from django.contrib.auth.models import AnonymousUser
 
 
 __all__ = (
@@ -32,13 +32,18 @@ class EventType(models.Model):
     """
     topic = models.ForeignKey(Topic,
                               verbose_name='Thematique',
-                              default=None)
+                              default=None,
+                              null=True,
+                              on_delete=models.SET_DEFAULT)
 
     label = models.CharField(verbose_name='label',
                              max_length=50,
                              default='autres')
+
     image = models.ImageField(default=None,
+                              null=True,
                               upload_to='event_types/')
+
     #image_main = ImageSpecField(source='image',
                                 #processors=[ResizeToFit(450, 300)],
                                 #format='JPEG',
@@ -65,19 +70,24 @@ class Event(models.Model):
     Container model for general metadata and associated ``Occurrence`` entries.
     """
     image = models.ImageField(verbose_name="Image",
-                          default=None,
-                          upload_to='events/')
+                              default=None,
+                              null=True,
+                              upload_to='events/')
 
     title = models.CharField(verbose_name="Titre",
                              max_length=100,
-                             default=None)
+                             default=None,
+                             null=True)
 
     description = models.TextField(verbose_name="Description",
-                                   default=None)
+                                   default=None,
+                                   null=True)
 
     event_type = models.ForeignKey(EventType,
                                    verbose_name="Catégorie",
-                                   default=None
+                                   default=None,
+                                   null=True,
+                                   on_delete=models.SET_DEFAULT,
                                    )
 
     price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
@@ -107,11 +117,9 @@ class Event(models.Model):
                                 )
 
     event_planner = models.ForeignKey(EnjoyTodayUser,
-                                      on_delete=models.SET_NULL,
+                                      on_delete=models.CASCADE,
                                       default=None,
                                       null=True,
-                                      blank=True,
-                                      # editable=False,
                                       verbose_name='annonceur',
                                       )
 
@@ -120,7 +128,9 @@ class Event(models.Model):
                                default="non précisé")
 
     site = models.ForeignKey(Site,
-                             on_delete=models.CASCADE,
+                             default=None,
+                             null=True,
+                             on_delete=models.SET_DEFAULT,
                              # if affected, breaks
                              # default=None,
                              )
@@ -233,6 +243,7 @@ class OccurrenceManager(models.Manager):
 
         return qs.filter(event=event) if event else qs
 
+
 # ==============================================================================
 @python_2_unicode_compatible
 class Occurrence(models.Model):
@@ -242,12 +253,14 @@ class Occurrence(models.Model):
     """
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    event = models.ForeignKey(Event, editable=False)
+    event = models.ForeignKey(Event,
+                              editable=False,
+                              on_delete=models.CASCADE)
     objects = OccurrenceManager()
     is_multiple = models.BooleanField(default=False)
 
-    #site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    #on_site = CurrentSiteManager()
+    # site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    # on_site = CurrentSiteManager()
 
     # ==========================================================================
     class Meta:
