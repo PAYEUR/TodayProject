@@ -36,14 +36,14 @@
         </div>
         {% if occurrences %}
             <div class="caption">
-                <div class="row" >
-                    {% for occurrence in occurrences %}
-                        <div class="col-sm-12 col-md-4">
-                        {# TODO fix the jump due to size here #}
+                {% for occurrence in occurrences %}
+                    {% if forloop.first %}<div class="row" >{% endif %}
+                        <div class="col-sm-6 col-md-4">
                             {%  include "topic/thumbnail.html" %}
                         </div>
-                    {% endfor %}
-                </div>
+                    {% if forloop.counter|divisibleby:3 %}</div><div class="row">{% endif %}
+                    {% if forloop.last %}</div>{% endif %}
+                {% endfor %}
             </div>
         {# if no occurence in the category #}
         {% else %}
