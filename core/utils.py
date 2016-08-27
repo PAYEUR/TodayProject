@@ -16,8 +16,3 @@ def get_current_topic(request):
         return get_object_or_404(Topic, name=mother_namespace)
     else:
         return None
-
-
-def get_current_site(request):
-    Site.objects.clear_cache()
-    return Site.objects.get(id=settings.SITE_ID)
