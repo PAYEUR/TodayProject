@@ -80,7 +80,6 @@ TEMPLATES = [
                 #added :
                 'TodayProject.context_processors.topic_sidebar',
                 'TodayProject.context_processors.topic_list',
-                'TodayProject.context_processors.site',
             ],
         },
     },

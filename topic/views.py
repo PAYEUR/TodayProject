@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 
 from core import swingtime_settings
-from core.utils import get_current_topic, get_current_site
+from core.utils import get_current_topic
 from . import utils
 from .forms import IndexForm
 from .models import Occurrence, EventType
@@ -71,7 +71,7 @@ class OccurrenceDetail(DetailView):
         address = self.object.event.address
         # TODO improve this using location.address
         if address == u'non précisé':
-            address += str(", " + str(get_current_site(self.request).name))
+            address += str(", " + str(self.request.site.name))
 
         context['address'] = address
 
@@ -81,7 +81,7 @@ class OccurrenceDetail(DetailView):
 # mother function
 def _get_events(request, event_type_list, start_time, end_time):
 
-    site = get_current_site(request)
+    current_site = request.site
     topic = get_current_topic(request)
     title = ' - '.join([event.label for event in event_type_list])
     template = 'topic/sorted_events.html'
@@ -90,7 +90,7 @@ def _get_events(request, event_type_list, start_time, end_time):
 
     for event_type in event_type_list:
         occurrences = Occurrence.objects.filter(event__event_type__topic=topic,
-                                                event__site=site,
+                                                event__site=current_site,
                                                 event__event_type=event_type,
                                                 start_time__gte=start_time,
                                                 end_time__lte=end_time)

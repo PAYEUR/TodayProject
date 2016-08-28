@@ -4,4 +4,3 @@ from settings import *
 #MEDIA_URL = 'nice/media/'
 
 SITE_ID = 3
-ALLOWED_HOSTS = ['localhost_nice.fr']
