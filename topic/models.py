@@ -13,8 +13,6 @@ from location.models import City
 from core.models import Topic
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
-from core.utils import get_current_site
-from django.contrib.auth.models import AnonymousUser
 
 
 __all__ = (

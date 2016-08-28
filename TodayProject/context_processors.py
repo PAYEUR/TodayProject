@@ -28,6 +28,3 @@ def topic_sidebar(request):
         context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context
 
-
-def site(request):
-    return {'site': utils.get_current_site(request)}
