@@ -125,6 +125,7 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     date = forms.DateField(
         required=True,
+        initial=date.today,
         label='Date',
         widget=DateWidget(
             options={
@@ -138,6 +139,7 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
+        initial='14:00',
         label='Horaire de début',
         widget=TimeWidget(
             options={
@@ -148,7 +150,8 @@ class SingleOccurrenceForm(forms.Form):
         )
 
     end_time = forms.TimeField(
-        required=False,
+        required=True,
+        initial='22:30',
         label='Horaire de fin',
         widget=TimeWidget(
             options={
@@ -216,8 +219,9 @@ class MultipleOccurrenceForm(forms.Form):
         )
 
     ending_hour = forms.TimeField(
+        required=True,
         label='Horaire de fin',
-        initial='16:00',
+        initial='22:30',
         widget=TimeWidget(
             options={'pickerPosition': 'top-left',
                      'minuteStep': 15,
@@ -227,7 +231,9 @@ class MultipleOccurrenceForm(forms.Form):
 
     ## date options
     start_day = forms.DateField(
+        required=True,
         label='A partir du',
+        initial=date.today,
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -240,7 +246,9 @@ class MultipleOccurrenceForm(forms.Form):
 
 
     end_day = forms.DateField(
+        required=True,
         label='Jusqu\'au',
+        initial=date(date.today().year, 12, 31),
         widget=DateWidget(
             options={
                     'todayHighlight': True,
