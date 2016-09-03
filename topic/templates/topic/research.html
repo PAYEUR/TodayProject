@@ -4,7 +4,12 @@
 {% load static %}
 
 
-{% block title %}Menu Principal{% endblock %}
+{% block title %}{{current_topic.name|capfirst}}: rechercher sur {{city_name|capfirst}}{% endblock %}
+
+
+{% block description %}
+    Rechercher des propositions {{current_topic.name|capfirst}} sur {{city_name|capfirst}}.
+{% endblock %}
 
 <!-- Bootstrap Date-Picker Plugin -->
 {% block base_extra_head %}
@@ -40,7 +45,7 @@
                 <p> {% bootstrap_alert "Merci de vérifer la date et les  horaires" alert_type='warning' %} </p>
             {% endif %}
 
-            <div class="col-md-4 col-sm-12" align="center">
+            <div class="col-md-4 col-sm-12" align="left">
                 <h2> Où ? </h2><br>
                 <a href="http://www.enjoytoday.fr" role="button" class="btn btn-danger btn-lg">
                     <span class="glyphicon glyphicon-map-marker"></span>
@@ -56,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12" align="center">
+            <div class="col-md-4 col-sm-12" align="right">
                  <h2> Quoi ?</h2><br>
                 {% bootstrap_field form.quoi show_label=False size="large"%}
             </div>
