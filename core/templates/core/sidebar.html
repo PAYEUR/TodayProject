@@ -1,17 +1,14 @@
 {# has to be written properly: no idea of navbar aims for the moment #}
 {# we have core_sidebar in context processor though #}
- <ul class="nav nav-sidebar">
-     {% block top_sidebar %}
-     {% endblock %}
-  </ul>
+<div class="hidden-xs">
+    <br>
+</div>
 
-  <ul class="nav nav-sidebar">
-    {% if topic_list %}
-      {% for topic in topic_list %}
-        <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
-      {% endfor %}
-    {% endif %}
-  </ul>
+<ul class="nav nav-sidebar">
+    {% for website in sites %}
+        <li><a href="http://{{ website.domain }}/catho">Rechercher sur {{ website.name|capfirst }}</a></li>
+    {% endfor %}
+</ul>
 
   <ul class="nav nav-sidebar">
     {% block bottom_sidebar %}

@@ -3,6 +3,7 @@ from topic.models import EventType
 from core.models import Topic
 from django.shortcuts import get_object_or_404
 from core import utils
+from django.contrib.sites.models import Site
 
 
 def topic_list(request):
@@ -39,3 +40,11 @@ def city_name(request):
     a = current_url.split('//')[1]
     b = a.split('.')[0]
     return {'city_name' : b.title()}
+
+
+# TODO rearrange architecture to remove the exclude
+def sites(request):
+    """
+    :param request:
+    """
+    return {'sites': Site.objects.exclude(domain='www.enjoytoday.fr')}
