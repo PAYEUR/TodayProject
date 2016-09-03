@@ -4,7 +4,11 @@
 {% load static %}
 
 {% block title %}
-    Contact
+    Contacter EnjoyToday
+{% endblock %}
+
+{% block description %}
+    Contacter l'équipe d'EnjoyToday.fr
 {% endblock %}
 
 {% block content %}
@@ -15,7 +19,8 @@
         <div class="col-sm-12 col-md-12">
             <div class="thumbnail" align="center">
                 <div class="caption">
-                    <p> {% bootstrap_alert "Une question, un bugg? Ecrivez-nous!!" %}</p>
+                    <p> {% bootstrap_alert "Une question, un bugg ? Ecrivez-nous !!" %}</p>
+                    <p> {% bootstrap_alert "Des idées à nous suggérer ? Envoyez-nous un mail !" alert_type='success' %}</p>
                     <address>
                         <strong>Mail :</strong><br>
                         <a href="mailto:enjoytodayproject@gmail.com" role="button" class="btn btn-warning btn-lg">
