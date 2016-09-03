@@ -28,3 +28,14 @@ def topic_sidebar(request):
         context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context
 
+
+# TODO this is totally aweful and must be replaced by correct django.site implementation
+def city_name(request):
+    """
+    returns name of subdomain expectig beeing name of the city
+    for example if subdomain is paris.enjoytoday.fr, returns Paris
+    """
+    current_url = request.build_absolute_uri()
+    a = current_url.split('//')[1]
+    b = a.split('.')[0]
+    return {'city_name' : b.title()}
