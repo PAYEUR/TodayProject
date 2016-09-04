@@ -91,22 +91,17 @@ class Event(models.Model):
     price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
                                              default=0)
 
-    #-------------------------------------------------------------
-    # Not for today
+    contact = models.CharField(verbose_name="Coordonnées du contact éventuel",
+                               max_length=150,
+                               default="non précisé",
+                               null=True,
+                               blank=True)
 
-    #contact = models.CharField(verbose_name="Contact éventuel",
-    #                           max_length=350,
-    #                           default=None,
-    #                           null=True,
-    #                           blank=True)
-
-    #website = models.CharField(verbose_name="Site internet officiel",
-    #                           max_length=100,
-    #                           default=None,
-    #                           null=True,
-    #                           blank=True)
-
-    #--------------------------------------------------------------------
+    website = models.CharField(verbose_name="Lien vers le site officiel de l'événement",
+                               max_length=150,
+                               default="non précisé",
+                               null=True,
+                               blank=True)
 
     image_main = ImageSpecField(source='image',
                                 processors=[ResizeToFill(800, 300)],
