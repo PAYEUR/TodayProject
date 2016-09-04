@@ -108,7 +108,6 @@ class EventForm(forms.ModelForm):
         self.fields['site'] = forms.ModelChoiceField(
             Site.objects.all(),
             label='Site internet sur lequel sera posté l\'événement',
-            empty_label=None,
             #to_field_name="name"  # doesn't work...
         )
 
