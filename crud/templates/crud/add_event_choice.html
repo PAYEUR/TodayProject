@@ -1,4 +1,4 @@
-{% extends 'topic/base.html' %}
+{% extends 'crud/base.html' %}
 
 {% load bootstrap3 %}
 
@@ -16,7 +16,7 @@
     <div id="services" class="row">
         <div class="col-sm-12 col-md-12" align="center">
             <p>{% bootstrap_alert  "Avant de poster un événement, assurez vous qu'il n'a pas déjà été renseigné par quelqu'un d'autre" alert_type='danger' %}  </p>
-            {# <p>{% bootstrap_alert "Pour poster des événements qui durent plusieurs jours, merci de poster plusieurs dates" %}  </p>  #}
+            <p>{% bootstrap_alert "Pour poster des événements qui durent plusieurs jours, veuillez poster plusieurs dates" %}  </p>
             <p>
             <a href="{% url 'topic:crud:nouvel_evenement_simple' %}" role="button" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
