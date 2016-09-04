@@ -11,6 +11,7 @@ from core.utils import get_current_topic
 from . import utils
 from .forms import IndexForm
 from .models import Occurrence, EventType
+from django.contrib.sites.models import Site
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
@@ -81,7 +82,11 @@ class OccurrenceDetail(DetailView):
 # mother function
 def _get_events(request, event_type_list, start_time, end_time):
 
-    current_site = request.site
+    # TODO: investigate this: some buggs probably due to cache
+    Site.objects.clear_cache()
+    current_site = Site.objects.get_current()
+    Site.objects.clear_cache()
+
     topic = get_current_topic(request)
     title = ' - '.join([event.label for event in event_type_list])
     template = 'topic/sorted_events.html'

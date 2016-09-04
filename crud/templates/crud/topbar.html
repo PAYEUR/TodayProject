@@ -1,11 +1,9 @@
 {% extends 'core/topbar.html' %}
 
  {% block city %}
-       <a class=" navbar-brand navbar-city" href="http://www.enjoytoday.fr"> <strong>{{ city_name }}</strong> </a>
  {% endblock %}
 
 {% block research %}
-    <li><a href="{% url 'topic:index' %}">Rechercher</a></li>
 {% endblock %}
 
 {% block topics %}
@@ -23,8 +21,5 @@
         <li><a href="{% url 'not_implemented:not_implemented' %}">jobs</a></li>
 
     {% endif %}
-
-
-
 
 {% endblock %}
