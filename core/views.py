@@ -51,3 +51,7 @@ class CGUView(TemplateView):
 
 class TeamView(TemplateView):
     template_name = 'core/team.html'
+
+
+class HelpUsView(TemplateView):
+    template_name = 'core/help_us.html'
