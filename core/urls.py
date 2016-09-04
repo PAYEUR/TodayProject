@@ -17,5 +17,5 @@ urlpatterns = [
     url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
     url(r'^nouvel-evenement$', NewEventView.as_view(), name="new_event"),
     url(r'^conditions-generales-d-utilisation', CGUView.as_view(), name="CGU"),
-    url(r'nous-aider', HelpUsView.as_view(), name="help_us"),
+    url(r'^nous-aider', HelpUsView.as_view(), name="help_us"),
     ]
