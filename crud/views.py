@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm
+from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
 from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
 from core.utils import get_current_topic
 from django.contrib.sites.shortcuts import get_current_site
@@ -120,7 +120,7 @@ def add_multiple_dates(
     dtstart = None
     topic = get_current_topic(request)
 
-    OccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=10)
+    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
