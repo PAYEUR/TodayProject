@@ -55,3 +55,7 @@ class TeamView(TemplateView):
 
 class HelpUsView(TemplateView):
     template_name = 'core/help_us.html'
+
+
+class CookiesView(TemplateView):
+    template_name = 'core/cookies.html'
