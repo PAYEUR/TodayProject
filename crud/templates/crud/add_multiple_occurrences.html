@@ -13,9 +13,7 @@
 
 {% block content %}
 
-    <div class="jumbotron">
-        <h1>Ajouter un événement {{ current_topic }}</h1>
-    </div>
+    <h1>Ajouter un événement {{ current_topic }}</h1>
 
     {% if recurrence_form.errors %}
         <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
