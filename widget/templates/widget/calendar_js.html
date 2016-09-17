@@ -19,11 +19,26 @@
     dateFormat: 'dd/mm/yy', firstDay: 0, 
     initStatus: 'Choisir la date', isRTL: false};
  $.datepicker.setDefaults($.datepicker.regional['fr']);
+
+  //today variable
+  var dateToday = new Date();
   
     $( "#calendar" ).datepicker({
       altField: "#id_quand", {# TODO This stuff directly depends on IndexForm quoi field and should be improved #}
       altFormat: "dd/mm/yy",
-	  firstDay: 1
+	  firstDay: 1,
+      minDate: dateToday,
+
+      // disable today highlighting
+        onSelect: function (dateText, inst) {
+                setTimeout(function() {
+                $(document).find('a.ui-state-highlight').removeClass('ui-state-highlight');
+            }, 0)
+        }
     });
-  } );
+
+    setTimeout(function() {
+                $(document).find('a.ui-state-highlight').removeClass('ui-state-highlight');
+            }, 0);
+    });
   </script>
