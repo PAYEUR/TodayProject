@@ -163,3 +163,16 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
+
+
+CACHES = {
+    'default': {
+        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
+        #'LOCATION': 'path.to.location',
+        'TIMEOUT': 0,
+        #'KEY_FUNCTION': '.utils.make_key_per_site',
+        #'OPTIONS': {
+            #'MAX_ENTRIES': 1000
+        #}
+    }
+}

@@ -12,6 +12,7 @@ from . import utils
 from .forms import IndexForm
 from .models import Occurrence, EventType
 from django.contrib.sites.models import Site
+from django.views.decorators.cache import never_cache
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
@@ -80,6 +81,7 @@ class OccurrenceDetail(DetailView):
 
 
 # mother function
+#@never_cache
 def _get_events(request, event_type_list, start_time, end_time):
 
     # TODO: investigate this: some buggs probably due to cache
@@ -116,7 +118,9 @@ def _all_events(request, start_time, end_time):
 
 
 def today_events(request):
-    return _all_events(request, start_time=datetime.now(), end_time=datetime.combine(date.today(), time.max))
+    print datetime.combine(date.today(), time.max)
+    #TODO delete this start_time
+    return _all_events(request, start_time=datetime.combine(date.today(), time.min), end_time=datetime.combine(date.today(), time.max))
 
 
 def tomorrow_events(request):
