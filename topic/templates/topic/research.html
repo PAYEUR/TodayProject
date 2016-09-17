@@ -38,7 +38,8 @@
     <br>
     <form role="form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% bootstrap_field form.quand %}{# hidden field that receive calendar input#}
+    {# hidden field that receive calendar input#}
+    {% bootstrap_field form.quand %} {# #id_quand actually hidden in the back of this field #}
 
         <div class=row>
             {% if form.errors %}
@@ -54,7 +55,11 @@
             </div>
 
             <div class="col-md-4 col-sm-12" align="center">
-                <div id="calendar"> <h2> Quand ?</h2></div><br>
+                <h2> Quand ?</h2>
+                <br>
+                {# calendar prompting #}
+                <div class ="row" id="calendar"></div>
+
                 <div class="row">
                     <div class="col-md-6 col-sm-6">{% bootstrap_field form.start_hour %}</div>
                     <div class="col-md-6 col-sm-6">{% bootstrap_field form.end_hour %}</div>
