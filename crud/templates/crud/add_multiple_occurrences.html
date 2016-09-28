@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 
 {% block title %}
-    Nouvel événement {{ current_topic }}
+    Evénement {{event.id}} : ajout dates
 {% endblock %}
 
 {# to allow recurrence_form.query #}
@@ -13,13 +13,13 @@
 
 {% block content %}
 
-    <h1>Ajouter un événement {{ current_topic }}</h1>
+    <h1>{{event.title}}</h1>
 
     {% if recurrence_form.errors %}
         <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
     {% endif %}
 
-    <p> {% bootstrap_alert "Choisissez une image qui met en valeur votre annonce" alert_type='danger' %} </p>
+    <p> {% bootstrap_alert "Ajoutez une ou plusieurs dates à votre événement" alert_type='info' %} </p>
 
 
     <form role="form" method="post" enctype="multipart/form-data">
