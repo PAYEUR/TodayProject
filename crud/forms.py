@@ -106,8 +106,8 @@ class EventForm(forms.ModelForm):
 
         # TODO print name of the city instead of the domain_name
         self.fields['site'] = forms.ModelChoiceField(
-            Site.objects.all(),
-            label='Site internet sur lequel sera posté l\'événement',
+            Site.objects.exclude(domain='www.enjoytoday.fr'),
+            label='Site internet de la ville sur lequel sera posté l\'événement',
             #to_field_name="name"  # doesn't work...
         )
 

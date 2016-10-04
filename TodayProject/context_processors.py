@@ -30,19 +30,16 @@ def topic_sidebar(request):
     return context
 
 
-# TODO this is totally aweful and must be replaced by correct django.site implementation
 def city_name(request):
     """
-    returns name of subdomain expectig beeing name of the city
-    for example if subdomain is paris.enjoytoday.fr, returns Paris
+    Return name of city related to current site
     """
-    current_url = request.build_absolute_uri()
-    a = current_url.split('//')[1]
-    b = a.split('.')[0]
-    return {'city_name' : b.title()}
+
+    return {'city_name' : request.site.name}
 
 
 # TODO rearrange architecture to remove the exclude
+# in  core/sidebar.html
 def sites(request):
     """
     :param request:

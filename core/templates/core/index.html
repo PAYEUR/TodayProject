@@ -31,9 +31,9 @@
             <img src="{% static 'core/carte_noms_albi.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map" />
             {# mapping according to http://imagemap-generator.dariodomi.de/ #}
             <map name="Map" id="Map">
-                <area alt="Paris" title="Paris" href="http://paris.enjoytoday.fr/catho" shape="poly" coords="211,74,212,114,324,119,326,75" />
-                <area alt="Nice" title="Nice" href="http://nice.enjoytoday.fr/catho" shape="poly" coords="375,324,375,371,475,372,473,331" />
-                <area alt="Albi" title="Albi" href="http://albi.enjoytoday.fr/catho" shape="poly" coords="177,315,183,367,277,363,275,317" />
+                <area alt="Paris" title="Paris" href="{{ paris_url }}" shape="poly" coords="211,74,212,114,324,119,326,75" />
+                <area alt="Nice" title="Nice" href="{{ nice_url }}" shape="poly" coords="375,324,375,371,475,372,473,331" />
+                <area alt="Albi" title="Albi" href="{{ albi_url }}" shape="poly" coords="177,315,183,367,277,363,275,317" />
             </map>
         </div>
          {# Small map #}
@@ -41,9 +41,9 @@
             <img src="{% static 'core/carte_noms_petite.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map2" />
             {# mapping according to http://imagemap-generator.dariodomi.de/ #}
             <map name="Map2" id="Map2">
-                <area alt="Paris" title="Paris" href="http://paris.enjoytoday.fr/catho" shape="poly" coords="89,33,88,48,136,49,135,37" />
-                <area alt="Nice" title="Nice" href="http://nice.enjoytoday.fr/catho" shape="poly" coords="157,136,156,157,198,155,198,140" />
-                <area alt="Albi" title="Albi" href="http://albi.enjoytoday.fr/catho" shape="poly" coords="77,135,78,151,112,150,116,136" />
+                <area alt="Paris" title="Paris" href="{{ paris_url }}" shape="poly" coords="89,33,88,48,136,49,135,37" />
+                <area alt="Nice" title="Nice" href="{{ nice_url }}" shape="poly" coords="157,136,156,157,198,155,198,140" />
+                <area alt="Albi" title="Albi" href="{{ albi_url }}" shape="poly" coords="77,135,78,151,112,150,116,136" />
             </map>
         </div>
 
