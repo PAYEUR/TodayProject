@@ -14,16 +14,6 @@ from django.http import HttpResponseRedirect
 class IndexView(TemplateView):
     template_name = 'core/index.html'
 
-    # create site url which doesn't depends on prod or dev domain
-    def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
-        context['paris_url'] = 'http://%s/catho' % Site.objects.get(name__contains='paris')
-        context['albi_url'] = 'http://%s/catho' % Site.objects.get(name__contains='albi')
-        context['nice_url'] = 'http://%s/catho' % Site.objects.get(name__contains='nice')
-        #context['lyon_url'] = 'http://%s/catho' % Site.objects.get(name__contains='lyon')
-
-        return context
-
 
 class ContactView(TemplateView):
     template_name = 'core/contact.html'

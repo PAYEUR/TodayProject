@@ -44,4 +44,13 @@ def sites(request):
     """
     :param request:
     """
-    return {'sites': Site.objects.exclude(domain='www.enjoytoday.fr')}
+    return {'sites': Site.objects.exclude(name__contains='oday')}
+
+def urls(request):
+    context = dict()
+    context['paris_url'] = 'http://%s/catho' % Site.objects.get(name__contains='paris')
+    context['albi_url'] = 'http://%s/catho' % Site.objects.get(name__contains='albi')
+    context['nice_url'] = 'http://%s/catho' % Site.objects.get(name__contains='nice')
+    context['lyon_url'] = 'http://%s/catho' % Site.objects.get(name__contains='lyon')
+    #context['index_url'] = 'http://%s' % Site.objects.get(name__contains='oday')
+    return context

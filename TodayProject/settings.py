@@ -82,6 +82,7 @@ TEMPLATES = [
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.city_name',
                 'TodayProject.context_processors.sites',
+                'TodayProject.context_processors.urls',
 
             ],
         },
