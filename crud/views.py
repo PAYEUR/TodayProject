@@ -275,7 +275,7 @@ def add_multiples_occurrences(
 
     dtstart = None
     event = get_object_or_404(Event, pk=int(event_id))
-    OccurrenceFormSet = formset_factory(recurrence_form_class, extra=10)
+    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
     #passes_test
     if test_func(request.user, event):
         if request.method == 'POST':
