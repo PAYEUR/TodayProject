@@ -48,9 +48,9 @@ def sites(request):
 
 def urls(request):
     context = dict()
-    context['paris_url'] = 'http://%s/catho' % Site.objects.get(name__contains='paris')
-    context['albi_url'] = 'http://%s/catho' % Site.objects.get(name__contains='albi')
-    context['nice_url'] = 'http://%s/catho' % Site.objects.get(name__contains='nice')
-    context['lyon_url'] = 'http://%s/catho' % Site.objects.get(name__contains='lyon')
-    #context['index_url'] = 'http://%s' % Site.objects.get(name__contains='oday')
+    context['paris_url'] = 'http://%s/catho' % Site.objects.get(name__contains='aris')
+    context['albi_url'] = 'http://%s/catho' % Site.objects.get(name__contains='lbi')
+    context['nice_url'] = 'http://%s/catho' % Site.objects.get(name__contains='ice')
+    context['lyon_url'] = 'http://%s/catho' % Site.objects.get(name__contains='yon')
+    context['index_url'] = 'http://%s' % Site.objects.get(name__contains='oday')
     return context

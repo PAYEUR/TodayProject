@@ -1,4 +1,4 @@
-from dev_settings import *
+from localdev_settings import *
 
 
 #launch it with following code:
