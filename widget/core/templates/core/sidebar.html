@@ -1,0 +1,20 @@
+{# has to be written properly: no idea of navbar aims for the moment #}
+{# we have core_sidebar in context processor though #}
+ <ul class="nav nav-sidebar">
+     {% block top_sidebar %}
+     {% endblock %}
+  </ul>
+
+  <ul class="nav nav-sidebar">
+    {% if topic_list %}
+      {% for topic in topic_list %}
+        <li><a href="{{ topic.get_absolute_url }}">{{ topic.name|capfirst }}</a></li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+
+  <ul class="nav nav-sidebar">
+    {% block bottom_sidebar %}
+        <li class="active"><a href="{% url 'core:new_event' %}">Poster une annonce <span class="sr-only">(current)</span></a></li>
+    {% endblock %}
+  </ul>
