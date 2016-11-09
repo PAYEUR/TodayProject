@@ -25,8 +25,7 @@ SECRET_KEY = '46x1@ythhko4@w%z4o749u7zub)qok!j6h1!-iizrgf6g(zaiu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['164.132.48.162','.enjoytoday.fr']
-
+ALLOWED_HOSTS = []
 
 # Application definition
 
