@@ -1,0 +1,12 @@
+a quoi sert le fichier todayproject.wsgi?
+
+Il faut seulement servir albi, nice, paris et index avec les fichiers settings et wsgi qui vont bien.
+
+J'ai également viré le SITE_ID dans le settings.py principal qui n'avait rien à y faire.
+
+Il convient donc d'appeler chacun des fichiers albiET.wsgi, indexET.wsgi, niceET.wsgi et albiET.wsgi dans le fichier de configuration apache.
+Il ne faut également pas oublier d'y inclure le path to virtualenv ainsi que décrit sur docs.djangoproject.com/fr/1.9/howto/deployment/wsgi/modwsgi
+
+D'autre part, comme tu fait un files =all wgsi.py dans le fichier de configuration, il est possible qu'il lise TOUS les fichiers wgsi présents dans le dossier, donc également ceux qui ne sont pas bons...
+
+Il convient donc de supprimer tous les fichiers wgsi inutiles du dossier!

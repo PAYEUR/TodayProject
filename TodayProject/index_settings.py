@@ -7,4 +7,4 @@ from settings import *
 #launch it with following code:
 #  runserver --settings TodayProject.paris_settings
 
-SITE_ID = 5
+SITE_ID = 1

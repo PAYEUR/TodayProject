@@ -1,10 +1,11 @@
 {% extends 'core/topbar.html' %}
 
  {% block city %}
-       <a class=" navbar-brand navbar-city" href="http://www.enjoytoday.fr"> <strong>{{ city_name }}</strong> </a>
+       <a class=" navbar-brand navbar-city" href="{{ index_url }}"> <strong>{{ city_name }}</strong> </a>
  {% endblock %}
 
 {% block research %}
+    <li><h4><a href="https://docs.google.com/forms/d/e/1FAIpQLScgZ5dvJ7e6L5uqQ1QRTOENH_rCgQN5LM51OAqMUK3AVvgsKg/viewform" target="_blank">Votre avis nous intéresse!!!</a></h4></li>
     <li><a href="{% url 'topic:index' %}">Rechercher</a></li>
 {% endblock %}
 

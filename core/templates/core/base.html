@@ -9,7 +9,9 @@
     <link href="{%  static 'core/base.css' %}" rel="stylesheet">
     <link href="{%  static 'core/topbar.css' %}" rel="stylesheet">
     <link href="{%  static 'core/footer.css' %}" rel="stylesheet">
+    <link href="{%  static 'core/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" >
     <link rel="icon" type="image/png" href="{% static 'core/logo_carre.png'%}" />
+    <link href="{%  static 'core/jquery.cookiebar.css' %}" rel="stylesheet">
     {% block base_extra_head %}{% endblock %}
 {% endblock %}
 
@@ -55,5 +57,21 @@
 {% endblock %}
 
 {% block bootstrap3_extra_script %}
+    <script type="text/javascript" src="{%  static 'core/jquery.cookiebar.js' %}"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+         $.cookieBar({
+             message: 'En poursuivant la navigation vous acceptez les cookies',
+             acceptText: 'OK',
+             policyButton: true,
+             policyText: 'Conditions',
+             policyURL: '{%  url  'core:cookies' %}'
+          {# dev purpose only #}
+          {# forceShow: true, #}
+          {# renewOnVisit: true #}
+
+         });
+      });
+    </script>
     {% block base_extra_script %}{% endblock %}
 {% endblock %}

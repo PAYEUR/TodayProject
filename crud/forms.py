@@ -106,8 +106,8 @@ class EventForm(forms.ModelForm):
 
         # TODO print name of the city instead of the domain_name
         self.fields['site'] = forms.ModelChoiceField(
-            Site.objects.all(),
-            label='Site internet sur lequel sera posté l\'événement',
+            Site.objects.exclude(name__contains='oday'),
+            label='Site internet de la ville sur lequel sera posté l\'événement',
             #to_field_name="name"  # doesn't work...
         )
 
@@ -333,3 +333,92 @@ class MultipleOccurrenceForm(forms.Form):
         )
 
         return params
+
+
+# ==============================================================================
+# TODO merge this with other forms
+## form that allows letting date and hours not filled for multiple date form
+
+class MultipleDateSingleOccurrenceForm(forms.Form):
+    """
+    A simple form for adding and updating single Occurrence attributes
+    # put request to true
+
+    """
+    # ==========================================================================
+    date = forms.DateField(
+        required=True,
+        #initial=date.today,
+        label='Date',
+        widget=DateWidget(
+            options={
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
+                    },
+            usel10n=True,
+            bootstrap_version=3)
+        )
+
+    start_time = forms.TimeField(
+        required=True,
+        #initial='14:00',
+        label='Horaire de début',
+        widget=TimeWidget(
+            options={
+                    'pickerPosition': 'top-left',
+                    'minuteStep': 15,
+                    },
+            bootstrap_version=3)
+        )
+
+    end_time = forms.TimeField(
+        required=True,
+        #initial='22:30',
+        label='Horaire de fin',
+        widget=TimeWidget(
+            options={
+                    'pickerPosition': 'top-left',
+                    'minuteStep': 15,
+                    },
+            bootstrap_version=3)
+        )
+
+    def clean(self):
+        """
+        :return: validation error if start_time or end_time in the past
+        concatenate date and hour to give start and end datetime
+        """
+        cleaned_data = super(MultipleDateSingleOccurrenceForm, self).clean()
+        start_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('start_time'))
+        now = datetime.now()
+
+        if start_time < now:
+            raise forms.ValidationError("Verifier que la date correspond")
+
+        if cleaned_data.get('end_time') is not None:
+            end_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('end_time'))
+            if start_time > end_time or end_time < now:
+                raise forms.ValidationError("Verifier que les heures correspondent")
+
+        return self.cleaned_data
+
+    def save(self, event):
+        """
+        :param event:
+        :return: end_time = start_time + 1h if end_time is None
+        """
+        start_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('start_time'))
+
+        if self.cleaned_data.get('end_time') is not None:
+            end_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('end_time'))
+        else:
+            end_time = start_time + timedelta(hours=1)
+
+        event.add_occurrences(
+            start_time,
+            end_time,
+            is_multiple=False,
+        )
+
+        return event

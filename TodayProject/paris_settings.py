@@ -1,4 +1,4 @@
-from .settings import *
+from settings import *
 
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'paris/media')
 #MEDIA_URL = 'paris/media/'
