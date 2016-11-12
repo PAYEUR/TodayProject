@@ -2,6 +2,7 @@ from django.views.generic import ListView, TemplateView, DetailView, RedirectVie
 from django.contrib.auth.mixins import LoginRequiredMixin
 from topic.models import Event
 from connection.models import EnjoyTodayUser
+from django.contrib.sites.models import Site
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -55,3 +56,7 @@ class TeamView(TemplateView):
 
 class HelpUsView(TemplateView):
     template_name = 'core/help_us.html'
+
+
+class CookiesView(TemplateView):
+    template_name = 'core/cookies.html'

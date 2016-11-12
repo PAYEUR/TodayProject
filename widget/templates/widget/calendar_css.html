@@ -2,7 +2,17 @@
 
 {# TODO: improve this, that violently resizes the calendar widget #}
 <style type="text/css">
-    div.ui-datepicker {
-    font-size: 160%;
+    @media screen and (max-width: 1200px){
+        #calendar {
+        font-size: 120%;
+        }
     }
+
+    @media screen and (min-width: 1200px){
+        #calendar {
+        font-size: 150%;
+        }
+    }
+
+
 </style>

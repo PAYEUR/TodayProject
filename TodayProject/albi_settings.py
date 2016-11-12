@@ -8,4 +8,3 @@ from settings import *
 #  runserver --settings TodayProject.albi_settings
 
 SITE_ID = 4
-

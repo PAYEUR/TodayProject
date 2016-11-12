@@ -81,6 +81,7 @@ TEMPLATES = [
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.city_name',
                 'TodayProject.context_processors.sites',
+                'TodayProject.context_processors.urls',
 
             ],
         },
@@ -165,14 +166,14 @@ LOGIN_URL = ''
 
 #Cache
 
-#CACHES = {
-#    'default': {
-#        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'path.to.location',
-#        'TIMEOUT': 5,
-#        'KEY_FUNCTION': '.utils.make_key_per_site',
-#        'OPTIONS': {
-#            'MAX_ENTRIES': 1000
-#        }
-#    }
-#}
+CACHES = {
+    'default': {
+        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
+        #'LOCATION': 'path.to.location',
+        'TIMEOUT': 0,
+        #'KEY_FUNCTION': '.utils.make_key_per_site',
+        #'OPTIONS': {
+            #'MAX_ENTRIES': 1000
+        #}
+    }
+}

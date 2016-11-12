@@ -81,7 +81,7 @@ class OccurrenceDetail(DetailView):
 
 
 # mother function
-@never_cache
+#@never_cache
 def _get_events(request, event_type_list, start_time, end_time):
 
     # TODO: investigate this: some buggs probably due to cache
@@ -118,6 +118,8 @@ def _all_events(request, start_time, end_time):
 
 
 def today_events(request):
+    print datetime.combine(date.today(), time.max)
+    #TODO delete this start_time
     return _all_events(request, start_time=datetime.combine(date.today(), time.min), end_time=datetime.combine(date.today(), time.max))
 
 
