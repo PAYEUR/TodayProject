@@ -13,7 +13,7 @@ body {
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 100px;
+  /*height: 100px;*/
   background-color: black;
 }
 
@@ -24,6 +24,27 @@ body {
 }
 
 .footer > .container .text-muted {
-  margin: 10px 0;
+    margin: 10px 0;
+}
+
+.footer a{
   color: lightgrey;
+  margin: 10px 0;
+}
+
+.footer .text-muted {
+  color: lightgrey;
+}
+
+.footer .social {
+  font-size: 30px;
+}
+
+.footer .social a :hover{
+  color: #c52022;
+}
+
+.footer a:hover{
+  color: #c52022;
+  text-decoration: none;
 }
