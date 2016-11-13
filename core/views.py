@@ -60,6 +60,3 @@ class HelpUsView(TemplateView):
 
 class CookiesView(TemplateView):
     template_name = 'core/cookies.html'
-
-class UsagePolicyView(TemplateView):
-    template_name = 'core/usage_policy.html'
