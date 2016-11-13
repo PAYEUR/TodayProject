@@ -69,7 +69,7 @@ ROOT_URLCONF = 'TodayProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,7 +98,7 @@ DATABASES = {
     'default': {
         # BD test
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        'NAME': os.path.join(BASE_DIR, '../../cathoDB'),
         # BD prod
         #'ENGINE': 'django.db.backends.mysql',
         #'OPTIONS': {
@@ -145,10 +145,10 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'core/../static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/../../topic/media')
 # modify this if not on the same computer to avoid error 500
 MEDIA_URL = 'topic/media/'
 
