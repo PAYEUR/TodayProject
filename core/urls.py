@@ -12,6 +12,7 @@ from .views import *
 app_name = 'core'
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index"),
+    url(r'^charte-de-navigation$', UsagePolicyView.as_view(), name="usage_policy"),
     url(r'^contact$', ContactView.as_view(), name="contact"),
     url(r'^l-equipe-enjoytoday', TeamView.as_view(), name="team"),
     url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
