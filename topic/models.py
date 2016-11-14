@@ -120,6 +120,13 @@ class Event(models.Model):
                                max_length=150,
                                default="non précisé")
 
+    #public_transport = models.CharField(verbose_name="Arrêt transport en commun (métro,...)",
+    #                                    max_length=150,
+    #                                    default="non précisé",
+    #                                    null=True,
+    #                                    blank=True
+    #                                    )
+
     site = models.ForeignKey(Site,
                              default=None,
                              null=True,

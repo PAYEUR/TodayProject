@@ -25,7 +25,7 @@ SECRET_KEY = '46x1@ythhko4@w%z4o749u7zub)qok!j6h1!-iizrgf6g(zaiu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+#ALLOWED_HOSTS = ['137.74.171.90','.enjoytoday.fr']
 
 
 # Application definition
@@ -69,7 +69,7 @@ ROOT_URLCONF = 'TodayProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'core/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,6 +82,7 @@ TEMPLATES = [
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.city_name',
                 'TodayProject.context_processors.sites',
+		'TodayProject.context_processors.urls',
 
             ],
         },
@@ -95,17 +96,17 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        # BD test
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../../cathoDB'),
-        # BD prod
-        #'ENGINE': 'django.db.backends.mysql',
-        #'OPTIONS': {
-            #'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+        'default': {
 
-        #}
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            #'read_default_file': os.path.join(BASE_DIR, 'devmy.cnf'),
+            'read_default_file': '/home/devpay2/darkside/devmy.cnf',
+
+        },
     }
+
+
 }
 
 
@@ -131,9 +132,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
+FILE_CHARSET = 'utf-8'
+
 LANGUAGE_CODE = 'fr-fr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
@@ -145,12 +148,12 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'core/../static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/../../topic/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
 # modify this if not on the same computer to avoid error 500
-MEDIA_URL = 'topic/media/'
+MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
@@ -163,3 +166,17 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
+
+#Cache
+
+#CACHES = {
+#    'default': {
+#        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'path.to.location',
+#        'TIMEOUT': 5,
+#        'KEY_FUNCTION': '.utils.make_key_per_site',
+#        'OPTIONS': {
+#            'MAX_ENTRIES': 1000
+#        }
+#    }
+#}
