@@ -98,12 +98,6 @@ DATABASES = {
         # BD test
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'cathoDB'),
-        # BD prod
-        #'ENGINE': 'django.db.backends.mysql',
-        #'OPTIONS': {
-            #'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
-
-        #}
     }
 }
 
@@ -149,7 +143,7 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
 # modify this if not on the same computer to avoid error 500
-MEDIA_URL = 'topic/media/'
+MEDIA_URL = '/media/'
 
 # Settings for django-bootstrap3
 BOOTSTRAP3 = {
@@ -162,16 +156,3 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
-
-
-CACHES = {
-    'default': {
-        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
-        #'LOCATION': 'path.to.location',
-        'TIMEOUT': 0,
-        #'KEY_FUNCTION': '.utils.make_key_per_site',
-        #'OPTIONS': {
-            #'MAX_ENTRIES': 1000
-        #}
-    }
-}
