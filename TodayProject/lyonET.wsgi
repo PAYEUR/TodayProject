@@ -12,15 +12,15 @@ import sys
 import site
 
 # Add the site-packages of the chosen virtualenv to work with
-site.addsitedir('/home/devpay2/todayproject/env/lib/python2.7/site-packages')
+site.addsitedir('/var/www/todayproject/env/lib/python2.7/site-packages')
 
-sys.path.append('/home/devpay2/todayproject')
-sys.path.append('/home/devpay2/todayproject/Todayproject')
+sys.path.append('/var/www/todayproject')
+sys.path.append('/var/www/todayproject/Todayproject')
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "TodayProject.lyon_settings"
 
 # Activate your virtual env
-activate_env=os.path.expanduser("/home/devpay2/todayproject/env/bin/activate_this.py")
+activate_env=os.path.expanduser("/var/www/todayproject/env/bin/activate_this.py")
 
 from django.core.wsgi import get_wsgi_application
 

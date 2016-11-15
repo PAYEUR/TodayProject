@@ -5,5 +5,5 @@ from settings import *
 
 SITE_ID = 3
 
-ALLOWED_HOSTS = ['devnice.enjoytoday.fr']
+ALLOWED_HOSTS = ['nice.enjoytoday.fr']
 

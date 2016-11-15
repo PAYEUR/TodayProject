@@ -23,9 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '46x1@ythhko4@w%z4o749u7zub)qok!j6h1!-iizrgf6g(zaiu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-#ALLOWED_HOSTS = ['137.74.171.90','.enjoytoday.fr']
+DEBUG = False
 
 
 # Application definition
@@ -100,8 +98,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            #'read_default_file': os.path.join(BASE_DIR, 'devmy.cnf'),
-            'read_default_file': '/home/devpay2/darkside/devmy.cnf',
+            'read_default_file': '/home/devpay1/darkworld/my.cnf',
 
         },
     }
@@ -167,16 +164,3 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
 
-#Cache
-
-#CACHES = {
-#    'default': {
-#        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'path.to.location',
-#        'TIMEOUT': 5,
-#        'KEY_FUNCTION': '.utils.make_key_per_site',
-#        'OPTIONS': {
-#            'MAX_ENTRIES': 1000
-#        }
-#    }
-#}

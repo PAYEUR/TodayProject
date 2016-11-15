@@ -9,5 +9,5 @@ from settings import *
 
 SITE_ID = 4
 
-ALLOWED_HOSTS = ['devalbi.enjoytoday.fr']
+ALLOWED_HOSTS = ['albi.enjoytoday.fr']
 

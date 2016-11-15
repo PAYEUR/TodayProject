@@ -9,7 +9,7 @@ from settings import *
 
 SITE_ID = 2
 
-ALLOWED_HOSTS = ['devparis.enjoytoday.fr']
+ALLOWED_HOSTS = ['paris.enjoytoday.fr']
 
 #DEBUG = True
 
