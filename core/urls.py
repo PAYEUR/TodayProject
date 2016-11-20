@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^tutoriel', TutorialView.as_view(), name="tutorial"),
     url(r'^presentation-du-projet', PresentationView.as_view(), name="presentation"),
     url(r'^charte-post-d-evenement', CharteView.as_view(), name="charte"),
+    url(r'^presentation-des-categories', ExplainCategoriesView.as_view(), name="explain_categories"),
+
     ]

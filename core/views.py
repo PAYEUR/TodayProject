@@ -69,3 +69,6 @@ class PresentationView(TemplateView):
 
 class CharteView(TemplateView):
     template_name = 'core/charte_utilisation.html'
+
+class ExplainCategoriesView(TemplateView):
+    template_name = 'core/explain_categories.html'
