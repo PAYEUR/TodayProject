@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^conditions-generales-d-utilisation', CGUView.as_view(), name="CGU"),
     url(r'^charte-utilisation-cookies', CookiesView.as_view(), name="cookies"),
     url(r'^nous-aider', HelpUsView.as_view(), name="help_us"),
+    url(r'^tutoriel', TutorialView.as_view(), name="tutorial"),
     ]

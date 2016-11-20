@@ -60,3 +60,6 @@ class HelpUsView(TemplateView):
 
 class CookiesView(TemplateView):
     template_name = 'core/cookies.html'
+
+class TutorialView(TemplateView):
+    template_name = 'core/tutorial.html'

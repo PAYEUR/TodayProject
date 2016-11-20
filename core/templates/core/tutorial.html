@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Comment poster un événement sur EnjoyToday?
+{% endblock %}
+
+{% block description %}
+    Explications sur la façon de poster des événements cathos dans ma ville sur www.enjoytoday.fr
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <h1> Par ce qu'un petit film vaut mieux qu'un long discours</h1>
+        <div class="col-sm-12 col-md-12">
+            <iframe width="640" height="360" src="https://www.youtube.com/embed/9Qc7JMPfbyE" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <h1> Par ce qu'on est entre gens biens </h1>
+        <div class="col-sm-12 col-md-12">
+            <h2><a href="{# url 'core/user_rules' #}">Je lis la charte d'utilisation d'EnjoyToday</a></h2>
+        </div>
+
+        <h1> Par ce que quand on est au bon endroit c'est mieux </h1>
+        <div class="col-sm-12 col-md-12">
+            <h2><a href="{# url 'core/category_explaination' #}">Je renseigne mon événement dans une catégorie pertinente</a></h2>
+        </div>
+
+    </div>
+
+{% endblock %}
