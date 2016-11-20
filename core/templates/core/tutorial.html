@@ -12,21 +12,54 @@
 
 {% block content %}
     <div class="row">
-        <h1> Par ce qu'un petit film vaut mieux qu'un long discours</h1>
         <div class="col-sm-12 col-md-12">
-            <iframe width="640" height="360" src="https://www.youtube.com/embed/9Qc7JMPfbyE" frameborder="0" allowfullscreen></iframe>
+            <h1> Qu'est ce que EnjoyToday</h1>
         </div>
 
-        <h1> Par ce qu'on est entre gens biens </h1>
-        <div class="col-sm-12 col-md-12">
-            <h2><a href="{# url 'core/user_rules' #}">Je lis la charte d'utilisation d'EnjoyToday</a></h2>
+        <div class="col-sm-12 col-md-12" >
+            <h3>
+                <a href="{% url 'core:presentation' %}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Présentation du concept
+                </a>
+            </h3>
         </div>
 
-        <h1> Par ce que quand on est au bon endroit c'est mieux </h1>
         <div class="col-sm-12 col-md-12">
-            <h2><a href="{# url 'core/category_explaination' #}">Je renseigne mon événement dans une catégorie pertinente</a></h2>
+            <h2> Par ce qu'un petit film vaut mieux qu'un long discours</h2>
+                <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/9Qc7JMPfbyE" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <div class="col-sm-12 col-md-12">
+            <h2> Par ce qu'on est entre gens biens </h2>
+            <h3>
+                <a href="{% url 'core:charte' %}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Je lis la charte pour poster des événements sur EnjoyToday.fr
+                </a>
+            </h3>
+        </div>
+
+        <div class="col-sm-12 col-md-12">
+            <h2> Par ce que quand on est au bon endroit c'est mieux </h2>
+            <h3>
+                <a href="{# url 'core:category_explaination' #}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Je renseigne mon événement dans une catégorie pertinente
+                </a>
+            </h3>
         </div>
 
     </div>
+
+    <div class=row>
+        <div class="col-sm-12 col-md-12" align="center">
+            <a href="{% url 'core:index' %}" role="button" class="btn btn-info btn-lg">
+                <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                Retour à la page principale
+            </a>
+        </div>
+    </div>
+    <br>
 
 {% endblock %}

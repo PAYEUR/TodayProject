@@ -24,8 +24,20 @@
     </div>
     <br>
     <div class=row>
+
+        <div class="visible-lg col-md-3 col-sm-12 text-center" align="center">
+            <br>
+            <br>
+            <br>
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/CCqVFcZ34mg?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+            <a href="{% url 'core:presentation' %}" role="button" class="btn btn-danger btn-md">
+                <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                Présentation
+            </a>
+        </div>
+
         {# Big map #}
-        <div class="hidden-xs col-md-6 col-md-offset-3 col-sm-12" align="center">
+        <div class="hidden-xs col-md-6 col-sm-12" align="center">
             <img src="{% static 'core/Carte_350.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map" />
             {# mapping according to http://imagemap-generator.dariodomi.de/ #}
             <map name="Map" id="Map">
@@ -65,7 +77,7 @@
     <br>
 
     {# Presentation video, uglily aligned but enough from now #}
-     <div class="row" align="center">
+     <div class="row hidden-lg" align="center">
         <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/CCqVFcZ34mg?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
     </div>
     <br>

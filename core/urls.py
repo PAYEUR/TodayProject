@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'^charte-utilisation-cookies', CookiesView.as_view(), name="cookies"),
     url(r'^nous-aider', HelpUsView.as_view(), name="help_us"),
     url(r'^tutoriel', TutorialView.as_view(), name="tutorial"),
+    url(r'^presentation-du-projet', PresentationView.as_view(), name="presentation"),
+    url(r'^charte-post-d-evenement', CharteView.as_view(), name="charte"),
     ]

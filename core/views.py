@@ -63,3 +63,9 @@ class CookiesView(TemplateView):
 
 class TutorialView(TemplateView):
     template_name = 'core/tutorial.html'
+
+class PresentationView(TemplateView):
+    template_name = 'core/presentation_project.html'
+
+class CharteView(TemplateView):
+    template_name = 'core/charte_utilisation.html'
