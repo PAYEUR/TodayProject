@@ -60,3 +60,15 @@ class HelpUsView(TemplateView):
 
 class CookiesView(TemplateView):
     template_name = 'core/cookies.html'
+
+class TutorialView(TemplateView):
+    template_name = 'core/tutorial.html'
+
+class PresentationView(TemplateView):
+    template_name = 'core/presentation_project.html'
+
+class CharteView(TemplateView):
+    template_name = 'core/charte_utilisation.html'
+
+class ExplainCategoriesView(TemplateView):
+    template_name = 'core/explain_categories.html'

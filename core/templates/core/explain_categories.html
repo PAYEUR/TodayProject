@@ -1,0 +1,148 @@
+{% extends 'core/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Conditions Générales d'Utilisation
+{% endblock %}
+
+{% block description %}
+    Description des catégories du site EnjoyToday.fr qui référence des propositions d'activités dans votre ville.
+{% endblock %}
+
+{% block content %}
+    <div><h1>Catégories - Exemple d'événements correspondants </h1></div>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+
+{# end of mother template header #}
+
+<P ALIGN=CENTER STYLE="margin-bottom: 0in"><FONT SIZE=4><I>Voici des
+idées de ce que l’on peut placer dans les 9 catégories de
+EnjoyToday</I></FONT></P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Conférence/Séminaire</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Conférences (Bernardin,
+catho de Paris, semeurs d’espérance, science-po, facultés
+(panthéon-Sorbonne) etc.</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Séminaire = week-ends
+(chemin neuf, Taizé, Focolari,), Forum (Paray le monial etc.),
+Colloque (conférence des évêques de France), universités d’été
+(diocèse etc)... </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Groupe de prière</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Chemin neuf, Emmanuel, St
+Eugidio, Taizé etc.</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Confession</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Les créneaux de
+confessions et veillées de réconciliation (Miséricorde)</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Adoration</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Les créneaux
+d’adorations, veillée, nuit etc. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Action sociale</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Soupe populaire, maraudes,
+évangélisation de rue, portes ouvertes, kermesse, fête de
+quartier, associatif etc. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Concert</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Les concerts de louange,
+musique classique, gospel, opéra, orgue etc.</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Retraite/pèlerinage
+	</B></FONT>
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Retraites en silence
+(ignatienne), week-ends (foyer de charité), pèlerinage (Lourdes,
+Israël, Assise etc.) </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Réflexion/Partage:
+	 </B></FONT>
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Groupes bibliques,
+focolari (JPMU), Even, aumôneries, jeunes pros, coexister etc.</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=4><B>Autres</B></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4>Messe exceptionnelles
+(rentrée des étudiants de Paris) etc.</FONT></P>
+
+
+{# mother template footer #}
+
+        </div>
+    </div>
+
+        <div class=row>
+        <div class="col-sm-12 col-md-12" align="center">
+            <a href="{% url 'core:tutorial' %}" role="button" class="btn btn-warning btn-lg">
+                <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                Retour au tutoriel
+            </a>
+        </div>
+    </div>
+    <br>
+
+{% endblock %}

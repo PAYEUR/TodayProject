@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Comment poster un événement sur EnjoyToday?
+{% endblock %}
+
+{% block description %}
+    Explications sur la façon de poster des événements cathos dans ma ville sur www.enjoytoday.fr
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <h1> Qu'est ce que EnjoyToday</h1>
+        </div>
+
+        <div class="col-sm-12 col-md-12" >
+            <h3>
+                <a href="{% url 'core:presentation' %}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Présentation du concept
+                </a>
+            </h3>
+        </div>
+
+        <div class="col-sm-12 col-md-12">
+            <h2> Par ce qu'un petit film vaut mieux qu'un long discours</h2>
+                <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/9Qc7JMPfbyE" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <div class="col-sm-12 col-md-12">
+            <h2> Par ce qu'on est entre gens biens </h2>
+            <h3>
+                <a href="{% url 'core:charte' %}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Je lis la charte pour poster des événements sur EnjoyToday.fr
+                </a>
+            </h3>
+        </div>
+
+        <div class="col-sm-12 col-md-12">
+            <h2> Par ce que quand on est au bon endroit c'est mieux </h2>
+            <h3>
+                <a href="{% url 'core:explain_categories' %}">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    Je renseigne mon événement dans une catégorie pertinente
+                </a>
+            </h3>
+        </div>
+
+    </div>
+
+    <div class=row>
+        <div class="col-sm-12 col-md-12" align="center">
+            <a href="{% url 'core:index' %}" role="button" class="btn btn-info btn-lg">
+                <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                Retour à la page principale
+            </a>
+        </div>
+    </div>
+    <br>
+
+{% endblock %}
