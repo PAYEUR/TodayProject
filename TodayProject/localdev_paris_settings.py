@@ -6,4 +6,4 @@ from localdev_settings import *
 
 SITE_ID = 2
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1:8000']

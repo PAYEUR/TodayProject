@@ -16,14 +16,14 @@ Including another URLconf
 """
 
 from django.conf.urls import include, url, static
+from django.contrib import admin
 from django.conf import settings
 
 
 urlpatterns = [
-    #the following namespaces have to be the same as topic.names in core.models.topic
-    url(r'^catho/', include('topic.urls', namespace='catho')),
-    url(r'^jobs/', include('topic.urls', namespace='jobs')),
-    url(r'^', include('not_implemented.urls')),
+    url(r'^', include('core.urls')),
+    url(r'^connexion/', include('connection.urls')),
+    url(r'^admin/', admin.site.urls),
 
 
     # media images deployment in development. Need change for production
