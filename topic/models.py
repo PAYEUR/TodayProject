@@ -13,7 +13,7 @@ from location.models import City
 from core.models import Topic
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
-
+from django.utils import timezone
 
 __all__ = (
     'EventType',
@@ -135,11 +135,11 @@ class Event(models.Model):
                              # default=None,
                              )
 
-    # created_at = models.DateTimeField(auto_now_add=True, auto_now=False, 
-    #                             verbose_name="Date de création")
+    created_at = models.DateTimeField(auto_now_add=True, auto_now=False, 
+                                verbose_name="Date de création")
 
-    created_at = models.DateTimeField(default=datetime.now)
-    
+    # created_at = models.DateTimeField(default=datetime.now)
+
     objects = models.Manager()
     on_site = CurrentSiteManager()
 
