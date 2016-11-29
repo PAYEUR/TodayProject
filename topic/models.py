@@ -135,6 +135,11 @@ class Event(models.Model):
                              # default=None,
                              )
 
+    # created_at = models.DateTimeField(auto_now_add=True, auto_now=False, 
+    #                             verbose_name="Date de création")
+
+    created_at = models.DateTimeField(default=datetime.now)
+    
     objects = models.Manager()
     on_site = CurrentSiteManager()
 
