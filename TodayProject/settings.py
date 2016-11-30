@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '46x1@ythhko4@w%z4o749u7zub)qok!j6h1!-iizrgf6g(zaiu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 # Application definition
@@ -94,17 +94,11 @@ WSGI_APPLICATION = 'TodayProject.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            #'read_default_file': os.path.join(BASE_DIR, 'devmy.cnf'),
-            'read_default_file': '/home/devpay2/darkside/devmy.cnf',
-
-        },
+    'default': {
+        # BD test
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
     }
-
-
 }
 
 
@@ -129,8 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
-FILE_CHARSET = 'utf-8'
 
 LANGUAGE_CODE = 'fr-fr'
 

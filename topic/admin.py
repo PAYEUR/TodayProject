@@ -8,6 +8,7 @@ class EventAdmin(admin.ModelAdmin):
                     'site',
                     'event_type',
                     'event_planner',
+                    'created_at',
                     )
 
     list_filter = ['site', 'event_type']
