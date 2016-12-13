@@ -67,85 +67,89 @@ class Event(models.Model):
     """
     Container model for general metadata and associated ``Occurrence`` entries.
     """
+
+    # null = True:empty bdd field allowed to be "NULL" instead of no_string. Not good in django
+    # blank = True: validation thing: not required if True
+    # see also https://docs.djangoproject.com/fr/1.10/ref/models/fields/
+
     image = models.ImageField(verbose_name="Image",
-                              default=None,
-                              null=True,
-                              upload_to='events/')
+                              upload_to='events/',
+                              help_text="image affichée pour l'événement",
+                              default=None
+                              )
 
     title = models.CharField(verbose_name="Titre",
                              max_length=100,
+                             help_text="Titre affiché pour l'événement",
                              default=None,
-                             null=True)
+                             )
 
     description = models.TextField(verbose_name="Description",
-                                   default=None,
-                                   null=True)
+                                   help_text="Description de l'événement. Ajouter également tout détails utiles",
+                                   default=None
+                                   )
 
     event_type = models.ForeignKey(EventType,
                                    verbose_name="Catégorie",
-                                   default=None,
-                                   null=True,
                                    on_delete=models.SET_DEFAULT,
+                                   help_text="Catégorie à laquelle est rattaché l'événement",
+                                   default=None,
                                    )
 
     price = models.CharField(verbose_name="Prix",
-                             max_length=150,
-                             default="non précisé",
-                             null=True,
+                             max_length=300,
                              blank=True,
+                             help_text="Conditions tarifaires",
+                             default=None,
                              )
 
-    contact = models.CharField(verbose_name="Coordonnées du contact éventuel",
+    contact = models.CharField(verbose_name="Détails organisateur",
                                max_length=150,
-                               default="non précisé",
-                               null=True,
-                               blank=True)
-
-    website = models.CharField(verbose_name="Lien vers le site officiel de l'événement",
-                               max_length=150,
-                               default="non précisé",
-                               null=True,
-                               blank=True)
-
-    image_main = ImageSpecField(source='image',
-                                processors=[ResizeToFill(800, 300)],
-                                format='JPEG',
-                                options={'quality': 100},
-                                )
-
-    event_planner = models.ForeignKey(EnjoyTodayUser,
-                                      on_delete=models.CASCADE,
-                                      default=None,
-                                      null=True,
-                                      verbose_name='annonceur',
-                                      )
+                               blank=True,
+                               help_text="Informations sur l'organisateur <u>officiel</u> de l'événement",
+                               default=None,
+                               )
 
     address = models.CharField(verbose_name="Adresse",
                                max_length=150,
-                               default="non précisé")
+                               help_text="Donner l'adresse postale <u>au sens de google</u>",
+                               default=None,
+                               )
 
-    public_transport = models.CharField(verbose_name="Arrêt transport en commun (métro,...)",
+    public_transport = models.CharField(verbose_name="Transport en commun",
                                         max_length=150,
-                                        default="non précisé",
-                                        null=True,
-                                        blank=True
+                                        blank=True,
+                                        help_text="Arrêt de métro,...",
+                                        default=None,
                                         )
 
     site = models.ForeignKey(Site,
-                             default=None,
-                             null=True,
                              on_delete=models.SET_DEFAULT,
-                             # if affected, breaks
-                             # default=None,
+                             help_text="ville dans laquelle sera posté l'événement",
+                             default=None,
                              )
 
-    created_at = models.DateTimeField(auto_now_add=True, auto_now=False, 
-                                verbose_name="Date de création")
+    #auto filled fields
+    event_planner = models.ForeignKey(EnjoyTodayUser,
+                                      on_delete=models.CASCADE,
+                                      verbose_name='annonceur',
+                                      default=None,
+                                      )
 
-    # created_at = models.DateTimeField(default=datetime.now)
+    created_at = models.DateTimeField(auto_now=True,
+                                      verbose_name="Date de création",
+                                      )
 
+    # Required by site manager framework
     objects = models.Manager()
     on_site = CurrentSiteManager()
+
+    # Resize image
+    image_main = ImageSpecField(source='image',
+                            processors=[ResizeToFill(800, 300)],
+                            format='JPEG',
+                            options={'quality': 100},
+                            )
 
     # ===========================================================================
     class Meta:
