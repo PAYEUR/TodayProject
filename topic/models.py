@@ -88,8 +88,12 @@ class Event(models.Model):
                                    on_delete=models.SET_DEFAULT,
                                    )
 
-    price = models.PositiveSmallIntegerField(verbose_name="Prix en euros",
-                                             default=0)
+    price = models.CharField(verbose_name="Prix",
+                             max_length=150,
+                             default="non précisé",
+                             null=True,
+                             blank=True,
+                             )
 
     contact = models.CharField(verbose_name="Coordonnées du contact éventuel",
                                max_length=150,

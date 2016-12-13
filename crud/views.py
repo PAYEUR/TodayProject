@@ -302,9 +302,3 @@ def add_multiples_occurrences(
 
     else:
         raise PermissionDenied
-
-
-@login_required(login_url='connection:login')
-def new_event(request):
-    context = dict()
-    return render(request, 'crud/add_event_choice.html', context)

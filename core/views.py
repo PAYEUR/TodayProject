@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 # core's views
 # -------------------------------------------------------------------------------
@@ -42,8 +43,10 @@ class EventPlannerPanelView(LoginRequiredMixin, ListView):
         return context
 
 
-class NewEventView(TemplateView):
-    template_name = 'core/add_event_topic.html'
+@login_required(login_url='connection:login')
+def new_event(request):
+    context = dict()
+    return render(request, 'crud/add_event_choice.html', context)
 
 
 class CGUView(TemplateView):
