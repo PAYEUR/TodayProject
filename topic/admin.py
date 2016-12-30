@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, EventType, Occurrence
+from .models import Topic, Event, EventType, Occurrence
 
 class EventAdmin(admin.ModelAdmin):
 
@@ -15,3 +15,4 @@ class EventAdmin(admin.ModelAdmin):
 admin.site.register(EventType)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Occurrence)
+admin.site.register(Topic)

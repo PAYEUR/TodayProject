@@ -1,4 +1,4 @@
-from .models import Topic
+from topic.models import Topic
 from django.shortcuts import get_object_or_404
 
 

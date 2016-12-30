@@ -1,15 +1,8 @@
-from django.views.generic import ListView, TemplateView, DetailView, RedirectView
+from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from topic.models import Event
 from connection.models import EnjoyTodayUser
-from django.contrib.sites.models import Site
 
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-
-# core's views
-# -------------------------------------------------------------------------------
 
 class IndexView(TemplateView):
     template_name = 'core/index.html'
@@ -24,7 +17,7 @@ class EventPlannerPanelView(LoginRequiredMixin, ListView):
     # mixin parameters
     login_url = 'connection:login'
 
-    ## view parameters
+    # view parameters
     model = Event
     context_object_name = 'events'
     template_name = 'core/event_planner_panel.html'

@@ -1,8 +1,6 @@
 # coding = utf8
-from topic.models import EventType
-from core.models import Topic
+from topic.models import Topic, EventType
 from django.shortcuts import get_object_or_404
-from core import utils
 from django.contrib.sites.models import Site
 
 
