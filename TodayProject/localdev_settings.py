@@ -62,6 +62,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
+#url corresponding only to navigation through cities
 ROOT_URLCONF = 'TodayProject.urls'
 
 TEMPLATES = [
@@ -134,7 +135,6 @@ USE_L10N = True
 
 # do not use TZ so that each time is like datetime.now
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

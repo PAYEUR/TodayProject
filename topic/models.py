@@ -3,14 +3,12 @@
 from datetime import datetime
 from dateutil import rrule
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.functional import cached_property
 from django.db import models
 from django.core.urlresolvers import reverse
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
-from core.models import Topic
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from django.utils import timezone
@@ -20,6 +18,30 @@ __all__ = (
     'Event',
     'Occurrence',
 )
+
+
+# ==============================================================================
+@python_2_unicode_compatible
+class Topic(models.Model):
+    """
+    topic class, for example "catho" or "jobs"
+    the name has to be the same as the corresponding namespace
+    """
+    name = models.CharField(verbose_name="Thématique",
+                            max_length=50,
+                            default='catho')
+
+    class Meta:
+        verbose_name = 'topic'
+        verbose_name_plural = 'topics'
+
+    # --------------------------------------------------------------------------
+    def __str__(self):
+        return self.name
+
+    # --------------------------------------------------------------------------
+    def get_absolute_url(self):
+        return reverse('topic:index', current_app=self.name)
 
 
 # ==============================================================================
