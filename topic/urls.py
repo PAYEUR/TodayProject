@@ -24,8 +24,5 @@ urlpatterns = [
     # neither this one as event_type_string has been created
     url(r'^categorie(?P<event_type_id_string>[0-9]+)/$', views.event_type_coming_days, name="event_type_coming_days"),
 
-    # add crud_url under catho/ajouter_evenement for example
-    url(r'^', include(crud_urls, namespace='crud')),
-
 
     ]

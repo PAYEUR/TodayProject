@@ -18,11 +18,10 @@ Including another URLconf
 from django.conf.urls import include, url, static
 from django.conf import settings
 
-
+# all the url being on city.enjoytoday.fr (basically catho and jobs)
 urlpatterns = [
-    #the following namespaces have to be the same as topic.names in core.models.topic
-    url(r'^catho/', include('topic.urls', namespace='catho')),
-    url(r'^jobs/', include('topic.urls', namespace='jobs')),
+    url(r'^catho/', include('topic.urls')),
+    # url(r'^jobs/', include('topic.urls', namespace='jobs')),
     url(r'^', include('not_implemented.urls')),
 
 

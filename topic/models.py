@@ -184,14 +184,16 @@ class Event(models.Model):
         return self.title
 
     # --------------------------------------------------------------------------
-    #def get_absolute_url(self):
-        #return reverse('', kwargs={'event_id': self.pk})
+     #def get_absolute_url(self):
+       # """returns the full url for one single event"""
+        #url = 'https://%s%s' % self.site.domain, reverse('catho:get_occurrence', kwargs={'event_id': self.pk})
+        #return url
 
     def delete_url(self):
-        return reverse('catho:crud:delete_event', kwargs={'event_id': self.pk})
+        return reverse('crud:delete_event', kwargs={'event_id': self.pk})
 
     def update_url(self):
-        return reverse('catho:crud:update_event', kwargs={'event_id': self.pk})
+        return reverse('crud:update_event', kwargs={'event_id': self.pk})
 
 
     # --------------------------------------------------------------------------
@@ -306,13 +308,17 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('topic:get_occurrence', kwargs={'pk': self.pk}, current_app=self.event.event_type.topic.name)
+        """returns the full url for one single occurrence for one city and one topic"""
+        url = 'https://%s%s' % self.event.site.domain, reverse('topic:get_occurrence',
+                                                               kwargs={'pk': self.pk},
+                                                               current_app=self.event.event_type.topic.name)
+        return url
 
     def delete_url(self):
-        return reverse('topic:crud:delete_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:delete_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
 
     def update_url(self):
-        return reverse('topic:crud:update_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:update_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

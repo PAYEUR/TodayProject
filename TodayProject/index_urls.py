@@ -19,11 +19,13 @@ from django.conf.urls import include, url, static
 from django.contrib import admin
 from django.conf import settings
 
-
+# all the url being directly on www.enjoytoday.fr
 urlpatterns = [
     url(r'^', include('core.urls')),
+    url(r'^', include('crud.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
+
 
 
     # media images deployment in development. Need change for production
