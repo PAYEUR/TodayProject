@@ -25,9 +25,7 @@ urlpatterns = [
     url(r'^', include('crud.urls')),
     url(r'^connexion/', include('connection.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^catho/', include('topic.urls')),
-    # url(r'^jobs/', include('topic.urls', namespace='jobs')),
-    url(r'^', include('not_implemented.urls')),
+    url(r'^(?P<city_slug>[\w-]+)/', include('location.urls')),
 
 
     # media images deployment in development. Need change for production

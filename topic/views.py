@@ -3,22 +3,20 @@ import calendar
 from datetime import datetime, date, time
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect
-from django.views.generic import DetailView
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import DetailView, ListView
+from location.models import City
 from core import swingtime_settings
-from core.utils import get_current_topic
 from . import utils
 from .forms import IndexForm
-from .models import Occurrence, EventType
-from django.contrib.sites.models import Site
-from django.views.decorators.cache import never_cache
+from .models import Occurrence, EventType, Topic
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
-def index(request, template='topic/research.html'):
+#TODO: where is the mention of city here?
+def index(request, topic_name, template='topic/research.html'):
     """
     :param request:
     :param template:
@@ -26,7 +24,7 @@ def index(request, template='topic/research.html'):
     """
 
     context = dict()
-    topic = get_current_topic(request)
+    topic = get_object_or_404(Topic, name=topic_name)
 
     if request.method == 'POST':
         form = IndexForm(topic, request.POST)
@@ -80,16 +78,14 @@ class OccurrenceDetail(DetailView):
         return context
 
 
+# -----------------------------------------------------------------------------
+# queries views
 # mother function
-#@never_cache
-def _get_events(request, event_type_list, start_time, end_time):
+def _get_events(request, event_type_list, city_slug, topic_name, start_time, end_time):
 
-    # TODO: investigate this: some buggs probably due to cache
-    Site.objects.clear_cache()
-    current_site = Site.objects.get_current()
-    Site.objects.clear_cache()
+    current_location = get_object_or_404(City, city_slug=city_slug)
+    topic = get_object_or_404(Topic, name=topic_name)
 
-    topic = get_current_topic(request)
     title = ' - '.join([event.label for event in event_type_list])
     template = 'topic/sorted_events.html'
 
@@ -97,7 +93,7 @@ def _get_events(request, event_type_list, start_time, end_time):
 
     for event_type in event_type_list:
         occurrences = Occurrence.objects.filter(event__event_type__topic=topic,
-                                                event__site=current_site,
+                                                event__location=current_location,
                                                 event__event_type=event_type,
                                                 start_time__gte=start_time,
                                                 end_time__lte=end_time)
@@ -111,9 +107,55 @@ def _get_events(request, event_type_list, start_time, end_time):
     return render(request, template, context)
 
 
+# # another way to write it
+# class LocationTopicList(ListView):
+#
+#     template = 'topic/sorted_events.html'
+#     context_object_name = 'sorted_occurrences'
+#     start_time = datetime.now()
+#     end_time = utils.end_of_next_days(duration=3)
+#
+#     def get_queryset(self):
+#         self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
+#         self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
+#         return Occurrence.objects.filter(event__location=self.current_location,
+#                                          event__event_type__topic=self.topic,
+#                                          start_time__gte=self.start_time,
+#                                          end_time__lte=self.end_time,
+#                                          )
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(LocationTopicList, self).get_context_data(**kwargs)
+#         context['days'] = utils.list_days(self.start_time, self.end_time)
+#         context['title'] = "toutes catégories"
+#
+#
+# class TodayList(LocationTopicList):
+#
+#     start_time = datetime.combine(date.today(), time.min)
+#     end_time = datetime.combine(date.today(), time.max)
+#
+#
+# class TomorrowList(LocationTopicList):
+#
+#     start_time = datetime.combine(date.tomorrow(), time.min)
+#     end_time = datetime.combine(date.tomorrow), time.max)
+#
+# class SingleDayList(LocationTopicList):
+#
+# self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
+#         return Occurrence.objects.filter(event__location=self.current_location,
+#                                          event__event_type__topic=self.topic,
+#                                          event__event_type__in=self.event_type_list,
+#                                          start_time__gte=self.start_time,
+#                                          end_time__lte=self.end_time,
+#                                          )
+
+#' - '.join([event.label for event in self.event_type_list])
+
 # functions for date queries
 def _all_events(request, start_time, end_time):
-    event_type_list = EventType.objects.filter(topic=get_current_topic(request))
+    event_type_list = EventType.objects.all()
     return _get_events(request, event_type_list, start_time, end_time)
 
 
@@ -134,7 +176,7 @@ def coming_days_events(request):
 # functions for event_type queries
 
 def single_day_event_type_list(request, event_type_id_string, year, month, day):
-    event_type_list = utils.get_event_type_list(event_type_id_string, current_topic=get_current_topic(request))
+    event_type_list = utils.get_event_type_list(event_type_id_string)
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, time.min)
     end_time = utils.construct_time(date_day, time.max)
@@ -143,7 +185,7 @@ def single_day_event_type_list(request, event_type_id_string, year, month, day):
 
 
 def single_time_event_type_list(request, event_type_id_string, year, month, day, start_hour_string, end_hour_string):
-    event_type_list = utils.get_event_type_list(event_type_id_string, current_topic=get_current_topic(request))
+    event_type_list = utils.get_event_type_list(event_type_id_string)
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, utils.construct_hour(start_hour_string))
     end_time = utils.construct_time(date_day, utils.construct_hour(end_hour_string))
@@ -152,7 +194,7 @@ def single_time_event_type_list(request, event_type_id_string, year, month, day,
 
 
 def event_type_coming_days(request, event_type_id_string):
-    event_type_list = utils.get_event_type_list(event_type_id_string, current_topic=get_current_topic(request))
+    event_type_list = utils.get_event_type_list(event_type_id_string)
     start_time = datetime.now()
     end_time = utils.end_of_next_days(duration=3)
 
@@ -160,7 +202,7 @@ def event_type_coming_days(request, event_type_id_string):
 
 
 def daily_events(request, year, month, day):
-    event_type_list = EventType.objects.filter(topic=get_current_topic(request))
+    event_type_list = EventType.objects.all()
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, time.min)
     end_time = utils.construct_time(date_day, time.max)

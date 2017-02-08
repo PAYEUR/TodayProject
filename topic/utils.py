@@ -58,11 +58,10 @@ def construct_hour_string(datetime_hour):
 # management of event_types useful functions
 # -------------------------------------------------------------------------------
 
-def get_event_type_list(event_type_id_string, current_topic):
+def get_event_type_list(event_type_id_string):
     """unsplit event_type_list_string such as 1&2&3 into event_type_id and return corresponding EventTypes"""
     id_list = [int(i) for i in event_type_id_string.split('&')]
-    return EventType.objects.filter(id__in=id_list,
-                                    topic=current_topic)
+    return EventType.objects.filter(id__in=id_list)
 
 
 def create_id_string(object_list):

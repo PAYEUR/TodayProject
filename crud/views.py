@@ -2,21 +2,18 @@ import logging
 from datetime import datetime
 
 from django import http
-from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from dateutil import parser
 from django.forms import formset_factory
-from django.views.generic import UpdateView, DeleteView, FormView
+from django.views.generic import UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
 from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
-from topic.models import EventType, Occurrence, Event, EnjoyTodayUser
-from core.utils import get_current_topic
-from django.contrib.sites.shortcuts import get_current_site
-from django.forms.models import model_to_dict
-
+from topic.models import Occurrence, Event, EnjoyTodayUser
+from location.utils import get_current_topic
 
 
 @login_required(login_url='connection:login')
