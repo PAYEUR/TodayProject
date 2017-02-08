@@ -12,13 +12,11 @@ class City(models.Model):
     """ Place class. Use to make queries on city.
     """
 
-    #site = models.ForeignKey(Site, on_delete=models.CASCADE)
-
     city_name = models.CharField(verbose_name='city_name',
-                                 max_length=255,
-                                 default="Paris")
+                                 max_length=255)
 
-    #location = PlainLocationField(based_fields=['city_name'], zoom=7, default="Null")
+    city_slug = models.CharField(verbose_name='city_slug',
+                                 max_length=255)
 
     # ==========================================================================
     class Meta:

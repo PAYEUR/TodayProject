@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Topic, Event, EventType, Occurrence
 
+
 class EventAdmin(admin.ModelAdmin):
 
     list_display = ('title',

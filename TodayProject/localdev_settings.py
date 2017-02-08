@@ -156,3 +156,5 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
+
+ALLOWED_HOSTS = ['127.0.0.1:8000']
