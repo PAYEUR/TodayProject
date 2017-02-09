@@ -55,6 +55,16 @@ def construct_hour_string(datetime_hour):
     return "h".join([hour, minutes])
 
 
+def create_date_url_dict(start_time, end_time):
+    return {'start_year': str(start_time.year),
+            'start_month': str(start_time.month),
+            'start_day': str(start_time.day),
+            'end_year': str(end_time.year),
+            'end_month': str(end_time.month),
+            'end_day': str(end_time.day),
+            }
+
+
 # management of event_types useful functions
 # -------------------------------------------------------------------------------
 
@@ -66,3 +76,10 @@ def get_event_type_list(event_type_id_string):
 
 def create_id_string(object_list):
     return '&'.join([str(thing.id) for thing in object_list])
+
+
+def url_all_events_dict(start_time, end_time):
+    d1 = {'event_type_id_string': create_id_string(EventType.objects.all())}
+    d2 = create_date_url_dict(start_time, end_time)
+    return dict(d1, **d2)
+
