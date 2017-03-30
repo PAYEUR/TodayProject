@@ -2,6 +2,7 @@
 from topic.models import Topic, EventType
 from django.shortcuts import get_object_or_404
 from django.contrib.sites.models import Site
+from location.models import City
 
 
 def topic_list(request):
@@ -28,27 +29,5 @@ def topic_sidebar(request):
     return context
 
 
-def city_name(request):
-    """
-    Return name of city related to current site
-    """
-
-    return {'city_name' : request.site.name}
-
-
-# TODO rearrange architecture to remove the exclude
-# in  core/sidebar.html
-def sites(request):
-    """
-    :param request:
-    """
-    return {'sites': Site.objects.exclude(name__contains='oday')}
-
-def urls(request):
-    context = dict()
-    context['paris_url'] = 'http://%s/catho' % Site.objects.get(name__contains='aris')
-    context['albi_url'] = 'http://%s/catho' % Site.objects.get(name__contains='lbi')
-    context['nice_url'] = 'http://%s/catho' % Site.objects.get(name__contains='ice')
-    context['lyon_url'] = 'http://%s/catho' % Site.objects.get(name__contains='yon')
-    context['index_url'] = 'http://%s' % Site.objects.get(name__contains='oday')
-    return context
+def cities(request):
+    return {'cities': City.objects.all()}

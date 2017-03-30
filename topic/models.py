@@ -147,6 +147,7 @@ class Event(models.Model):
                                  on_delete=models.SET_DEFAULT,
                                  help_text="ville dans laquelle sera posté l'événement",
                                  default=None,
+                                 blank=True,
                                  )
 
     #auto filled fields
@@ -154,6 +155,7 @@ class Event(models.Model):
                                       on_delete=models.CASCADE,
                                       verbose_name='annonceur',
                                       default=None,
+                                      blank=True,
                                       )
 
     created_at = models.DateTimeField(auto_now=True,
@@ -162,10 +164,10 @@ class Event(models.Model):
 
     # Resize image
     image_main = ImageSpecField(source='image',
-                            processors=[ResizeToFill(800, 300)],
-                            format='JPEG',
-                            options={'quality': 100},
-                            )
+                                processors=[ResizeToFill(800, 300)],
+                                format='JPEG',
+                                options={'quality': 100},
+                                )
 
     # ===========================================================================
     class Meta:
