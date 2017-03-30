@@ -2,7 +2,6 @@ from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from topic.models import Event
 from connection.models import EnjoyTodayUser
-from location.models import City
 
 
 class IndexView(TemplateView):

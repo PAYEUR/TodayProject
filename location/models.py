@@ -25,8 +25,7 @@ class City(models.Model):
                                  help_text="Nom de la ville affiché dans l'url")
 
     city_big_map_coordinates = models.CharField(verbose_name='city_big_map_coordinates',
-                                                default=None,
-                                                blank=True,
+                                                default="155,52,155,83,238,88,237,56",
                                                 max_length=255,
                                                 help_text="Coordonnées html de la zone de la grande carte de France "
                                                           "correspondant à la ville, au format 155,52,155,83,238,88,237,56")

@@ -147,7 +147,6 @@ class Event(models.Model):
                                  on_delete=models.SET_DEFAULT,
                                  help_text="ville dans laquelle sera posté l'événement",
                                  default=None,
-                                 blank=True,
                                  )
 
     #auto filled fields

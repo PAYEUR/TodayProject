@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
-    'django.contrib.sites',
     'widget.apps.WidgetConfig',
     'not_implemented.apps.NotImplementedConfig',
 
@@ -59,7 +58,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
 #url corresponding only to navigation through cities
