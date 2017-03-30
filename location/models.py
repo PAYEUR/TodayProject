@@ -39,12 +39,12 @@ class City(models.Model):
     # TODO: automatize topic_name
     def get_absolute_url(self):
         """
-        by default, returns catho index page
+        by default, returns spi index page
         """
-        return reverse('topic:index',
+        return reverse('location:topic:index',
                        kwargs={'city_slug': self.city_slug,
-                               'topic_name': 'catho',
-                               # 'topic_name': Topic.Field('name').default,
+                               'topic_name': 'spi',
+                               #'topic_name': Topic.Field('name').default,
                                }
                        )
 

@@ -16,7 +16,7 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
 
 
 #TODO: where is the mention of city here?
-def index(request, topic_name, template='topic/research.html'):
+def index(request, topic_name, city_slug, template='topic/research.html'):
     """
     :param request:
     :param template:
@@ -25,6 +25,7 @@ def index(request, topic_name, template='topic/research.html'):
 
     context = dict()
     topic = get_object_or_404(Topic, name=topic_name)
+    city = get_object_or_404(City, city_slug=city_slug)
 
     if request.method == 'POST':
         form = IndexForm(topic, request.POST)
@@ -51,7 +52,7 @@ def index(request, topic_name, template='topic/research.html'):
                                             'start_hour_string': utils.construct_hour_string(start_hour),
                                             'end_hour_string': utils.construct_hour_string(end_hour),
                                             },
-                                    current_app=topic.name),
+                                    )
                             )
 
     else:

@@ -43,7 +43,7 @@
             <map name="Map" id="Map">
                 {% for city in cities %}
                     <area shape="poly" alt="{{ city.city_slug }}" title="{{ city.city_name }}"
-                          href="{{ city.get_absolute_url }}" coords="{{ city_city_big_map_coordinates }}" />
+                          href="{{ city.get_absolute_url }}" coords="{{ city.city_big_map_coordinates }}" />
                 {% endfor %}
             </map>
         </div>
@@ -54,7 +54,7 @@
             <map name="Map2" id="Map2">
                 {% for city in cities %}
                     <area shape="poly" alt="{{ city.city_slug }}" title="{{ city.city_name }}"
-                          href="{{ city.get_absolute_url }}" coords="{{ city_city_small_map_coordinates }}" />
+                          href="{{ city.get_absolute_url }}" coords="{{ city.city_small_map_coordinates }}" />
                 {% endfor %}
             </map>
         </div>
