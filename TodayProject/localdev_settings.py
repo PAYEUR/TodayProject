@@ -94,7 +94,7 @@ DATABASES = {
     'default': {
         # BD test
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        'NAME': os.path.join(BASE_DIR, 'testDB'),
     }
 }
 
