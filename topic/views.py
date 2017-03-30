@@ -193,7 +193,6 @@ def tomorrow_events(request):
     return redirect('DateList.as_view()', dic)
 
 
-
 def coming_days_events(request):
     start_time = datetime.combine(date.today(), time.min)
     end_time = utils.end_of_next_days(duration=3)

@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied
 
 from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
 from topic.models import Occurrence, Event, EnjoyTodayUser
-from location.utils import get_current_topic
+from TodayProject.utils import get_current_topic
 
 
 @login_required(login_url='connection:login')

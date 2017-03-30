@@ -6,13 +6,13 @@ class EventAdmin(admin.ModelAdmin):
 
     list_display = ('title',
                     'address',
-                    'site',
+                    'location',
                     'event_type',
                     'event_planner',
                     'created_at',
                     )
 
-    list_filter = ['site', 'event_type']
+    list_filter = ['location', 'event_type']
 
 admin.site.register(EventType)
 admin.site.register(Event, EventAdmin)
