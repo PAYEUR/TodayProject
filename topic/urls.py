@@ -1,6 +1,5 @@
 # coding="utf-8"
-from crud import urls as crud_urls
-from django.conf.urls import url, include
+from django.conf.urls import url
 from . import views
 
 

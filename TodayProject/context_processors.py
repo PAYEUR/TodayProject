@@ -17,14 +17,14 @@ def topic_sidebar(request):
 
     # TODO mix this with core.utils.get_current_topic function
     mother_namespace = request.resolver_match.namespaces[0]
-    #     topic_names = [topic.name for topic in Topic.objects.all()]
+    topic_names = [topic.name for topic in Topic.objects.all()]
     context = dict()
     # print mother_namespace
     # print topic_names
-    #    if mother_namespace in topic_names:
-    #        current_topic = get_object_or_404(Topic, name=mother_namespace)
-    #        context['current_topic'] = current_topic
-    #       context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
+    if mother_namespace in topic_names:
+        current_topic = get_object_or_404(Topic, name=mother_namespace)
+        context['current_topic'] = current_topic
+        context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context
 
 

@@ -6,7 +6,7 @@
 
 <ul class="nav nav-sidebar">
     {% for city in cities %}
-        <li><a href="{{ city.get_absolute_url }}">Rechercher sur {{ city.name|capfirst }}</a></li>
+        <li><a href="{{ city.get_absolute_url }}">Rechercher sur {{ city.city_name|capfirst }}</a></li>
     {% endfor %}
 </ul>
 

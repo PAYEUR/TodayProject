@@ -10,13 +10,15 @@ from core import swingtime_settings
 from . import utils
 from .forms import IndexForm
 from .models import Occurrence, EventType, Topic
+#from TodayProject.utils import get_current_topic
 
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
 
 #TODO: where is the mention of city here?
-def index(request, topic_name, city_slug, template='topic/research.html'):
+# vue initiale, remise ici pour mémoire
+def index2(request, topic_name, city_slug, template='topic/research.html'):
     """
     :param request:
     :param template:
@@ -61,6 +63,59 @@ def index(request, topic_name, city_slug, template='topic/research.html'):
     context['form'] = form
 
     return render(request, template, context)
+
+
+# on suppose la ville et le topic connus
+def index(request, topic_name, city_slug, template='topic/research.html'):
+    """
+    :param request:
+    :param template:
+    :return: home template with index form
+    """
+
+    context = dict()
+    topic = get_object_or_404(Topic, name=topic_name)
+
+    if request.method == 'POST':
+        form = IndexForm(topic, request.POST)
+
+        if form.is_valid():
+            # required
+            query_date = form.cleaned_data['quand']
+            # blank allowed
+            event_type_list = form.cleaned_data['quoi']
+            # hour by default else.
+            start_hour = form.cleaned_data['start_hour']
+            end_hour = form.cleaned_data['end_hour']
+
+            if event_type_list:
+                event_type_id_string = utils.create_id_string(event_type_list)
+            else:
+                event_type_id_string = utils.create_id_string(EventType.objects.filter(topic=topic))
+
+            return redirect(reverse('DateList.as_view()',
+                                    kwargs={'start_year': query_date.year,
+                                            'start_month': query_date.month,
+                                            'start_day': query_date.day,
+                                            'start_hour_string': utils.construct_hour_string(start_hour),
+                                            'end_year': query_date.year,
+                                            'end_month': query_date.month,
+                                            'end_day': query_date.day,
+                                            'end_hour_string': utils.construct_hour_string(end_hour),
+                                            'event_type_id_string': event_type_id_string,
+                                            'topic_name': topic_name,
+                                            'city_slug': city_slug,
+                                            },
+                                    )
+                            )
+
+    else:
+        form = IndexForm(topic)
+
+    context['form'] = form
+
+    return render(request, template, context)
+
 
 
 class OccurrenceDetail(DetailView):
@@ -183,8 +238,8 @@ def today_all_events(request):
     # normally city and topic are already in request.
     start_time = datetime.combine(date.today(), time.min)
     end_time = datetime.combine(date.today(), time.max)
-    dict = utils.url_all_events_dict(start_time, end_time)
-    return redirect('DateList.as_view()', dict)
+    dic = utils.url_all_events_dict(start_time, end_time)
+    return redirect('DateList.as_view()', dic)
 
 
 def tomorrow_events(request):

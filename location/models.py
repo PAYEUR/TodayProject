@@ -45,7 +45,8 @@ class City(models.Model):
                        kwargs={'city_slug': self.city_slug,
                                'topic_name': 'spi',
                                #'topic_name': Topic.Field('name').default,
-                               }
+                               },
+                       current_app='topic'
                        )
 
     # ==========================================================================
