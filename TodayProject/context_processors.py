@@ -2,6 +2,7 @@
 from topic.models import Topic, EventType
 from django.shortcuts import get_object_or_404
 from location.models import City
+import utils
 
 
 def topic_list(request):
@@ -11,20 +12,13 @@ def topic_list(request):
 
 def topic_sidebar(request):
     """
-    :param request: search the mother_namespace
+    :param request: look for the current topic name from url
     :return: add current_topic and current_topic_event_type_list to the context depending on the called namespace
     """
-
-    # TODO mix this with core.utils.get_current_topic function
-    mother_namespace = request.resolver_match.namespaces[0]
-    topic_names = [topic.name for topic in Topic.objects.all()]
     context = dict()
-    # print mother_namespace
-    # print topic_names
-    if mother_namespace in topic_names:
-        current_topic = get_object_or_404(Topic, name=mother_namespace)
-        context['current_topic'] = current_topic
-        context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
+    current_topic = utils.get_city_and_topic(request)['topic']
+    context['current_topic'] = current_topic
+    context['current_topic_event_type_list'] = EventType.objects.filter(topic=current_topic)
     return context
 
 

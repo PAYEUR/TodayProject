@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied
 
 from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
 from topic.models import Occurrence, Event, EnjoyTodayUser
-from TodayProject.utils import get_current_topic
+from TodayProject.utils import get_city_and_topic
 
 
 @login_required(login_url='connection:login')
@@ -24,7 +24,7 @@ def _add_event(
         event_form_class=EventForm,
         ):
 
-        topic = get_current_topic(request)
+        topic = get_city_and_topic(request)['topic']
         return _add_event_by_topic(request,
                                    topic,
                                    recurrence_form_class,
@@ -115,7 +115,7 @@ def add_multiple_dates(
         ):
 
     dtstart = None
-    topic = get_current_topic(request)
+    topic = get_city_and_topic(request)['topic']
 
     OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
     if request.method == 'POST':
@@ -165,7 +165,7 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     raise_exception = True
 
     def get_form(self, form_class=form_class):
-        return form_class(topic=get_current_topic(self.request), **self.get_form_kwargs())
+        return form_class(topic=get_city_and_topic(self.request)['topic'], **self.get_form_kwargs())
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')

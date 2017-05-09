@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.urlresolvers import reverse
-#from topic.models import Topic
+
 
 # rewrite this to properly take into account site and related cities
 

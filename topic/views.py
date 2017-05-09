@@ -126,8 +126,8 @@ class OccurrenceDetail(DetailView):
         context = super(OccurrenceDetail, self).get_context_data(**kwargs)
         address = self.object.event.address
         # TODO improve this using location.address
-        if address == u'non précisé':
-            address += str(", " + str(self.request.site.name))
+        # if address == u'non précisé':
+            # address += str(", " + str(self.request.site.name))
 
         context['address'] = address
 
