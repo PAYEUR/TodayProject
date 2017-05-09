@@ -39,10 +39,11 @@ class City(models.Model):
     # TODO: automatize topic_name
     def get_absolute_url(self):
         """
-        by default, returns spi index page
+        by default, returns city index page
+        the proper way to do is to link with a function INSIDE of the bundle
         """
-        return reverse('index',
-                       kwargs={ 'city_slug': self.city_slug,
+        return reverse('location:index',
+                       kwargs={'city_slug': self.city_slug,
                                }
                        )
     # ==========================================================================

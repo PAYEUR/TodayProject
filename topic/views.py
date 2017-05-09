@@ -125,38 +125,6 @@ def _get_events(request, event_type_list, city_slug, topic_name, start_time, end
     return render(request, template, context)
 
 
-# another way to write it
-# class LocationTopicList(ListView):
-#
-#     template = 'topic/sorted_events.html'
-#     context_object_name = 'sorted_occurrences'
-#
-#     def get_queryset(self):
-#         self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
-#         self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
-#         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
-#
-#         start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_day'])
-#         start_hour = utils.construct_hour(self.kwargs['start_hour_string'])
-#         self.start_time = utils.construct_time(start_date, start_hour)
-#
-#         end_date = utils.construct_day(self.kwargs['end_year'], self.kwargs['end_month'], self.kwargs['end_day'])
-#         end_hour = utils.construct_hour(self.kwargs['end_hour_string'])
-#         self.end_time = utils.construct_time(end_date, end_hour)
-#
-#         return Occurrence.objects.filter(event__location=self.current_location,
-#                                          event__event_type__topic=self.topic,
-#                                          event__event_type__in=self.event_type_list,
-#                                          start_time__gte=self.start_time,
-#                                          end_time__lte=self.end_time,
-#                                          )
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(LocationTopicList, self).get_context_data(**kwargs)
-#         context['days'] = utils.list_days(self.start_time, self.end_time)
-#         context['title'] = ' - '.join([event.label for event in self.event_type_list])
-
-
 class LocationTopicList(ListView):
 
     template = 'topic/sorted_events.html'
