@@ -41,14 +41,10 @@ class City(models.Model):
         """
         by default, returns spi index page
         """
-        return reverse('location:topic:index',
-                       kwargs={'city_slug': self.city_slug,
-                               'topic_name': 'spi',
-                               #'topic_name': Topic.Field('name').default,
-                               },
-                       current_app='topic'
+        return reverse('index',
+                       kwargs={ 'city_slug': self.city_slug,
+                               }
                        )
-
     # ==========================================================================
     class Meta:
         verbose_name ='city'

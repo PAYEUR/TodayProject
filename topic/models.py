@@ -9,7 +9,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
-from django.utils import timezone
+#from TodayProject import utils
 
 __all__ = (
     'EventType',
@@ -38,8 +38,12 @@ class Topic(models.Model):
         return self.name
 
     # --------------------------------------------------------------------------
-    def get_absolute_url(self):
-        return reverse('topic:index', current_app=self.name)
+    # def get_absolute_url(self):
+    #     return reverse('topic:index',
+    #                    kwargs={'topic_name': self.name,
+    #                            'city_slug': utils.get_city_and_topic(self.request)['city'],
+    #                            }
+    #                    )
 
 
 # ==============================================================================
@@ -78,8 +82,10 @@ class EventType(models.Model):
 
     def get_absolute_url(self):
         return reverse('topic:event_type_coming_days',
-                       kwargs={'event_type_id_string': str(self.pk)},
-                       current_app=self.topic.name)
+                       kwargs={'event_type_id_string': str(self.pk),
+                               },
+                       #current_app=self.topic.name
+                       )
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -306,10 +312,16 @@ class Occurrence(models.Model):
 
 # TODO: rewrite this
     def delete_url(self):
-        return reverse('crud:delete_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:delete_occurrence',
+                       kwargs={'occurrence_id': self.pk},
+                       #current_app=self.event.event_type.topic.name
+                       )
 
     def update_url(self):
-        return reverse('crud:update_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:update_occurrence',
+                       kwargs={'occurrence_id': self.pk},
+                       #current_app=self.event.event_type.topic.name,
+                       )
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
     'widget.apps.WidgetConfig',
-    'not_implemented.apps.NotImplementedConfig',
+    #'not_implemented.apps.NotImplementedConfig',
 
 ]
 
@@ -79,6 +79,7 @@ TEMPLATES = [
                 'TodayProject.context_processors.topic_sidebar',
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.cities',
+                'TodayProject.context_processors.current_city',
 
             ],
         },

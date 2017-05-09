@@ -2,7 +2,7 @@
 from topic.models import Topic, EventType
 from django.shortcuts import get_object_or_404
 from location.models import City
-import utils
+from . import utils
 
 
 def topic_list(request):
@@ -24,3 +24,6 @@ def topic_sidebar(request):
 
 def cities(request):
     return {'cities': City.objects.all()}
+
+def current_city(request):
+    return {'current_city': utils.get_city_and_topic(request)['city']}
