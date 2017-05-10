@@ -28,9 +28,9 @@ def end_of_next_days(duration=3):
 
 def list_days(start_time, end_time):
     """
-    :param start_time:
-    :param end_time:
-    :return: list of datetimes corresponding to days
+    :param start_time: datetime.time
+    :param end_time: datetime.time
+    :return: list of datetime.day
     """
     diff = end_time - start_time
     return [start_time + timedelta(days=+i) for i in range(diff.days + 1)]
@@ -59,9 +59,11 @@ def create_date_url_dict(start_time, end_time):
     return {'start_year': str(start_time.year),
             'start_month': str(start_time.month),
             'start_day': str(start_time.day),
+            'start_hour_string': "00h00",
             'end_year': str(end_time.year),
             'end_month': str(end_time.month),
             'end_day': str(end_time.day),
+            'end_hour_string': "23h59",
             }
 
 

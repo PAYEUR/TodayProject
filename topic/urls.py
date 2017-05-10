@@ -23,6 +23,6 @@ urlpatterns = [
         views.single_time_event_type_list, name="occurence_list"),
 
     #in the idea, one should have a single string like that
-    url(r'^categorie(?P<event_type_id_string>.+)/du_(?P<start_year>\d{4})-(?P<start_month>0?[1-9]|1[012])-(?P<start_day>[0-3]?\d)_ a_(?P<start_hour_string>.+)/au_(?P<end_year>\d{4})-(?P<end_month>0?[1-9]|1[012])-(?P<end_day>[0-3]?\d)_ a_(?P<end_hour_string>.+)$',
+    url(r'^categorie(?P<event_type_id_string>.+)/du_(?P<start_year>\d{4})-(?P<start_month>0?[1-9]|1[012])-(?P<start_day>[0-3]?\d)_a_(?P<start_hour_string>.+)/au_(?P<end_year>\d{4})-(?P<end_month>0?[1-9]|1[012])-(?P<end_day>[0-3]?\d)_a_(?P<end_hour_string>.+)$',
         views.single_time_event_type_list, name="full_list"),
     ]

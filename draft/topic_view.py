@@ -81,3 +81,30 @@ def index2(request, topic_name, city_slug, template='topic/research.html'):
 #         context = super(LocationTopicList, self).get_context_data(**kwargs)
 #         context['days'] = utils.list_days(self.start_time, self.end_time)
 #         context['title'] = ' - '.join([event.label for event in self.event_type_list])
+
+
+# # mother function
+# def _get_events(request, event_type_list, city_slug, topic_name, start_time, end_time):
+#
+#     current_location = get_object_or_404(City, city_slug=city_slug)
+#     topic = get_object_or_404(Topic, name=topic_name)
+#
+#     title = ' - '.join([event.label for event in event_type_list])
+#     template = 'topic/sorted_events.html'
+#
+#     sorted_occurrences = dict()
+#
+#     for event_type in event_type_list:
+#         occurrences = Occurrence.objects.filter(event__event_type__topic=topic,
+#                                                 event__location=current_location,
+#                                                 event__event_type=event_type,
+#                                                 start_time__gte=start_time,
+#                                                 end_time__lte=end_time)
+#         sorted_occurrences[event_type] = occurrences
+#
+#     context = dict({'sorted_occurrences': sorted_occurrences,
+#                     'days': utils.list_days(start_time, end_time),
+#                     'title': title
+#                     })
+#
+#     return render(request, template, context)

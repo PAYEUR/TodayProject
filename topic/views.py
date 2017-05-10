@@ -72,6 +72,8 @@ def index(request, topic_name, city_slug, template='topic/research.html'):
     return render(request, template, context)
 
 
+# -----------------------------------------------------------------------------
+# detail views
 
 class OccurrenceDetail(DetailView):
     model = Occurrence
@@ -92,39 +94,7 @@ class OccurrenceDetail(DetailView):
 # -----------------------------------------------------------------------------
 # queries views
 
-
-# TODO: before all these function, the mother bundle should define a q function that gives city and topic from the current url.
-# All the following function should only be q_childrens of that mother function
-# This is actually LocationTopicList
-
-
-# mother function
-def _get_events(request, event_type_list, city_slug, topic_name, start_time, end_time):
-
-    current_location = get_object_or_404(City, city_slug=city_slug)
-    topic = get_object_or_404(Topic, name=topic_name)
-
-    title = ' - '.join([event.label for event in event_type_list])
-    template = 'topic/sorted_events.html'
-
-    sorted_occurrences = dict()
-
-    for event_type in event_type_list:
-        occurrences = Occurrence.objects.filter(event__event_type__topic=topic,
-                                                event__location=current_location,
-                                                event__event_type=event_type,
-                                                start_time__gte=start_time,
-                                                end_time__lte=end_time)
-        sorted_occurrences[event_type] = occurrences
-
-    context = dict({'sorted_occurrences': sorted_occurrences,
-                    'days': utils.list_days(start_time, end_time),
-                    'title': title
-                    })
-
-    return render(request, template, context)
-
-
+# grand-mother function: topic and city
 class LocationTopicList(ListView):
 
     template = 'topic/sorted_events.html'
@@ -144,10 +114,36 @@ class LocationTopicList(ListView):
         context['topic'] = self.topic
 
 
+# mother function: event_type_list, start and end time
 class DateList(LocationTopicList):
+    """
+    Queries occurrences in database from input kwargs and display them into 'topic/sorted_events.html' template
+
+    input (as kwargs) in the url:
+        - string, city_slug
+        - string, topic_name
+        - event_type_id_string: string, id of requested events
+        - start_year
+        - start_month
+        - start_day
+        - start_hour_string
+        - end_year
+        - end_month
+        - end_day
+        - end_hour_string
+
+    return context:
+        - sorted_occurrences: list of topic.models.Occurrence
+        - city: current location.models.City
+        - topic: current topic.models.Topic
+        - days: list of datetime.day corresponding to the time request
+        - title: string, title of the page (requested event_types concatenation)
+    """
 
     def get_queryset(self):
-        queryset = super(DateList, self).get_queryset()
+        queryset = super(DateList, self).get_context_data()
+        #self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
+        #self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
 
         start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_day'])
@@ -169,12 +165,16 @@ class DateList(LocationTopicList):
         context['title'] = ' - '.join([event.label for event in self.event_type_list])
 
 
-def today_all_events(request):
+# child functions
+def today_all_events(request, **kwargs):
     # normally city and topic are already in request.
     start_time = datetime.combine(date.today(), time.min)
     end_time = datetime.combine(date.today(), time.max)
     dic = utils.url_all_events_dict(start_time, end_time)
-    return redirect('DateList.as_view()', dic)
+    kwargs = dict(dic, **kwargs)
+    #dic2 ={'city_slug':"paris", 'topic_name':"spi"}
+    return DateList.as_view()(request, **kwargs)
+
 
 
 def tomorrow_events(request):
@@ -200,12 +200,13 @@ def single_day_event_type_list(request, event_type_id_string, year, month, day):
     return redirect('DateList.as_view()', dic)
 
 
-def single_time_event_type_list(request, event_type_id_string, year, month, day, start_hour_string, end_hour_string):
+def single_time_event_type_list(request, event_type_id_string, year, month, day, start_hour_string, end_hour_string, **kwargs):
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, utils.construct_hour(start_hour_string))
     end_time = utils.construct_time(date_day, utils.construct_hour(end_hour_string))
     dic = dict(utils.create_date_url_dict(start_time, end_time), **{'event_type_id_string': event_type_id_string})
-    return redirect('DateList.as_view()', dic)
+    kwargs = dict(dic, **kwargs)
+    return redirect('DateList.as_view()', **kwargs)
 
 
 def event_type_coming_days(request, event_type_id_string):
