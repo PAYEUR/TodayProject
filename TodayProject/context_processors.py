@@ -25,5 +25,6 @@ def topic_sidebar(request):
 def cities(request):
     return {'cities': City.objects.all()}
 
+
 def current_city(request):
     return {'current_city': utils.get_city_and_topic(request)['city']}

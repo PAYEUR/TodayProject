@@ -17,8 +17,19 @@ from django.http import HttpResponse
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
 
-def index2(request, topic_name, city_slug):
-     return HttpResponse("sujet : " + str(topic_name) + " ;  Ville : " + str(city_slug))
+
+def test1(request, topic_name, city_slug):
+    # test if kwargs are correctly taken into account
+    return HttpResponse("sujet : " + str(topic_name) + " ;  Ville : " + str(city_slug))
+
+
+def test2(request, topic_name, city_slug):
+    # tests if a template can be rendered
+    context = {'title': topic_name + " a " + city_slug,
+               'site': City.objects.get(city_slug=city_slug),
+               }
+    return render(request, template_name='topic/test.html', context=context)
+
 
 # on suppose la ville et le topic connus
 def index(request, topic_name, city_slug, template='topic/research.html'):
@@ -97,7 +108,8 @@ class OccurrenceDetail(DetailView):
 # grand-mother function: topic and city
 class LocationTopicList(ListView):
 
-    template = 'topic/sorted_events.html'
+    model = Occurrence
+    template_name = 'topic/sorted_events.html'
     context_object_name = 'sorted_occurrences'
 
     def get_queryset(self):
@@ -112,10 +124,11 @@ class LocationTopicList(ListView):
         context = super(LocationTopicList, self).get_context_data(**kwargs)
         context['city'] = self.current_location
         context['topic'] = self.topic
+        return context
 
 
 # mother function: event_type_list, start and end time
-class DateList(LocationTopicList):
+class DateList(ListView):
     """
     Queries occurrences in database from input kwargs and display them into 'topic/sorted_events.html' template
 
@@ -140,10 +153,14 @@ class DateList(LocationTopicList):
         - title: string, title of the page (requested event_types concatenation)
     """
 
+    model = Occurrence
+    template_name = 'topic/sorted_events.html'
+    context_object_name = 'sorted_occurrences'
+
     def get_queryset(self):
-        queryset = super(DateList, self).get_context_data()
-        #self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
-        #self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
+        #queryset = super(DateList, self).get_context_data()
+        self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
+        self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
 
         start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_day'])
@@ -154,16 +171,21 @@ class DateList(LocationTopicList):
         end_hour = utils.construct_hour(self.kwargs['end_hour_string'])
         self.end_time = utils.construct_time(end_date, end_hour)
 
-        return queryset.filter(event__event_type__in=self.event_type_list,
+        return Occurrence.objects.filter(event__event_type__in=self.event_type_list,
                                start_time__gte=self.start_time,
                                end_time__lte=self.end_time,
+                                         event__location=self.current_location,
+                                         event__event_type__topic=self.topic,
                                )
 
     def get_context_data(self, **kwargs):
         context = super(DateList, self).get_context_data(**kwargs)
         context['days'] = utils.list_days(self.start_time, self.end_time)
         context['title'] = ' - '.join([event.label for event in self.event_type_list])
+        context['city'] = self.current_location
+        context['topic'] = self.topic
 
+        return context
 
 # child functions
 def today_all_events(request, **kwargs):

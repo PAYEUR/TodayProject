@@ -5,6 +5,8 @@ import views
 
 app_name = 'topic'
 urlpatterns = [
+    url(r'^test1$', views.test1, name="test1"),
+    url(r'^test2$', views.test2, name="test2"),
     url(r'^$', views.index, name="index"),
     url(r'^evenement(?P<pk>[0-9]+)$', views.OccurrenceDetail.as_view(), name="get_occurrence"),
     url(r'^toutes-categories/aujourd-hui/$', views.today_all_events, name="today_events"),
@@ -23,6 +25,7 @@ urlpatterns = [
         views.single_time_event_type_list, name="occurence_list"),
 
     #in the idea, one should have a single string like that
-    url(r'^categorie(?P<event_type_id_string>.+)/du_(?P<start_year>\d{4})-(?P<start_month>0?[1-9]|1[012])-(?P<start_day>[0-3]?\d)_a_(?P<start_hour_string>.+)/au_(?P<end_year>\d{4})-(?P<end_month>0?[1-9]|1[012])-(?P<end_day>[0-3]?\d)_a_(?P<end_hour_string>.+)$',
-        views.single_time_event_type_list, name="full_list"),
+    # categorie1/du_21-05-2017_a_12h00/au_21-05-2017_a_12h00
+    url(r'^categorie(?P<event_type_id_string>.+)/du_(?P<start_day>[0-3]?\d)-(?P<start_month>0?[1-9]|1[012])-(?P<start_year>\d{4})_a_(?P<start_hour_string>.+)/au_(?P<end_day>[0-3]?\d)-(?P<end_month>0?[1-9]|1[012])-(?P<end_year>\d{4})_a_(?P<end_hour_string>.+)$',
+        views.DateList.as_view(), name="full_list"),
     ]
