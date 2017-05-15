@@ -108,3 +108,25 @@ def index2(request, topic_name, city_slug, template='topic/research.html'):
 #                     })
 #
 #     return render(request, template, context)
+
+
+# grand-mother function: topic and city
+class LocationTopicList(ListView):
+
+    model = Occurrence
+    template_name = 'topic/sorted_events.html'
+    context_object_name = 'sorted_occurrences'
+
+    def get_queryset(self):
+        self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
+        self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
+
+        return Occurrence.objects.filter(event__location=self.current_location,
+                                         event__event_type__topic=self.topic,
+                                         )
+
+    def get_context_data(self, **kwargs):
+        context = super(LocationTopicList, self).get_context_data(**kwargs)
+        context['city'] = self.current_location
+        context['topic'] = self.topic
+        return context

@@ -26,5 +26,6 @@ def cities(request):
     return {'cities': City.objects.all()}
 
 
+# TODO remove this if unused
 def current_city(request):
     return {'current_city': utils.get_city_and_topic(request)['city']}

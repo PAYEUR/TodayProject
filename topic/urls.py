@@ -5,8 +5,6 @@ import views
 
 app_name = 'topic'
 urlpatterns = [
-    url(r'^test1$', views.test1, name="test1"),
-    url(r'^test2$', views.test2, name="test2"),
     url(r'^$', views.index, name="index"),
     url(r'^evenement(?P<pk>[0-9]+)$', views.OccurrenceDetail.as_view(), name="get_occurrence"),
     url(r'^toutes-categories/aujourd-hui/$', views.today_all_events, name="today_events"),
