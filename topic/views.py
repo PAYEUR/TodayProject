@@ -78,10 +78,20 @@ class OccurrenceDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OccurrenceDetail, self).get_context_data(**kwargs)
+
+        topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
+        city = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
+
         address = self.object.event.address
         # TODO improve this using location.address
         # if address == u'non précisé':
             # address += str(", " + str(self.request.site.name))
+
+        # generic
+        context['city'] = city
+        context['topic'] = topic
+        # side_bar
+        context['all_event_type_list'] = EventType.objects.filter(topic=topic)
 
         context['address'] = address
 
@@ -110,9 +120,10 @@ class DateList(ListView):
         - end_hour_string
 
     return context:
-        - sorted_occurrences: list of topic.models.Occurrence
+        - all_event_type_list : for the sidebar
         - city: current location.models.City
         - topic: current topic.models.Topic
+        - sorted_occurrences: list of topic.models.Occurrence
         - days: list of datetime.day corresponding to the time request
         - title: string, title of the page (requested event_types concatenation)
     """
@@ -135,19 +146,26 @@ class DateList(ListView):
         end_hour = utils.construct_hour(self.kwargs['end_hour_string'])
         self.end_time = utils.construct_time(end_date, end_hour)
 
-        return Occurrence.objects.filter(event__event_type__in=self.event_type_list,
-                                         start_time__gte=self.start_time,
-                                         end_time__lte=self.end_time,
-                                         event__location=self.current_location,
-                                         event__event_type__topic=self.topic,
-                               )
+        sorted_occurrences = dict()
+        for event_type in self.event_type_list:
+            sorted_occurrences[event_type] = Occurrence.objects.filter(event__event_type=event_type,
+                                                                       start_time__gte=self.start_time,
+                                                                       end_time__lte=self.end_time,
+                                                                       event__location=self.current_location,
+                                                                       event__event_type__topic=self.topic,
+                                                                       )
+        return sorted_occurrences
 
     def get_context_data(self, **kwargs):
         context = super(DateList, self).get_context_data(**kwargs)
-        context['days'] = utils.list_days(self.start_time, self.end_time)
-        context['title'] = ' - '.join([event.label for event in self.event_type_list])
+        # generic
         context['city'] = self.current_location
         context['topic'] = self.topic
+        # side_bar
+        context['all_event_type_list'] = EventType.objects.filter(topic=self.topic)
+        # specific
+        context['days'] = utils.list_days(self.start_time, self.end_time)
+        context['title'] = ' - '.join([event.label for event in self.event_type_list])
 
         return context
 

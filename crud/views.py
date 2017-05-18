@@ -12,10 +12,11 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
 from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
-from topic.models import Occurrence, Event, EnjoyTodayUser
-from TodayProject.utils import get_city_and_topic
+from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
 
 
+
+# TODO: rewrite these vebose views. Only one view to post any kind of occurrences
 @login_required(login_url='connection:login')
 def _add_event(
         request,
@@ -24,7 +25,8 @@ def _add_event(
         event_form_class=EventForm,
         ):
 
-        topic = get_city_and_topic(request)['topic']
+        # TODO: topic should become a form field
+        topic = get_object_or_404(Topic, name='spi')
         return _add_event_by_topic(request,
                                    topic,
                                    recurrence_form_class,
@@ -61,11 +63,9 @@ def _add_event_by_topic(
 
     dtstart = None
 
-
     if request.method == 'POST':
         # to add event_planner to event
         event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
-                      #site=get_current_site(request)
                       )
 
         event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
@@ -115,7 +115,9 @@ def add_multiple_dates(
         ):
 
     dtstart = None
-    topic = get_city_and_topic(request)['topic']
+
+    # TODO: topic should become a form field
+    topic = get_object_or_404(Topic, name='spi')
 
     OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
     if request.method == 'POST':
@@ -165,7 +167,7 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     raise_exception = True
 
     def get_form(self, form_class=form_class):
-        return form_class(topic=get_city_and_topic(self.request)['topic'], **self.get_form_kwargs())
+        return form_class(topic=Event.event_type.topic, **self.get_form_kwargs())
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')

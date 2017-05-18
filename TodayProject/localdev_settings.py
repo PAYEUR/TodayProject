@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
     'widget.apps.WidgetConfig',
-    #'not_implemented.apps.NotImplementedConfig',
 
 ]
 
@@ -75,11 +74,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                #added :
-                'TodayProject.context_processors.topic_sidebar',
+                # added :
                 'TodayProject.context_processors.topic_list',
-                'TodayProject.context_processors.cities',
-                'TodayProject.context_processors.current_city',
+                'TodayProject.context_processors.cities_list',
+                #'TodayProject.context_processors.current_city',
+                #'TodayProject.context_processors.topic_sidebar',
 
             ],
         },

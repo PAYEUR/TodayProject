@@ -5,12 +5,12 @@
 {% load easy_maps_tags %}
 
 {% block title %}
-    {{ occurrence.event.title|capfirst }} à {{city_name}}
+    {{ occurrence.event.title|capfirst }} à {{city.city_name}}
 {% endblock %}
 
 
 {% block description %}
-   {{ occurrence.event.title|capfirst }} à {{city_name}} : renseignements et informations.
+   {{ occurrence.event.title|capfirst }} à {{city.city_name}} : renseignements et informations.
 {% endblock %}
 
 {% block content %}

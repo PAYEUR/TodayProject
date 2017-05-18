@@ -1,30 +1,19 @@
 {% extends 'core/topbar.html' %}
 
  {% block city %}
-       <a class=" navbar-brand navbar-city" href="{# index_url #}"> <strong>{{ city.city_name }}</strong> </a>
+       <a class=" navbar-brand navbar-city" href="{% url 'core:index' %}"> <strong>{{ city.city_name }}</strong> </a>
  {% endblock %}
 
 {% block research %}
-    <li><a href="{# url 'topic:index' #}">Rechercher</a></li>
+    <li><a href="{% url 'location:topic:index' city_slug=city.city_slug topic_name=topic.name %}">Rechercher</a></li>
 {% endblock %}
 
 {% block topics %}
 
-    {% if current_topic and topic_list %}
-      {% for topic in topic_list %}
-        {% if topic == current_topic %}
-          <li class="active"><a href="{# topic.get_absolute_url #}">{{ topic.name|capfirst }}</a></li>
-        {% else %}
-          <li><a href="{# topic.get_absolute_url #}">{{ topic.name|capfirst }}</a></li>
-        {% endif %}
-      {% endfor %}
-
-        {# remove jobs temporarly #}
-        <li><a href="{# url 'not_implemented:not_implemented' #}">jobs</a></li>
-
-    {% endif %}
-
-
-
+    {% for t in topic_list %}
+          <li {% if t == topic %} class="active" {% endif %} >
+              <a href="{% url 'location:topic:index' city_slug=city.city_slug topic_name=topic.name %}">{{ topic.name|capfirst }}</a>
+          </li>
+    {% endfor %}
 
 {% endblock %}

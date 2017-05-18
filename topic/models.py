@@ -9,7 +9,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
-#from TodayProject import utils
+from TodayProject import utils
 
 __all__ = (
     'EventType',
@@ -36,15 +36,6 @@ class Topic(models.Model):
     # --------------------------------------------------------------------------
     def __str__(self):
         return self.name
-
-    # --------------------------------------------------------------------------
-    # def get_absolute_url(self):
-    #     return reverse('topic:index',
-    #                    kwargs={'topic_name': self.name,
-    #                            'city_slug': utils.get_city_and_topic(self.request)['city'],
-    #                            }
-    #                    )
-
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -80,12 +71,6 @@ class EventType(models.Model):
     def __str__(self):
         return self.label
 
-    def get_absolute_url(self):
-        return reverse('topic:event_type_coming_days',
-                       kwargs={'event_type_id_string': str(self.pk),
-                               },
-                       #current_app=self.topic.name
-                       )
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -306,21 +291,21 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        return reverse('topic:get_occurrence', kwargs={'pk': self.pk,
-                                                       'city_slug': self.event.location.city_slug,
-                                                       'topic_name': self.event.event_type.topic.name})
+        return reverse('location:topic:get_occurrence',
+                       kwargs={'pk': self.pk,
+                               'city_slug': self.event.location.city_slug,
+                               'topic_name': self.event.event_type.topic.name
+                               }
+                       )
 
-# TODO: rewrite this
     def delete_url(self):
         return reverse('crud:delete_occurrence',
                        kwargs={'occurrence_id': self.pk},
-                       #current_app=self.event.event_type.topic.name
                        )
 
     def update_url(self):
         return reverse('crud:update_occurrence',
                        kwargs={'occurrence_id': self.pk},
-                       #current_app=self.event.event_type.topic.name,
                        )
 
     # --------------------------------------------------------------------------

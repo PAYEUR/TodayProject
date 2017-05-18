@@ -4,20 +4,18 @@
 </div>
 
 <ul class="nav nav-sidebar">
-    <li><a href="{# url 'topic:today_events' #}">Aujourd'hui</a></li>
-    <li><a href="{# url 'topic:tomorrow_events' #}">Demain</a></li>
-    <li><a href="{# url 'topic:coming_days_events' #}">Les prochains jours</a></li>
+    <li><a href="{% url 'location:topic:today_events' city_slug=city.city_slug topic_name=topic.name %}">Aujourd'hui</a></li>
+    <li><a href="{% url 'location:topic:tomorrow_events' city_slug=city.city_slug topic_name=topic.name %}">Demain</a></li>
+    <li><a href="{% url 'location:topic:coming_days_events' city_slug=city.city_slug topic_name=topic.name %}">Les prochains jours</a></li>
 </ul>
 
 <ul class="nav nav-sidebar">
-    <li class="active"><a href="{# url 'core:new_event' #}">Poster un événement <span class="sr-only">(current)</span></a></li>
+    <li class="active"><a href="{% url 'core:new_event' %}">Poster un événement <span class="sr-only">(current)</span></a></li>
 </ul>
 
 <ul class="nav nav-sidebar">
-    {% if current_topic_event_type_list %}
-        {% for event_type in current_topic_event_type_list %}
-            <li><a href="{# event_type.get_absolute_url #}">{{ event_type.label|capfirst }}</a></li>
-        {% endfor %}
-    {% endif %}
+    {% for event_type in all_event_type_list %}
+        <li><a href="{% url  'location:topic:event_type_coming_days' city_slug=city.city_slug topic_name=topic.name event_type_id_string=event_type.pk %}">{{ event_type.label|capfirst }}</a></li>
+    {% endfor %}
 </ul>
 
