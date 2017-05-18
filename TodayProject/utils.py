@@ -1,8 +1,21 @@
-from django.contrib.sites.models import Site
+from topic.models import Topic
+from location.models import City
+from django.shortcuts import get_object_or_404
 
 
-def make_key_per_site(key, key_prefix, version):
-    site = Site.objects.get_current()
-    site_id = site['id']
+def get_city_and_topic(request):
+    arguments  = request.get_full_path().split("/")
+    topic_names = [topic.name for topic in Topic.objects.all()]
+    city_slugs = [city.city_slug for city in City.objects.all()]
 
-    return ':'.join([key_prefix, site_id, str(version), key])
+    data = {'topic': None,
+            'city': None,
+            }
+
+    for arg in arguments:
+        if arg in topic_names:
+           data['topic'] = get_object_or_404(Topic, name=arg)
+        elif arg in city_slugs:
+            data['city'] = get_object_or_404(City, city_slug=arg)
+
+    return data

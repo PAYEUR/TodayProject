@@ -9,9 +9,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from connection.models import EnjoyTodayUser
 from location.models import City
-from django.contrib.sites.models import Site
-from django.contrib.sites.managers import CurrentSiteManager
-from django.utils import timezone
+#from TodayProject import utils
 
 __all__ = (
     'EventType',
@@ -40,8 +38,12 @@ class Topic(models.Model):
         return self.name
 
     # --------------------------------------------------------------------------
-    def get_absolute_url(self):
-        return reverse('topic:index', current_app=self.name)
+    # def get_absolute_url(self):
+    #     return reverse('topic:index',
+    #                    kwargs={'topic_name': self.name,
+    #                            'city_slug': utils.get_city_and_topic(self.request)['city'],
+    #                            }
+    #                    )
 
 
 # ==============================================================================
@@ -80,8 +82,10 @@ class EventType(models.Model):
 
     def get_absolute_url(self):
         return reverse('topic:event_type_coming_days',
-                       kwargs={'event_type_id_string': str(self.pk)},
-                       current_app=self.topic.name)
+                       kwargs={'event_type_id_string': str(self.pk),
+                               },
+                       #current_app=self.topic.name
+                       )
 
 # ==============================================================================
 @python_2_unicode_compatible
@@ -145,33 +149,30 @@ class Event(models.Model):
                                         default=None,
                                         )
 
-    site = models.ForeignKey(Site,
-                             on_delete=models.SET_DEFAULT,
-                             help_text="ville dans laquelle sera posté l'événement",
-                             default=None,
-                             )
+    location = models.ForeignKey(City,
+                                 on_delete=models.SET_DEFAULT,
+                                 help_text="ville dans laquelle sera posté l'événement",
+                                 default=None,
+                                 )
 
     #auto filled fields
     event_planner = models.ForeignKey(EnjoyTodayUser,
                                       on_delete=models.CASCADE,
                                       verbose_name='annonceur',
                                       default=None,
+                                      blank=True,
                                       )
 
     created_at = models.DateTimeField(auto_now=True,
                                       verbose_name="Date de création",
                                       )
 
-    # Required by site manager framework
-    objects = models.Manager()
-    on_site = CurrentSiteManager()
-
     # Resize image
     image_main = ImageSpecField(source='image',
-                            processors=[ResizeToFill(800, 300)],
-                            format='JPEG',
-                            options={'quality': 100},
-                            )
+                                processors=[ResizeToFill(800, 300)],
+                                format='JPEG',
+                                options={'quality': 100},
+                                )
 
     # ===========================================================================
     class Meta:
@@ -184,10 +185,7 @@ class Event(models.Model):
         return self.title
 
     # --------------------------------------------------------------------------
-     #def get_absolute_url(self):
-       # """returns the full url for one single event"""
-        #url = 'https://%s%s' % self.site.domain, reverse('catho:get_occurrence', kwargs={'event_id': self.pk})
-        #return url
+    # def get_absolute_url(self): used? useful?
 
     def delete_url(self):
         return reverse('crud:delete_event', kwargs={'event_id': self.pk})
@@ -308,17 +306,22 @@ class Occurrence(models.Model):
 
     # --------------------------------------------------------------------------
     def get_absolute_url(self):
-        """returns the full url for one single occurrence for one city and one topic"""
-        url = 'https://%s%s' % self.event.site.domain, reverse('topic:get_occurrence',
-                                                               kwargs={'pk': self.pk},
-                                                               current_app=self.event.event_type.topic.name)
-        return url
+        return reverse('topic:get_occurrence', kwargs={'pk': self.pk,
+                                                       'city_slug': self.event.location.city_slug,
+                                                       'topic_name': self.event.event_type.topic.name})
 
+# TODO: rewrite this
     def delete_url(self):
-        return reverse('crud:delete_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:delete_occurrence',
+                       kwargs={'occurrence_id': self.pk},
+                       #current_app=self.event.event_type.topic.name
+                       )
 
     def update_url(self):
-        return reverse('crud:update_occurrence', kwargs={'occurrence_id': self.pk}, current_app=self.event.event_type.topic.name)
+        return reverse('crud:update_occurrence',
+                       kwargs={'occurrence_id': self.pk},
+                       #current_app=self.event.event_type.topic.name,
+                       )
 
     # --------------------------------------------------------------------------
     def __lt__(self, other):

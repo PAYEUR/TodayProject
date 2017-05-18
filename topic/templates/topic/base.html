@@ -2,11 +2,11 @@
 
 
 {% block keywords %}
-    Evénement, {{current_topic.name|capfirst}}, spi, {{city_name|capfirst}}, ce soir
+    Evénement, {{topic.name|capfirst}}, spi, {{city.city_name}}, ce soir
 {% endblock %}
 
 {% block description %}
-    Le moteur de recherche des propositions {{current_topic.name|capfirst}} à {{city_name|capfirst}}.
+    Le moteur de recherche des propositions {{topic.name|capfirst}} à {{city.city_name}}.
 {% endblock %}
 
 

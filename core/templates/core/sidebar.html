@@ -5,8 +5,8 @@
 </div>
 
 <ul class="nav nav-sidebar">
-    {% for website in sites %}
-        <li><a href="http://{{ website.domain }}/catho">Rechercher sur {{ website.name|capfirst }}</a></li>
+    {% for city in cities %}
+        <li><a href="{{ city.get_absolute_url }}">Rechercher sur {{ city.city_name|capfirst }}</a></li>
     {% endfor %}
 </ul>
 

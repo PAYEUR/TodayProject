@@ -41,10 +41,10 @@
             <img src="{% static 'core/Carte_350.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map" />
             {# mapping according to http://imagemap-generator.dariodomi.de/ #}
             <map name="Map" id="Map">
-                {% for city in cities %}
-                    <area shape="poly" alt="{{ city.city_slug }}" title="{{ city.city_name }}"
-                          href="{{ city.get_absolute_url }}" coords="{{ city.city_big_map_coordinates }}" />
-                {% endfor %}
+                <area alt="Paris" title="Paris" href="{{ paris_url }}" shape="poly" coords="155,52,155,83,238,88,237,56" />
+                <area alt="Nice" title="Nice" href="{{ nice_url }}" shape="poly" coords="270,237,270,275,348,277,348,239" />
+                <area alt="Albi" title="Albi" href="{{ albi_url }}" shape="poly" coords="130,228,132,264,204,269,203,229" />
+                <area alt="Lyon" title="Lyon" href="{{ lyon_url }}" shape="poly" coords="197,166,198,199,281,201,277,166" />
             </map>
         </div>
          {# Small map #}
@@ -52,10 +52,10 @@
             <img src="{% static 'core/carte_lyon_200.png' %}" class="img-responsive" alt="implantation EnjoyToday" usemap="#Map2" />
             {# mapping according to http://imagemap-generator.dariodomi.de/ #}
             <map name="Map2" id="Map2">
-                {% for city in cities %}
-                    <area shape="poly" alt="{{ city.city_slug }}" title="{{ city.city_name }}"
-                          href="{{ city.get_absolute_url }}" coords="{{ city.city_small_map_coordinates }}" />
-                {% endfor %}
+                <area alt="Paris" title="Paris" href="{{ paris_url }}" shape="poly" coords="89,33,88,48,136,49,135,37" />
+                <area alt="Nice" title="Nice" href="{{ nice_url }}" shape="poly" coords="157,136,156,157,198,155,198,140" />
+                <area alt="Albi" title="Albi" href="{{ albi_url }}" shape="poly" coords="77,135,78,151,112,150,116,136" />
+                <area alt="Lyon" title="Lyon" href="{{ lyon_url }}" shape="poly" coords="116,95,115,115,157,114,156,101" />
             </map>
         </div>
 

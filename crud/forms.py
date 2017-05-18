@@ -7,7 +7,7 @@ from datetime import datetime, date, time, timedelta
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
 from django import forms
-from django.contrib.sites.models import Site
+from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
 from core import swingtime_settings
@@ -89,7 +89,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = "__all__"
-        exclude = ['event_planner', 'objects', 'on_site']
+        exclude = ['event_planner', 'objects', 'location']
 
 
     # ---------------------------------------------------------------------------
@@ -104,11 +104,9 @@ class EventForm(forms.ModelForm):
             empty_label=None,
             widget=forms.widgets.Select)
 
-        # TODO print name of the city instead of the domain_name
-        self.fields['site'] = forms.ModelChoiceField(
-            Site.objects.exclude(name__contains='oday'),
-            label='Site internet de la ville sur lequel sera posté l\'événement',
-            #to_field_name="name"  # doesn't work...
+        self.fields['location'] = forms.ModelChoiceField(
+            City.objects.all(),
+            label='Ville',
         )
 
 

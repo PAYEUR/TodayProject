@@ -4,11 +4,11 @@
 {% load static %}
 
 
-{% block title %}{{current_topic.name|capfirst}}: rechercher sur {{city_name|capfirst}}{% endblock %}
+{% block title %}{{topic.name|capfirst}}: rechercher sur {{city.city_name}}{% endblock %}
 
 
 {% block description %}
-    Rechercher des propositions {{current_topic.name|capfirst}} sur {{city_name|capfirst}}.
+    Rechercher des propositions {{topic.name|capfirst}} sur {{city.city_name}}.
 {% endblock %}
 
 <!-- Bootstrap Date-Picker Plugin -->
@@ -51,9 +51,9 @@
 
             <div class="col-md-4 col-sm-12" align="left">
                 <h2> Où ? </h2><br>
-                <a href="http://www.enjoytoday.fr" role="button" class="btn btn-danger btn-lg">
+                <a href={{ city.get_absolute_url }} role="button" class="btn btn-danger btn-lg">
                     <span class="glyphicon glyphicon-map-marker"></span>
-                    {{ city_name }}
+                    {{ city.city_name }}
                 </a>
             </div>
 
@@ -88,7 +88,7 @@
 
     <div class="row">
         <div class="col-sm-12 col-md-12" align="center">
-            <a href="{% url 'core:new_event' %}" role="button" class="btn btn-info btn-md">
+            <a href="{# url 'core:new_event' #}" role="button" class="btn btn-info btn-md">
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 Poster un événement
             </a>

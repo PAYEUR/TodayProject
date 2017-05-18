@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
@@ -44,9 +45,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
-    'django.contrib.sites',
     'widget.apps.WidgetConfig',
-    'not_implemented.apps.NotImplementedConfig',
+    #'not_implemented.apps.NotImplementedConfig',
 
 ]
 
@@ -59,7 +59,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
 #url corresponding only to navigation through cities
@@ -79,9 +78,8 @@ TEMPLATES = [
                 #added :
                 'TodayProject.context_processors.topic_sidebar',
                 'TodayProject.context_processors.topic_list',
-                'TodayProject.context_processors.city_name',
-                'TodayProject.context_processors.sites',
-                'TodayProject.context_processors.urls',
+                'TodayProject.context_processors.cities',
+                'TodayProject.context_processors.current_city',
 
             ],
         },
@@ -98,7 +96,7 @@ DATABASES = {
     'default': {
         # BD test
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'cathoDB'),
+        'NAME': os.path.join(BASE_DIR, 'testDB'),
     }
 }
 
@@ -156,3 +154,5 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
+
+ALLOWED_HOSTS = ['127.0.0.1:8000']

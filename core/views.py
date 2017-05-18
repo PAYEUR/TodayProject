@@ -5,6 +5,9 @@ from connection.models import EnjoyTodayUser
 
 
 class IndexView(TemplateView):
+    """view that print France map
+    cities names are for the moment passed explicitly
+    """
     template_name = 'core/index.html'
 
 

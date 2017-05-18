@@ -16,13 +16,16 @@ Including another URLconf
 """
 
 from django.conf.urls import include, url, static
+from django.contrib import admin
 from django.conf import settings
 
-# all the url being on city.enjoytoday.fr (basically catho and jobs)
+
 urlpatterns = [
-    url(r'^catho/', include('topic.urls')),
-    # url(r'^jobs/', include('topic.urls', namespace='jobs')),
-    url(r'^', include('not_implemented.urls')),
+    url(r'^', include('core.urls')),
+    url(r'^', include('crud.urls')),
+    url(r'^connexion/', include('connection.urls')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^(?P<city_slug>[\w-]+)/', include('location.urls')),
 
 
     # media images deployment in development. Need change for production
