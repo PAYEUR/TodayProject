@@ -4,17 +4,8 @@ from topic.models import Event
 from connection.models import EnjoyTodayUser
 
 
-class IndexView(TemplateView):
-    """view that print France map
-    cities names are for the moment passed explicitly
-    """
-    template_name = 'core/index.html'
-
-
-class ContactView(TemplateView):
-    template_name = 'core/contact.html'
-
-
+# ------------------------------------------------------------------------------------------
+# Dynamic views, TODO: improve them
 class EventPlannerPanelView(LoginRequiredMixin, ListView):
 
     # mixin parameters
@@ -42,6 +33,16 @@ class NewEventView(TemplateView):
     template_name = 'crud/add_event_choice.html'
 
 
+# -----------------------------------------------------------------------------------------
+# Generic static views
+class IndexView(TemplateView):
+    template_name = 'core/index.html'
+
+
+class ContactView(TemplateView):
+    template_name = 'core/contact.html'
+
+
 class CGUView(TemplateView):
     template_name = 'core/CGU.html'
 
@@ -57,14 +58,18 @@ class HelpUsView(TemplateView):
 class CookiesView(TemplateView):
     template_name = 'core/cookies.html'
 
+
 class TutorialView(TemplateView):
     template_name = 'core/tutorial.html'
+
 
 class PresentationView(TemplateView):
     template_name = 'core/presentation_project.html'
 
+
 class CharteView(TemplateView):
     template_name = 'core/charte_utilisation.html'
+
 
 class ExplainCategoriesView(TemplateView):
     template_name = 'core/explain_categories.html'
