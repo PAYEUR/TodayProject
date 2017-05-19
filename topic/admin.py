@@ -14,7 +14,16 @@ class EventAdmin(admin.ModelAdmin):
 
     list_filter = ['location', 'event_type']
 
+
+class OccurrenceAdmin(admin.ModelAdmin):
+
+    list_display = ('start_time',
+                    'end_time',
+                    'event',
+                    'is_multiple',
+                    )
+
 admin.site.register(EventType)
 admin.site.register(Event, EventAdmin)
-admin.site.register(Occurrence)
+admin.site.register(Occurrence, OccurrenceAdmin)
 admin.site.register(Topic)
