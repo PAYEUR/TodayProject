@@ -274,6 +274,7 @@ class Occurrence(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     event = models.ForeignKey(Event,
+                              # TODO: determine why editable=False (not accessible in admin...)
                               editable=False,
                               on_delete=models.CASCADE)
     objects = OccurrenceManager()
