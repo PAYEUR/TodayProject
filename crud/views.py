@@ -11,8 +11,98 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm
+from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm, EventTypeForm
+
+
 from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
+
+
+# new views
+
+def bound_form(form_list):
+    for form in form_list:
+        if form.is_bound:
+            return form
+
+
+def add_event2(request,
+               template='crud/add_event2.html'
+               ):
+    """
+    Testing one single form to insert data in database. One single template and one single view.
+    The form consists in 3 part:
+    1) first block given by the topic and corresponding event_types
+    2) second block given by commons event characteristics (image...)
+    3) third block given by the kind of occurrences (single, multiples or dates).
+
+    # TODO: OccurrenceFormSet does not display as common form in the template, so has to be taken into consideration
+    # TODO: validation
+    """
+
+    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
+    event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user))
+
+    if request.method == 'POST':
+        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
+
+        occurrence_forms = [SingleOccurrenceForm(request.POST),
+                            MultipleOccurrenceForm(request.POST),
+                            #OccurrenceFormSet(request.POST)
+                            ]
+
+        topic_form = bound_form(topic_forms)
+        occurrence_form = bound_form(occurrence_forms)
+        event_form = EventForm(request.POST, request.FILES)
+
+        if topic_form.is_valid() and occurrence_form.is_valid() and event_form.is_valid():
+            event.event_type = topic_form.cleaned_data['label']
+            event.save()
+            occurrence_form.save()
+            return redirect('core:event_planner_panel')
+
+    else:
+        if 'dtstart' in request.GET:
+            try:
+                dtstart = parser.parse(request.GET['dtstart'])
+            except(TypeError, ValueError) as exc:
+                # TODO: A badly formatted date is passed to add_event
+                logging.warning(exc)
+
+        dtstart = datetime.now()
+        event_form = EventForm()
+        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
+        occurrence_forms = [SingleOccurrenceForm(),
+                            MultipleOccurrenceForm(),
+                            #OccurrenceFormSet()
+                            ]
+    context = dict({'dtstart': dtstart,
+                    'topic_forms': topic_forms,
+                    'occurrence_forms': occurrence_forms,
+                    'event_form': event_form,
+                    },
+                   )
+
+    return render(request, template, context)
+
+
+
+
+
+
+
+
+
+
+
+
+# end of new views
+
+
+
+
+
+
+
 
 
 

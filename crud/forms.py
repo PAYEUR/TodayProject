@@ -11,7 +11,7 @@ from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
 from core import swingtime_settings
-from topic.models import Event, EventType  #,City, Occurrence
+from topic.models import Event, EventType, Topic
 
 WEEKDAY_LONG = (
     (0, _('Monday')),
@@ -25,7 +25,6 @@ WEEKDAY_LONG = (
 
 
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
-
 
 
 # -------------------------------------------------------------------------------
@@ -73,7 +72,7 @@ class MultipleIntegerField(forms.MultipleChoiceField):
             widget=widget,
         )
 
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     def clean(self, value):
         return [int(i) for i in super(MultipleIntegerField, self).clean(value)]
 
@@ -81,33 +80,55 @@ class MultipleIntegerField(forms.MultipleChoiceField):
 # ==============================================================================
 class EventForm(forms.ModelForm):
     """
-    A simple form for adding and updating Event attributes
+    A simple form for adding and updating Event attributes.
     """
-
-    # ==========================================================================
 
     class Meta:
         model = Event
-        fields = "__all__"
-        exclude = ['event_planner', 'objects', 'location']
-
+        fields = ['image',
+                  'title',
+                  'description',
+                  'price',
+                  'contact',
+                  'address',
+                  'public_transport',
+                  'location',
+                  ]
 
     # ---------------------------------------------------------------------------
-    def __init__(self, topic, *args, **kws):
+    def __init__(self, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
-        self.topic = topic
-
-        self.fields['event_type'] = forms.ModelChoiceField(
-            EventType.objects.filter(topic=topic),
-            label='Catégorie',
-            #required=False,
-            empty_label=None,
-            widget=forms.widgets.Select)
 
         self.fields['location'] = forms.ModelChoiceField(
             City.objects.all(),
             label='Ville',
         )
+
+
+# ==============================================================================
+class EventTypeForm(forms.ModelForm):
+    """
+    Choosing event_types related to a topic. Need a topic as input data. Managed by a formset.
+    """
+
+    class Meta:
+        model = EventType
+        fields = ['label',
+                  ]
+
+    # ---------------------------------------------------------------------------
+    def __init__(self, topic, *args, **kws):
+        super(EventTypeForm, self).__init__(*args, **kws)
+        self.topic = topic
+        # need to have a prefix in order to select properly forms
+        self.prefix = topic.name
+
+        self.fields['label'] = forms.ModelChoiceField(
+            EventType.objects.filter(topic=topic),
+            label='Catégorie',
+            # required=False,
+            empty_label=None,
+            widget=forms.widgets.Select)
 
 
 # ==============================================================================
@@ -157,6 +178,8 @@ class SingleOccurrenceForm(forms.Form):
                     },
             bootstrap_version=3)
         )
+
+    prefix = 'single_occurrence'
 
     def clean(self):
         """
@@ -241,7 +264,6 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-
     end_day = forms.DateField(
         required=True,
         label='Jusqu\'au',
@@ -256,13 +278,14 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-
     ### weekly options
     week_days = MultipleIntegerField(
         WEEKDAY_LONG,
         label='Jours de la semaine',
         widget=forms.CheckboxSelectMultiple
     )
+
+    prefix = 'multiple_occurrence'
 
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
@@ -381,6 +404,8 @@ class MultipleDateSingleOccurrenceForm(forms.Form):
                     },
             bootstrap_version=3)
         )
+
+    prefix = 'multiple_date'
 
     def clean(self):
         """
