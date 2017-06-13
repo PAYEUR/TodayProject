@@ -119,13 +119,15 @@ class EventTypeForm(forms.ModelForm):
     # ---------------------------------------------------------------------------
     def __init__(self, topic, *args, **kws):
         super(EventTypeForm, self).__init__(*args, **kws)
+
         self.topic = topic
+
         # need to have a prefix in order to select properly forms
         self.prefix = topic.name
 
         self.fields['label'] = forms.ModelChoiceField(
             EventType.objects.filter(topic=topic),
-            label='Catégorie',
+            label=self.topic.name,
             # required=False,
             empty_label=None,
             widget=forms.widgets.Select)

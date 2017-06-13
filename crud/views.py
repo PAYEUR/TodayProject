@@ -19,10 +19,11 @@ from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
 
 # new views
 
-def bound_form(form_list):
-    for form in form_list:
-        if form.is_bound:
-            return form
+def bound_form(form_dict):
+    for form in form_dict:
+        if form.value.is_bound is False:
+            del form
+    return form_dict
 
 
 def add_event2(request,
@@ -39,45 +40,43 @@ def add_event2(request,
     # TODO: validation
     """
 
-    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
+    # OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
     event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user))
 
     if request.method == 'POST':
-        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
+        # initialization
+        topic_forms_dict = {topic.name: EventTypeForm(topic, request.POST) for topic in Topic.objects.all()}
 
-        occurrence_forms = [SingleOccurrenceForm(request.POST),
-                            MultipleOccurrenceForm(request.POST),
-                            #OccurrenceFormSet(request.POST)
-                            ]
+        occurrence_forms_dict = {'single_occurrence_form': SingleOccurrenceForm(request.POST),
+                                 'multiple_occurrence_form': MultipleOccurrenceForm(request.POST),
+                                 # OccurrenceFormSet(request.POST)
+                                 }
+        event_form = EventForm(request.POST, request.FILES, instance=event)
 
-        topic_form = bound_form(topic_forms)
-        occurrence_form = bound_form(occurrence_forms)
-        event_form = EventForm(request.POST, request.FILES)
+        # need to verify:
+            # 1) len [dict.form.is_valid] == 1 for each dict
+            # 2) else reprint form at initial state
+            # 3) if topic_form.is_valid() and occurrence_form.is_valid() and event_form.is_valid():
 
         if topic_form.is_valid() and occurrence_form.is_valid() and event_form.is_valid():
+
             event.event_type = topic_form.cleaned_data['label']
             event.save()
             occurrence_form.save()
             return redirect('core:event_planner_panel')
 
     else:
-        if 'dtstart' in request.GET:
-            try:
-                dtstart = parser.parse(request.GET['dtstart'])
-            except(TypeError, ValueError) as exc:
-                # TODO: A badly formatted date is passed to add_event
-                logging.warning(exc)
-
         dtstart = datetime.now()
         event_form = EventForm()
-        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
-        occurrence_forms = [SingleOccurrenceForm(),
-                            MultipleOccurrenceForm(),
-                            #OccurrenceFormSet()
-                            ]
-    context = dict({'dtstart': dtstart,
-                    'topic_forms': topic_forms,
-                    'occurrence_forms': occurrence_forms,
+        topic_forms_dict = {topic.name: EventTypeForm(topic, request.POST) for topic in Topic.objects.all()}
+        occurrence_forms_dict = {'single_occurrence_form': SingleOccurrenceForm(request.POST),
+                                 'multiple_occurrence_form': MultipleOccurrenceForm(request.POST),
+                                 # OccurrenceFormSet(request.POST)
+                                 }
+
+        context = dict({'dtstart': dtstart,
+                    'topic_forms': topic_forms_dict.values(),
+                    'occurrence_forms': occurrence_forms_dict.values(),
                     'event_form': event_form,
                     },
                    )
