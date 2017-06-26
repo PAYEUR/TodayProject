@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'crud'
 urlpatterns = [
+    url(r'^two_forms_test$', views.two_forms_test, name="two_forms_test"),
     url(r'^test_add$', views.add_event2, name="add_event2"),
     url(r'^nouvel_evenement_multiple$', views.add_multiple_occurrence_event, name="nouvel_evenement_multiple"),
     url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),

@@ -5,7 +5,9 @@ from datetime import datetime, date, time
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView, ListView
 from location.models import City
-from core import swingtime_settings
+# TODO remove this asap
+from crud import swingtime_settings
+
 from . import utils
 from .forms import IndexForm
 from .models import Occurrence, EventType, Topic

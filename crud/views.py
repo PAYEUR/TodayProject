@@ -11,21 +11,37 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm, EventTypeForm
-
+from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm, EventTypeForm, get_valid_forms
+from django.http import HttpResponse
 
 from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
 
 
+def two_forms_test(request, template='crud/two_forms_test.html'):
+
+    if request.method == 'POST':
+        # initialization
+        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
+
+        # validation
+        valid_topic_forms = get_valid_forms(topic_forms)
+        if len(valid_topic_forms) == 1:
+            valid_form = valid_topic_forms[0]
+            label = valid_form.cleaned_data['label']
+            print(label)
+
+            return HttpResponse("label : " + label)
+
+    else:
+        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
+
+    context = {'topic_forms': topic_forms,
+               }
+
+    return render(request, template, context)
+
+
 # new views
-
-def bound_form(form_dict):
-    for form in form_dict:
-        if form.value.is_bound is False:
-            del form
-    return form_dict
-
-
 def add_event2(request,
                template='crud/add_event2.html'
                ):
@@ -45,41 +61,43 @@ def add_event2(request,
 
     if request.method == 'POST':
         # initialization
-        topic_forms_dict = {topic.name: EventTypeForm(topic, request.POST) for topic in Topic.objects.all()}
+        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
 
-        occurrence_forms_dict = {'single_occurrence_form': SingleOccurrenceForm(request.POST),
-                                 'multiple_occurrence_form': MultipleOccurrenceForm(request.POST),
-                                 # OccurrenceFormSet(request.POST)
-                                 }
+        occurrence_forms = [SingleOccurrenceForm(request.POST),
+                            MultipleOccurrenceForm(request.POST),
+                            # MultipleDates
+                            ]
         event_form = EventForm(request.POST, request.FILES, instance=event)
 
-        # need to verify:
-            # 1) len [dict.form.is_valid] == 1 for each dict
-            # 2) else reprint form at initial state
-            # 3) if topic_form.is_valid() and occurrence_form.is_valid() and event_form.is_valid():
+        # validation
+        # TODO: to be tested
+        valid_topic_forms = get_valid_forms(topic_forms)
+        valid_occurrence_forms = get_valid_forms(occurrence_forms)
 
-        if topic_form.is_valid() and occurrence_form.is_valid() and event_form.is_valid():
+        if len(valid_topic_forms) == 1 and len(valid_occurrence_forms) == 1 and event_form.is_valid():
 
+            topic_form = valid_topic_forms[0]
+            occurrence_form = valid_occurrence_forms[0]
+
+            event = event_form.save(commit=False)
             event.event_type = topic_form.cleaned_data['label']
             event.save()
             occurrence_form.save()
             return redirect('core:event_planner_panel')
 
     else:
-        dtstart = datetime.now()
         event_form = EventForm()
-        topic_forms_dict = {topic.name: EventTypeForm(topic, request.POST) for topic in Topic.objects.all()}
-        occurrence_forms_dict = {'single_occurrence_form': SingleOccurrenceForm(request.POST),
-                                 'multiple_occurrence_form': MultipleOccurrenceForm(request.POST),
-                                 # OccurrenceFormSet(request.POST)
-                                 }
+        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
+        occurrence_forms = [SingleOccurrenceForm(),
+                            MultipleOccurrenceForm(),
+                            # OccurrenceFormSet()
+                            ]
 
-        context = dict({'dtstart': dtstart,
-                    'topic_forms': topic_forms_dict.values(),
-                    'occurrence_forms': occurrence_forms_dict.values(),
-                    'event_form': event_form,
-                    },
-                   )
+    context = {'topic_forms': topic_forms,
+               'occurrence_forms': occurrence_forms,
+               'event_form': event_form,
+               'media': occurrence_forms[0].media
+               }
 
     return render(request, template, context)
 

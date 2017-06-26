@@ -10,7 +10,7 @@ from django import forms
 from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
-from core import swingtime_settings
+from crud import swingtime_settings
 from topic.models import Event, EventType, Topic
 
 WEEKDAY_LONG = (
@@ -53,8 +53,17 @@ def timeslot_options(
     return options
 
 
-# ==============================================================================
+def get_valid_forms(form_list):
+    """get valid forms from a list of forms"""
+    validated_forms = []
+    for form in form_list:
+        if form.is_valid():
+            validated_forms.append(form)
+    return validated_forms
 
+
+
+# ==============================================================================
 class MultipleIntegerField(forms.MultipleChoiceField):
     """
     A form field for handling multiple integers.
@@ -106,15 +115,12 @@ class EventForm(forms.ModelForm):
 
 
 # ==============================================================================
-class EventTypeForm(forms.ModelForm):
+
+# TODO rewrite this form.
+class EventTypeForm(forms.Form):
     """
     Choosing event_types related to a topic. Need a topic as input data. Managed by a formset.
     """
-
-    class Meta:
-        model = EventType
-        fields = ['label',
-                  ]
 
     # ---------------------------------------------------------------------------
     def __init__(self, topic, *args, **kws):
@@ -126,12 +132,19 @@ class EventTypeForm(forms.ModelForm):
         self.prefix = topic.name
 
         self.fields['label'] = forms.ModelChoiceField(
-            EventType.objects.filter(topic=topic),
+            queryset=EventType.objects.filter(topic=topic),
             label=self.topic.name,
-            # required=False,
-            empty_label=None,
-            widget=forms.widgets.Select)
+            required=False,
+            widget=forms.widgets.Select
+            )
 
+    def clean(self):
+        cleaned_data = super(EventTypeForm, self).clean()
+
+        if cleaned_data['label']:
+            raise forms.ValidationError("Choisir une categorie")
+
+        return self.cleaned_data
 
 # ==============================================================================
 
@@ -289,24 +302,25 @@ class MultipleOccurrenceForm(forms.Form):
 
     prefix = 'multiple_occurrence'
 
-    # ---------------------------------------------------------------------------
-    def __init__(self, *args, **kws):
-        """
-        :param args:
-        :param kws:
-        :return: prefilling widget with current time. (not ultra useful)
-        """
-        super(MultipleOccurrenceForm, self).__init__(*args, **kws)
-        dtstart = self.initial.get('dtstart', None)
-        if dtstart:
-            dtstart = dtstart.replace(
-                minute=((dtstart.minute // MINUTES_INTERVAL) * MINUTES_INTERVAL),
-                second=0,
-                microsecond=0
-            )
-
-            self.initial.setdefault('start_day', dtstart)
-            self.initial.setdefault('week_days', '%d' % dtstart.isoweekday())
+    # TODO remove this asap
+    # # ---------------------------------------------------------------------------
+    # def __init__(self, *args, **kws):
+    #     """
+    #     :param args:
+    #     :param kws:
+    #     :return: prefilling widget with current time. (not ultra useful)
+    #     """
+    #     super(MultipleOccurrenceForm, self).__init__(*args, **kws)
+    #     dtstart = self.initial.get('dtstart', None)
+    #     if dtstart:
+    #         dtstart = dtstart.replace(
+    #             minute=((dtstart.minute // MINUTES_INTERVAL) * MINUTES_INTERVAL),
+    #             second=0,
+    #             microsecond=0
+    #         )
+    #
+    #         self.initial.setdefault('start_day', dtstart)
+    #         self.initial.setdefault('week_days', '%d' % dtstart.isoweekday())
 
     # ---------------------------------------------------------------------------
     def clean(self):

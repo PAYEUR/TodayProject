@@ -9,7 +9,7 @@
 
 {# to allow recurrence_form.query #}
 {% block base_extra_head %}
-    {{ media }}
+
 {% endblock %}
 
 {% block content %}
@@ -24,16 +24,6 @@
                 {% csrf_token %}
 
             {%  for form in topic_forms %}
-                {% if form.errors %}
-                    <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
-                {% endif %}
-
-                {% bootstrap_form form %}
-            {% endfor %}
-
-                {% bootstrap_form event_form %}
-
-            {%  for form in occurrence_forms %}
                 {% if form.errors %}
                     <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
                 {% endif %}
