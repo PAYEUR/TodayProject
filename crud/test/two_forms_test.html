@@ -7,11 +7,6 @@
     Nouvel événement
 {% endblock %}
 
-{# to allow recurrence_form.query #}
-{% block base_extra_head %}
-
-{% endblock %}
-
 {% block content %}
     <h1>Ajouter un événement</h1>
 
@@ -23,11 +18,11 @@
             <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-            {%  for form in topic_forms %}
-                {% if form.errors %}
-                    <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
-                {% endif %}
+            {% if error %}
+                <p> {% bootstrap_alert "Sélectionner une catégorie" alert_type='warning' %} </p>
+            {%  endif %}
 
+            {%  for form in topic_forms %}
                 {% bootstrap_form form %}
             {% endfor %}
 

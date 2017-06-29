@@ -3,7 +3,7 @@
 from __future__ import print_function, unicode_literals
 
 from datetime import datetime, date, time, timedelta
-
+from django.forms import formset_factory
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
 from django import forms
@@ -53,16 +53,6 @@ def timeslot_options(
     return options
 
 
-def get_valid_forms(form_list):
-    """get valid forms from a list of forms"""
-    validated_forms = []
-    for form in form_list:
-        if form.is_valid():
-            validated_forms.append(form)
-    return validated_forms
-
-
-
 # ==============================================================================
 class MultipleIntegerField(forms.MultipleChoiceField):
     """
@@ -84,6 +74,165 @@ class MultipleIntegerField(forms.MultipleChoiceField):
     # ---------------------------------------------------------------------------
     def clean(self, value):
         return [int(i) for i in super(MultipleIntegerField, self).clean(value)]
+
+
+# ==============================================================================
+class EventTypeByTopicForm(forms.Form):
+    """
+    Choosing event_types related to a topic. Need a topic as input data.
+    """
+
+    # ---------------------------------------------------------------------------
+    def __init__(self, topic, *args, **kws):
+        super(EventTypeByTopicForm, self).__init__(*args, **kws)
+
+        self.topic = topic
+
+        # need to have a prefix in order to select properly forms
+        self.prefix = topic.name
+
+        self.fields['event_type'] = forms.ModelChoiceField(
+            queryset=EventType.objects.filter(topic=topic),
+            label=self.topic.name,
+            required=False,
+            widget=forms.widgets.Select
+            )
+
+    def clean(self):
+        """ if event_type field is blank, unvalid the form"""
+        cleaned_data = super(EventTypeByTopicForm, self).clean()
+
+        if not cleaned_data['event_type']:
+            raise forms.ValidationError("Sélectionner la catégorie")
+
+        return self.cleaned_data
+
+
+# ==============================================================================
+class EventTypeByTopicFormsListManager:
+    """
+    Manager of a list of EventTypeByTopicForm.
+    Has been written to shorten the view.
+    initial_topic_forms: virgin list of EventTypeByTopicForms (served if request.method is not POST)
+    only_one_form_error: boolean. False if exactly one form is validated. Used in context to print error text.
+    request: input request
+    topic_form_post: list of EventTypesByTopicForm served with POST data or None
+    valid_topic_form: list of valid forms within topic_forms_post or None
+    valid_form: the only valid EventTypeByTopicForm or None
+    context: {"topic_forms" and "error"}
+
+    """
+
+    initial_topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+    only_one_form_error = False
+
+    def __init__(self, request):
+        self.request = request
+        self.topic_forms_post = self.topic_forms_post()
+        self.valid_topic_forms = self.get_valid_forms()
+        self.valid_form = self.check_valid_form()
+        self.context = self.context()
+
+    def topic_forms_post(self):
+        """
+        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
+        """
+        if self.request.method == 'POST':
+            return [EventTypeByTopicForm(topic, self.request.POST) for topic in Topic.objects.all()]
+        else:
+            return None
+
+    def get_valid_forms(self):
+        """get valid forms from a list of forms"""
+        if self.topic_forms_post is not None:
+            validated_forms = []
+            for form in self.topic_forms_post:
+                if form.is_valid():
+                    validated_forms.append(form)
+            return validated_forms
+        else:
+            return None
+
+    def check_valid_form(self):
+        """
+        Check if there is only one form valid within self.valid_topic_forms.
+        If yes, set valid_form to this form
+        If no, set None to valid_form and et only_one_form_error to True
+        """
+        if self.valid_topic_forms is not None:
+            if len(self.valid_topic_forms) == 1:
+                valid_form = self.valid_topic_forms[0]
+            else:
+                valid_form = None
+                self.only_one_form_error = True
+            return valid_form
+        else:
+            return None
+
+    def context(self):
+        """
+        Returns the context for the view. Note that error is explicitely given into the context and not within a form.
+        This is because EventTypeByTopicForm are hidden each others
+        """
+        context = {'topic_forms': self.initial_topic_forms,
+                   'error': self.only_one_form_error,
+                   }
+        return context
+
+
+# ===============================================================================
+class TimeFormsListManager:
+    # TODO: same than above but for MultipleOccurrenceForm and MultipleDates
+
+    initial_dates_forms = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)()
+    initial_multiple_occurrence_form = MultipleOccurrenceForm()
+    only_one_form_error = False
+
+    def __init__(self, request):
+        self.request = request
+        self.dates_forms_post = self.dates_forms_post()
+        self.multiple_occurrence_form_post = self.multiple_occurrence_form_post()
+        self.valid_form = self.check_valid_form()
+        self.context = self.context()
+
+    def dates_forms_post(self):
+        """
+        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
+        """
+        if self.request.method == 'POST':
+            return formset_factory(MultipleDateSingleOccurrenceForm, extra=10)(self.request.POST)
+        else:
+            return None
+
+    def multiple_occurrence_form_post(self):
+        """
+        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
+        """
+        if self.request.method == 'POST':
+            return MultipleOccurrenceForm(self.request.POST)
+        else:
+            return None
+
+    def check_valid_form(self):
+        """
+        Check if there is only one form valid within forms_list.
+        If yes, set valid_form to this form
+        If no, set None to valid_form and only_one_form_error to True
+        """
+        forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
+        is_valid_d = forms[0].is_valid()
+        is_valid_mp = forms[1].is_valid()
+        if is_valid_d or is_valid_mp and is_valid_d is not is_valid_mp:
+            valid_form = [f for f in forms if f.is_valid]
+            return valid_form[0]
+        else:
+            self.only_one_form_error = True
+            return None
+
+
+
+
+
 
 
 # ==============================================================================
@@ -115,40 +264,6 @@ class EventForm(forms.ModelForm):
 
 
 # ==============================================================================
-
-# TODO rewrite this form.
-class EventTypeForm(forms.Form):
-    """
-    Choosing event_types related to a topic. Need a topic as input data. Managed by a formset.
-    """
-
-    # ---------------------------------------------------------------------------
-    def __init__(self, topic, *args, **kws):
-        super(EventTypeForm, self).__init__(*args, **kws)
-
-        self.topic = topic
-
-        # need to have a prefix in order to select properly forms
-        self.prefix = topic.name
-
-        self.fields['label'] = forms.ModelChoiceField(
-            queryset=EventType.objects.filter(topic=topic),
-            label=self.topic.name,
-            required=False,
-            widget=forms.widgets.Select
-            )
-
-    def clean(self):
-        cleaned_data = super(EventTypeForm, self).clean()
-
-        if cleaned_data['label']:
-            raise forms.ValidationError("Choisir une categorie")
-
-        return self.cleaned_data
-
-# ==============================================================================
-
-
 class SingleOccurrenceForm(forms.Form):
     """
     A simple form for adding and updating single Occurrence attributes

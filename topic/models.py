@@ -37,6 +37,7 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
+
 # ==============================================================================
 @python_2_unicode_compatible
 class EventType(models.Model):

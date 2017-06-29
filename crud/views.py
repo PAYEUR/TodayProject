@@ -11,34 +11,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm, EventTypeForm, get_valid_forms
-from django.http import HttpResponse
+from .forms import EventForm, SingleOccurrenceForm, MultipleOccurrenceForm, MultipleDateSingleOccurrenceForm, \
+    EventTypeByTopicForm, EventTypeByTopicFormsListManager
+
 
 from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
-
-
-def two_forms_test(request, template='crud/two_forms_test.html'):
-
-    if request.method == 'POST':
-        # initialization
-        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
-
-        # validation
-        valid_topic_forms = get_valid_forms(topic_forms)
-        if len(valid_topic_forms) == 1:
-            valid_form = valid_topic_forms[0]
-            label = valid_form.cleaned_data['label']
-            print(label)
-
-            return HttpResponse("label : " + label)
-
-    else:
-        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
-
-    context = {'topic_forms': topic_forms,
-               }
-
-    return render(request, template, context)
 
 
 # new views
