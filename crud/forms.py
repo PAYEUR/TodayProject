@@ -437,7 +437,7 @@ class MultipleOccurrenceForm(forms.Form):
 class OccurrenceFormsListManager:
     # TODO: same EventTypeByTopicFormsListManager above but for MultipleOccurrenceForm and multiples dates
 
-    initial_dates_forms = formset_factory(SingleOccurrenceForm, extra=10)()
+    initial_formset_factory = formset_factory(SingleOccurrenceForm, extra=2)()
     initial_multiple_occurrence_form = MultipleOccurrenceForm()
     only_one_form_error = False
 
@@ -454,7 +454,7 @@ class OccurrenceFormsListManager:
         Else return None
         """
         if self.request.method == 'POST':
-            return formset_factory(SingleOccurrenceForm, extra=10)(self.request.POST)
+            return formset_factory(SingleOccurrenceForm, extra=2)(self.request.POST)
         else:
             return None
 
@@ -475,13 +475,23 @@ class OccurrenceFormsListManager:
         If no, set None to valid_form and only_one_form_error to True
         """
         forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
-        valid_form = [f for f in forms if f.is_valid()]
+        valid_form = [f for f in forms if f is not None and f.is_valid()]
         if len(valid_form) == 1:
             return valid_form[0]
         else:
             self.only_one_form_error = True
             return None
 
+    def context(self):
+        """
+        Returns the context for the view. Note that error is explicitely given into the context and not within a form.
+        This is because MultipleOccurenceForm and the Occurrence Formset Factory are hidding themselves.
+        """
+        context = {'initial_formset_factory': self.initial_formset_factory,
+                   'initial_multiple_occurrence_form': self.initial_multiple_occurrence_form,
+                   'error': self.only_one_form_error,
+                   }
+        return context
 
 
 

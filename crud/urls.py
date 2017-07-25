@@ -6,7 +6,8 @@ from test import test_views
 app_name = 'crud'
 urlpatterns = [
     # tests
-    url(r'^two_forms_test$', test_views.two_forms_test, name="two_forms_test"),
+    url(r'^two_event_types_test$', test_views.two_event_types_test, name="two_event_type_test"),
+    url(r'^occurrences_test$', test_views.occurrences_test, name="occurrences_test"),
     url(r'^test_add$', views.add_event2, name="add_event2"),
 
     url(r'^nouvel_evenement_multiple$', views.add_multiple_occurrence_event, name="nouvel_evenement_multiple"),
