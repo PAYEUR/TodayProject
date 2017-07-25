@@ -27,7 +27,9 @@ WEEKDAY_LONG = (
 MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
-# -------------------------------------------------------------------------------
+# ===============================================================================
+# TOD0 old features, remove this
+
 def timeslot_options(
     interval=swingtime_settings.TIMESLOT_INTERVAL,
     start_time=swingtime_settings.TIMESLOT_START_TIME,
@@ -53,7 +55,6 @@ def timeslot_options(
     return options
 
 
-# ==============================================================================
 class MultipleIntegerField(forms.MultipleChoiceField):
     """
     A form field for handling multiple integers.
@@ -77,6 +78,36 @@ class MultipleIntegerField(forms.MultipleChoiceField):
 
 
 # ==============================================================================
+# Event creation form
+class EventForm(forms.ModelForm):
+    """
+    A simple form for adding and updating Event attributes.
+    """
+
+    class Meta:
+        model = Event
+        fields = ['image',
+                  'title',
+                  'description',
+                  'price',
+                  'contact',
+                  'address',
+                  'public_transport',
+                  'location',
+                  ]
+
+    # ---------------------------------------------------------------------------
+    def __init__(self, *args, **kws):
+        super(EventForm, self).__init__(*args, **kws)
+
+        self.fields['location'] = forms.ModelChoiceField(
+            City.objects.all(),
+            label='Ville',
+        )
+
+
+# ==============================================================================
+# Event type selection
 class EventTypeByTopicForm(forms.Form):
     """
     Choosing event_types related to a topic. Need a topic as input data.
@@ -88,7 +119,7 @@ class EventTypeByTopicForm(forms.Form):
 
         self.topic = topic
 
-        # need to have a prefix in order to select properly forms
+        # need to have a prefix in order to properly select forms
         self.prefix = topic.name
 
         self.fields['event_type'] = forms.ModelChoiceField(
@@ -108,7 +139,6 @@ class EventTypeByTopicForm(forms.Form):
         return self.cleaned_data
 
 
-# ==============================================================================
 class EventTypeByTopicFormsListManager:
     """
     Manager of a list of EventTypeByTopicForm.
@@ -135,7 +165,7 @@ class EventTypeByTopicFormsListManager:
 
     def topic_forms_post(self):
         """
-        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
+        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return None
         """
         if self.request.method == 'POST':
             return [EventTypeByTopicForm(topic, self.request.POST) for topic in Topic.objects.all()]
@@ -145,11 +175,7 @@ class EventTypeByTopicFormsListManager:
     def get_valid_forms(self):
         """get valid forms from a list of forms"""
         if self.topic_forms_post is not None:
-            validated_forms = []
-            for form in self.topic_forms_post:
-                if form.is_valid():
-                    validated_forms.append(form)
-            return validated_forms
+            return [f for f in self.topic_forms_post if f.is_valid()]
         else:
             return None
 
@@ -180,90 +206,8 @@ class EventTypeByTopicFormsListManager:
         return context
 
 
-# ===============================================================================
-class TimeFormsListManager:
-    # TODO: same than above but for MultipleOccurrenceForm and MultipleDates
-
-    initial_dates_forms = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)()
-    initial_multiple_occurrence_form = MultipleOccurrenceForm()
-    only_one_form_error = False
-
-    def __init__(self, request):
-        self.request = request
-        self.dates_forms_post = self.dates_forms_post()
-        self.multiple_occurrence_form_post = self.multiple_occurrence_form_post()
-        self.valid_form = self.check_valid_form()
-        self.context = self.context()
-
-    def dates_forms_post(self):
-        """
-        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
-        """
-        if self.request.method == 'POST':
-            return formset_factory(MultipleDateSingleOccurrenceForm, extra=10)(self.request.POST)
-        else:
-            return None
-
-    def multiple_occurrence_form_post(self):
-        """
-        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return none
-        """
-        if self.request.method == 'POST':
-            return MultipleOccurrenceForm(self.request.POST)
-        else:
-            return None
-
-    def check_valid_form(self):
-        """
-        Check if there is only one form valid within forms_list.
-        If yes, set valid_form to this form
-        If no, set None to valid_form and only_one_form_error to True
-        """
-        forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
-        is_valid_d = forms[0].is_valid()
-        is_valid_mp = forms[1].is_valid()
-        if is_valid_d or is_valid_mp and is_valid_d is not is_valid_mp:
-            valid_form = [f for f in forms if f.is_valid]
-            return valid_form[0]
-        else:
-            self.only_one_form_error = True
-            return None
-
-
-
-
-
-
-
 # ==============================================================================
-class EventForm(forms.ModelForm):
-    """
-    A simple form for adding and updating Event attributes.
-    """
-
-    class Meta:
-        model = Event
-        fields = ['image',
-                  'title',
-                  'description',
-                  'price',
-                  'contact',
-                  'address',
-                  'public_transport',
-                  'location',
-                  ]
-
-    # ---------------------------------------------------------------------------
-    def __init__(self, *args, **kws):
-        super(EventForm, self).__init__(*args, **kws)
-
-        self.fields['location'] = forms.ModelChoiceField(
-            City.objects.all(),
-            label='Ville',
-        )
-
-
-# ==============================================================================
+# Occurrence forms creation
 class SingleOccurrenceForm(forms.Form):
     """
     A simple form for adding and updating single Occurrence attributes
@@ -271,7 +215,7 @@ class SingleOccurrenceForm(forms.Form):
 
     """
     # ==========================================================================
-    date = forms.DateField(
+    start_date = forms.DateField(
         required=True,
         initial=date.today,
         label='Date',
@@ -323,7 +267,7 @@ class SingleOccurrenceForm(forms.Form):
         if start_time < now:
             raise forms.ValidationError("Verifier que la date correspond")
 
-        if cleaned_data.get('end_time') is not None:
+        if cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
             end_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('end_time'))
             if start_time > end_time or end_time < now:
                 raise forms.ValidationError("Verifier que les heures correspondent")
@@ -337,7 +281,7 @@ class SingleOccurrenceForm(forms.Form):
         """
         start_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('start_time'))
 
-        if self.cleaned_data.get('end_time') is not None:
+        if self.cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
             end_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('end_time'))
         else:
             end_time = start_time + timedelta(hours=1)
@@ -345,7 +289,7 @@ class SingleOccurrenceForm(forms.Form):
         event.add_occurrences(
             start_time,
             end_time,
-            is_multiple=False,
+            is_multiple=False,  # TODO: remove this feature
         )
 
         return event
@@ -445,14 +389,17 @@ class MultipleOccurrenceForm(forms.Form):
         start_day = cleaned_data['start_day']
         end_day = cleaned_data['end_day']
 
+        # test on hours
         if starting_hour and ending_hour:
             if starting_hour > ending_hour:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
+        # test on days
         if start_day and end_day:
             if start_day > end_day or start_day < date.today():
                 raise forms.ValidationError("Verifier que les dates correspondent")
-            # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
+
+        # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
 
         self.cleaned_data['first_day_start_time'] = datetime.combine(start_day, starting_hour)
         self.cleaned_data['first_day_end_time'] = datetime.combine(start_day, ending_hour)
@@ -487,8 +434,58 @@ class MultipleOccurrenceForm(forms.Form):
         return params
 
 
-# ==============================================================================
-# TODO merge this with other forms
+class OccurrenceFormsListManager:
+    # TODO: same EventTypeByTopicFormsListManager above but for MultipleOccurrenceForm and multiples dates
+
+    initial_dates_forms = formset_factory(SingleOccurrenceForm, extra=10)()
+    initial_multiple_occurrence_form = MultipleOccurrenceForm()
+    only_one_form_error = False
+
+    def __init__(self, request):
+        self.request = request
+        self.dates_forms_post = self.dates_forms_post()
+        self.multiple_occurrence_form_post = self.multiple_occurrence_form_post()
+        self.valid_form = self.check_valid_form()
+        self.context = self.context()
+
+    def dates_forms_post(self):
+        """
+        If request.method is POST, return a formset_factory of SingleOccurrencesForm bounded with post data.
+        Else return None
+        """
+        if self.request.method == 'POST':
+            return formset_factory(SingleOccurrenceForm, extra=10)(self.request.POST)
+        else:
+            return None
+
+    def multiple_occurrence_form_post(self):
+        """
+        If request.method is POST, return a list of MultipleOccurrenceForm bounded with post data.
+        Else return None
+        """
+        if self.request.method == 'POST':
+            return MultipleOccurrenceForm(self.request.POST)
+        else:
+            return None
+
+    def check_valid_form(self):
+        """
+        Check if there is only one form valid within a form list.
+        If yes, set valid_form to this form
+        If no, set None to valid_form and only_one_form_error to True
+        """
+        forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
+        valid_form = [f for f in forms if f.is_valid()]
+        if len(valid_form) == 1:
+            return valid_form[0]
+        else:
+            self.only_one_form_error = True
+            return None
+
+
+
+
+# TODO remove this
 ## form that allows letting date and hours not filled for multiple date form
 
 class MultipleDateSingleOccurrenceForm(forms.Form):

@@ -1,11 +1,14 @@
 from django.conf.urls import url
 
 from . import views
+from test import test_views
 
 app_name = 'crud'
 urlpatterns = [
-    url(r'^two_forms_test$', views.two_forms_test, name="two_forms_test"),
+    # tests
+    url(r'^two_forms_test$', test_views.two_forms_test, name="two_forms_test"),
     url(r'^test_add$', views.add_event2, name="add_event2"),
+
     url(r'^nouvel_evenement_multiple$', views.add_multiple_occurrence_event, name="nouvel_evenement_multiple"),
     url(r'^nouvel_evenement_simple$', views.add_single_event, name="nouvel_evenement_simple"),
     url(r'^nouvel_evenement_par_dates$', views.add_multiple_dates, name="add_multiple_dates"),
