@@ -142,7 +142,11 @@ class EventTypeByTopicForm(forms.Form):
 class EventTypeByTopicFormsListManager:
     """
     Manager of a list of EventTypeByTopicForm.
+
     Has been written to shorten the view.
+    Feature: if forms are not validated, all fields are set to initial state (instead of POST state) and form
+    are presented again.
+
     initial_topic_forms: virgin list of EventTypeByTopicForms (served if request.method is not POST)
     only_one_form_error: boolean. False if exactly one form is validated. Used in context to print error text.
     request: input request
@@ -160,7 +164,7 @@ class EventTypeByTopicFormsListManager:
         self.request = request
         self.topic_forms_post = self.topic_forms_post()
         self.valid_topic_forms = self.get_valid_forms()
-        self.valid_form = self.check_valid_form()
+        #self.valid_form = self.check_valid_form()
         self.context = self.context()
 
     def topic_forms_post(self):
@@ -217,7 +221,7 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        initial=date.today,
+        #initial=date.today,
         label='Date',
         widget=DateWidget(
             options={
@@ -231,7 +235,7 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        initial='14:00',
+        #initial='14:00',
         label='Horaire de début',
         widget=TimeWidget(
             options={
@@ -243,7 +247,7 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=True,
-        initial='22:30',
+        #initial='22:30',
         label='Horaire de fin',
         widget=TimeWidget(
             options={
@@ -253,22 +257,20 @@ class SingleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    prefix = 'single_occurrence'
-
     def clean(self):
         """
         :return: validation error if start_time or end_time in the past
         concatenate date and hour to give start and end datetime
         """
         cleaned_data = super(SingleOccurrenceForm, self).clean()
-        start_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('start_time'))
+        start_time = datetime.combine(cleaned_data.get('start_date'), cleaned_data.get('start_time'))
         now = datetime.now()
 
         if start_time < now:
             raise forms.ValidationError("Verifier que la date correspond")
 
         if cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
-            end_time = datetime.combine(cleaned_data.get('date'), cleaned_data.get('end_time'))
+            end_time = datetime.combine(cleaned_data.get('start_date'), cleaned_data.get('end_time'))
             if start_time > end_time or end_time < now:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
@@ -304,7 +306,7 @@ class MultipleOccurrenceForm(forms.Form):
     ## hour
     starting_hour = forms.TimeField(
         label='Horaire de début',
-        initial='14:00',
+        #initial='14:00',
         widget=TimeWidget(
             options={'pickerPosition': 'top-left',
                      'minuteStep': 15,
@@ -315,7 +317,7 @@ class MultipleOccurrenceForm(forms.Form):
     ending_hour = forms.TimeField(
         required=True,
         label='Horaire de fin',
-        initial='22:30',
+        #initial='22:30',
         widget=TimeWidget(
             options={'pickerPosition': 'top-left',
                      'minuteStep': 15,
@@ -327,7 +329,7 @@ class MultipleOccurrenceForm(forms.Form):
     start_day = forms.DateField(
         required=True,
         label='A partir du',
-        initial=date.today,
+        #initial=date.today,
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -341,7 +343,7 @@ class MultipleOccurrenceForm(forms.Form):
     end_day = forms.DateField(
         required=True,
         label='Jusqu\'au',
-        initial=date(date.today().year, 12, 31),
+        #initial=date(date.today().year, 12, 31),
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -437,7 +439,8 @@ class MultipleOccurrenceForm(forms.Form):
 class OccurrenceFormsListManager:
     # TODO: same EventTypeByTopicFormsListManager above but for MultipleOccurrenceForm and multiples dates
 
-    initial_formset_factory = formset_factory(SingleOccurrenceForm, extra=2)()
+    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=2, min_num=1, validate_min=True)
+    initial_formset = SingleOccurrenceFormSet(prefix='single_occurrences')
     initial_multiple_occurrence_form = MultipleOccurrenceForm()
     only_one_form_error = False
 
@@ -445,16 +448,15 @@ class OccurrenceFormsListManager:
         self.request = request
         self.dates_forms_post = self.dates_forms_post()
         self.multiple_occurrence_form_post = self.multiple_occurrence_form_post()
-        self.valid_form = self.check_valid_form()
         self.context = self.context()
 
     def dates_forms_post(self):
         """
-        If request.method is POST, return a formset_factory of SingleOccurrencesForm bounded with post data.
+        If request.method is POST, return a formset of SingleOccurrenceForm bounded with post data.
         Else return None
         """
         if self.request.method == 'POST':
-            return formset_factory(SingleOccurrenceForm, extra=2)(self.request.POST)
+            return self.SingleOccurrenceFormSet(self.request.POST, prefix='single_occurrences')
         else:
             return None
 
@@ -468,16 +470,20 @@ class OccurrenceFormsListManager:
         else:
             return None
 
-    def check_valid_form(self):
+    def get_valid_form(self):
         """
         Check if there is only one form valid within a form list.
         If yes, set valid_form to this form
         If no, set None to valid_form and only_one_form_error to True
         """
         forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
-        valid_form = [f for f in forms if f is not None and f.is_valid()]
-        if len(valid_form) == 1:
-            return valid_form[0]
+
+        valid_forms = [f for f in forms if f is not None and f.is_valid()]
+
+        print("valid_forms: " + str(valid_forms))
+
+        if len(valid_forms) == 1:
+            return valid_forms[0]
         else:
             self.only_one_form_error = True
             return None
@@ -487,7 +493,7 @@ class OccurrenceFormsListManager:
         Returns the context for the view. Note that error is explicitely given into the context and not within a form.
         This is because MultipleOccurenceForm and the Occurrence Formset Factory are hidding themselves.
         """
-        context = {'initial_formset_factory': self.initial_formset_factory,
+        context = {'initial_formset': self.initial_formset,
                    'initial_multiple_occurrence_form': self.initial_multiple_occurrence_form,
                    'error': self.only_one_form_error,
                    }

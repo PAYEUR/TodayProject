@@ -9,7 +9,7 @@
 
 {% block base_extra_head %}
     {{ initial_multiple_occurrence_form.media }}
-    {{ initial_formset_factory.media }}
+    {{ initial_formset.media }}
 {% endblock %}
 
 {% block content %}
@@ -27,8 +27,9 @@
                 <p> {% bootstrap_alert "Veuillez resélectionner les dates" alert_type='warning' %} </p>
             {%  endif %}
 
-            <h2>Here is formset_factory</h2>
-            {%  for form in initial_formset_factory %}
+            <h2>Here is formset</h2>
+            {{ initial_formset.management_form }}
+            {% for form in initial_formset %}
                 <h3>Date n°{{forloop.counter}}</h3>
                 {% bootstrap_form form %}
             {% endfor %}

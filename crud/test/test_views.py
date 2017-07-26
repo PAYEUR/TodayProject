@@ -11,7 +11,7 @@ from django.shortcuts import render
 def two_event_types_test(request, template='test/two_event_types_forms_test.html'):
 
     manager = EventTypeByTopicFormsListManager(request)
-    valid_form = manager.valid_form
+    valid_form = manager.check_valid_form()
 
     # Macro validation: only one form must be valid
     if valid_form is not None:
@@ -25,11 +25,12 @@ def two_event_types_test(request, template='test/two_event_types_forms_test.html
 def occurrences_test(request, template='test/two_occurrences_forms_test.html'):
 
     manager = OccurrenceFormsListManager(request)
-    valid_form = manager.valid_form
+    #print(manager.dates_forms_post)
+    #print(manager.multiple_occurrence_form_post)
+    valid_form = manager.get_valid_form()
 
     if valid_form is not None:
         return HttpResponse("Un seul formulaire a été rempli")
 
     else:
         return render(request, template, manager.context)
-
