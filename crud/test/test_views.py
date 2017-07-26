@@ -25,7 +25,7 @@ def two_event_types_test(request, template='test/two_event_types_forms_test.html
 def occurrences_test(request, template='test/two_occurrences_forms_test.html'):
 
     manager = OccurrenceFormsListManager(request)
-    #print(manager.dates_forms_post)
+    # print(manager.dates_forms_post)
     #print(manager.multiple_occurrence_form_post)
     valid_form = manager.get_valid_form()
 
