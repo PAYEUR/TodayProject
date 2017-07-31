@@ -263,18 +263,25 @@ class SingleOccurrenceForm(forms.Form):
         concatenate date and hour to give start and end datetime
         """
         cleaned_data = super(SingleOccurrenceForm, self).clean()
-        start_time = datetime.combine(cleaned_data.get('start_date'), cleaned_data.get('start_time'))
-        now = datetime.now()
+        start_date = cleaned_data.get('start_date')
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
 
-        if start_time < now:
-            raise forms.ValidationError("Verifier que la date correspond")
+        if start_date and start_time and end_time:
 
-        if cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
-            end_time = datetime.combine(cleaned_data.get('start_date'), cleaned_data.get('end_time'))
+            start_time = datetime.combine(start_date, start_time)
+            end_time = datetime.combine(start_date, end_time)
+            now = datetime.now()
+
+            # 1st condition
+            if start_time < now:
+                raise forms.ValidationError("Verifier que la date correspond")
+
+            # 2nd condition
             if start_time > end_time or end_time < now:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-        return self.cleaned_data
+            return self.cleaned_data
 
     def save(self, event):
         """
@@ -363,50 +370,29 @@ class MultipleOccurrenceForm(forms.Form):
 
     prefix = 'multiple_occurrence'
 
-    # TODO remove this asap
-    # # ---------------------------------------------------------------------------
-    # def __init__(self, *args, **kws):
-    #     """
-    #     :param args:
-    #     :param kws:
-    #     :return: prefilling widget with current time. (not ultra useful)
-    #     """
-    #     super(MultipleOccurrenceForm, self).__init__(*args, **kws)
-    #     dtstart = self.initial.get('dtstart', None)
-    #     if dtstart:
-    #         dtstart = dtstart.replace(
-    #             minute=((dtstart.minute // MINUTES_INTERVAL) * MINUTES_INTERVAL),
-    #             second=0,
-    #             microsecond=0
-    #         )
-    #
-    #         self.initial.setdefault('start_day', dtstart)
-    #         self.initial.setdefault('week_days', '%d' % dtstart.isoweekday())
-
-    # ---------------------------------------------------------------------------
     def clean(self):
         cleaned_data = super(MultipleOccurrenceForm, self).clean()
-        starting_hour = cleaned_data['starting_hour']
-        ending_hour = cleaned_data['ending_hour']
-        start_day = cleaned_data['start_day']
-        end_day = cleaned_data['end_day']
+        starting_hour = cleaned_data.get('starting_hour')
+        ending_hour = cleaned_data.get('ending_hour')
+        start_day = cleaned_data.get('start_day')
+        end_day = cleaned_data.get('end_day')
 
-        # test on hours
-        if starting_hour and ending_hour:
+        if starting_hour and ending_hour and start_day and end_day:
+
+            # test on hours
             if starting_hour > ending_hour:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-        # test on days
-        if start_day and end_day:
+            # test on days
             if start_day > end_day or start_day < date.today():
                 raise forms.ValidationError("Verifier que les dates correspondent")
 
-        # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
+            # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
 
-        self.cleaned_data['first_day_start_time'] = datetime.combine(start_day, starting_hour)
-        self.cleaned_data['first_day_end_time'] = datetime.combine(start_day, ending_hour)
+            self.cleaned_data['first_day_start_time'] = datetime.combine(start_day, starting_hour)
+            self.cleaned_data['first_day_end_time'] = datetime.combine(start_day, ending_hour)
 
-        return self.cleaned_data
+            return self.cleaned_data
 
     # ---------------------------------------------------------------------------
     def save(self, event):
