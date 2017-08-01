@@ -3,7 +3,6 @@
 from __future__ import print_function, unicode_literals
 
 from datetime import datetime, date, time, timedelta
-from django.forms import formset_factory
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
 from django import forms
@@ -11,7 +10,7 @@ from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
 from crud import swingtime_settings
-from topic.models import Event, EventType, Topic
+from topic.models import Event, EventType
 
 WEEKDAY_LONG = (
     (0, _('Monday')),
@@ -139,75 +138,37 @@ class EventTypeByTopicForm(forms.Form):
         return self.cleaned_data
 
 
-class EventTypeByTopicFormsListManager:
+class FormsListManager:
     """
-    Manager of a list of EventTypeByTopicForm.
-
-    Has been written to shorten the view.
-    Feature: if forms are not validated, all fields are set to initial state (instead of POST state) and form
-    are presented again.
-
-    initial_topic_forms: virgin list of EventTypeByTopicForms (served if request.method is not POST)
-    only_one_form_error: boolean. False if exactly one form is validated. Used in context to print error text.
-    request: input request
-    topic_form_post: list of EventTypesByTopicForm served with POST data or None
-    valid_topic_form: list of valid forms within topic_forms_post or None
-    valid_form: the only valid EventTypeByTopicForm or None
-    context: {"topic_forms" and "error"}
+    Manager for lists of Forms or Formsets.
 
     """
 
-    initial_topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
-    only_one_form_error = False
+    def __init__(self):
+        self.filled_forms = []
+        self.filled_form = None
+        self.error = False
 
-    def __init__(self, request):
-        self.request = request
-        self.topic_forms_post = self.topic_forms_post()
-        self.valid_topic_forms = self.get_valid_forms()
-        #self.valid_form = self.check_valid_form()
-        self.context = self.context()
+    def check_filled_forms(self, forms):
+        """
+            Check forms (resp. formsets) that have been modified and put them in filled_forms
+        """
 
-    def topic_forms_post(self):
-        """
-        If request.method is POST, return a list of EventTypeByTopicForm bounded with post data. Else return None
-        """
-        if self.request.method == 'POST':
-            return [EventTypeByTopicForm(topic, self.request.POST) for topic in Topic.objects.all()]
-        else:
-            return None
+        filled_forms = [f for f in forms if f is not None and f.has_changed()]
+        self.filled_forms = filled_forms
 
-    def get_valid_forms(self):
-        """get valid forms from a list of forms"""
-        if self.topic_forms_post is not None:
-            return [f for f in self.topic_forms_post if f.is_valid()]
-        else:
-            return None
+    def only_one_form_is_filled(self):
+        """
+            Assert if one single form (resp. formset) has been modified.
+        """
+        return len(self.filled_forms) == 1
 
-    def check_valid_form(self):
+    def set_filled_form(self):
         """
-        Check if there is only one form valid within self.valid_topic_forms.
-        If yes, set valid_form to this form
-        If no, set None to valid_form and et only_one_form_error to True
+            If only one single form (resp formset) has been modified, put this form (resp formset) into filled_form.
         """
-        if self.valid_topic_forms is not None:
-            if len(self.valid_topic_forms) == 1:
-                valid_form = self.valid_topic_forms[0]
-            else:
-                valid_form = None
-                self.only_one_form_error = True
-            return valid_form
-        else:
-            return None
-
-    def context(self):
-        """
-        Returns the context for the view. Note that error is explicitely given into the context and not within a form.
-        This is because EventTypeByTopicForm are hidden each others
-        """
-        context = {'topic_forms': self.initial_topic_forms,
-                   'error': self.only_one_form_error,
-                   }
-        return context
+        if self.only_one_form_is_filled():
+            self.filled_form = self.filled_forms[0]
 
 
 # ==============================================================================
@@ -379,18 +340,20 @@ class MultipleOccurrenceForm(forms.Form):
 
         if starting_hour and ending_hour and start_day and end_day:
 
-            # test on hours
+            start_time = datetime.combine(start_day, starting_hour)
+            end_time = datetime.combine(end_day, ending_hour)
+            now = datetime.now()
+
+            # 1st condition
+            if start_time > end_time or end_time < now:
+                raise forms.ValidationError("Verifier que la date correspond")
+
+            # 2nd condition
             if starting_hour > ending_hour:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-            # test on days
-            if start_day > end_day or start_day < date.today():
-                raise forms.ValidationError("Verifier que les dates correspondent")
-
-            # pas de test si un événement est créé aujourd'hui mais à une heure déjà passée
-
-            self.cleaned_data['first_day_start_time'] = datetime.combine(start_day, starting_hour)
-            self.cleaned_data['first_day_end_time'] = datetime.combine(start_day, ending_hour)
+            self.cleaned_data['first_day_start_time'] = start_time
+            self.cleaned_data['first_day_end_time'] = end_time
 
             return self.cleaned_data
 
@@ -422,70 +385,37 @@ class MultipleOccurrenceForm(forms.Form):
         return params
 
 
-class OccurrenceFormsListManager:
-    # TODO: same EventTypeByTopicFormsListManager above but for MultipleOccurrenceForm and multiples dates
-
-    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=2, min_num=1, validate_min=True)
-    initial_formset = SingleOccurrenceFormSet(prefix='single_occurrences')
-    initial_multiple_occurrence_form = MultipleOccurrenceForm()
-    only_one_form_error = False
-
-    def __init__(self, request):
-        self.request = request
-        self.dates_forms_post = self.dates_forms_post()
-        self.multiple_occurrence_form_post = self.multiple_occurrence_form_post()
-        self.context = self.context()
-
-    def dates_forms_post(self):
-        """
-        If request.method is POST, return a formset of SingleOccurrenceForm bounded with post data.
-        Else return None
-        """
-        if self.request.method == 'POST':
-            return self.SingleOccurrenceFormSet(self.request.POST, prefix='single_occurrences')
-        else:
-            return None
-
-    def multiple_occurrence_form_post(self):
-        """
-        If request.method is POST, return a list of MultipleOccurrenceForm bounded with post data.
-        Else return None
-        """
-        if self.request.method == 'POST':
-            return MultipleOccurrenceForm(self.request.POST)
-        else:
-            return None
-
-    def get_valid_form(self):
-        """
-        Check if there is only one form valid within a form list.
-        If yes, set valid_form to this form
-        If no, set None to valid_form and only_one_form_error to True
-        """
-        forms = [self.dates_forms_post, self.multiple_occurrence_form_post]
-
-        valid_forms = [f for f in forms if f is not None and f.is_valid()]
-
-        print("valid_forms: " + str(valid_forms))
-
-        if len(valid_forms) == 1:
-            return valid_forms[0]
-        else:
-            self.only_one_form_error = True
-            return None
-
-    def context(self):
-        """
-        Returns the context for the view. Note that error is explicitely given into the context and not within a form.
-        This is because MultipleOccurenceForm and the Occurrence Formset Factory are hidding themselves.
-        """
-        context = {'initial_formset': self.initial_formset,
-                   'initial_multiple_occurrence_form': self.initial_multiple_occurrence_form,
-                   'error': self.only_one_form_error,
-                   }
-        return context
-
-
+# class OccurrenceFormsListManager:
+#     """
+#         Manager for a FormSet of different dates and a Form of multiples occurrences
+#
+#     """
+#
+#     SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=1, min_num=1, validate_min=True)
+#     MultipleOccurrenceForm = MultipleOccurrenceForm
+#
+#     def __init__(self):
+#         self.filled_forms = []
+#         self.filled_form = None
+#
+#     def check_filled_forms(self, post_dates_formset, post_multiple_occurrence_form):
+#         """
+#         :returns a list of filled/modified forms within post forms.
+#         """
+#         forms = [post_dates_formset,
+#                  post_multiple_occurrence_form,
+#                  ]
+#
+#         filled_forms = [f for f in forms if f is not None and f.has_changed()]
+#
+#         self.filled_forms = filled_forms
+#
+#     def only_one_form_is_filled(self):
+#         return len(self.filled_forms) == 1
+#
+#     def set_filled_form(self):
+#         if self.only_one_form_is_filled():
+#             self.filled_form = self.filled_forms[0]
 
 # TODO remove this
 ## form that allows letting date and hours not filled for multiple date form

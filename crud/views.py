@@ -15,8 +15,8 @@ from .forms import (EventForm,
                     SingleOccurrenceForm,
                     MultipleOccurrenceForm,
                     MultipleDateSingleOccurrenceForm,
-                    EventTypeByTopicForm,
-                    EventTypeByTopicFormsListManager,
+                    #EventTypeByTopicForm,
+                    #EventTypeByTopicFormsListManager,
                     )
 
 
