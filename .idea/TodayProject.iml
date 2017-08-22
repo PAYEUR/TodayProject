@@ -15,6 +15,9 @@
     <orderEntry type="jdk" jdkName="Python 2.7.11 virtualenv at C:\Users\jean-baptiste.payeur\today" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="D:\TodayProject" />
+  </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
     <option name="TEMPLATE_FOLDERS">
