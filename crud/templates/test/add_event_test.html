@@ -1,0 +1,57 @@
+{% extends 'crud/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Nouvel événement
+{% endblock %}
+
+{# to allow recurrence_form.query #}
+{% block base_extra_head %}
+    {{ topic_forms.media }}
+    {{ event_form.media }}
+    {{ single_occurrence_formset.media }}
+    {{ multiple_occurrence_formset.media }}
+{% endblock %}
+
+{% block content %}
+    <h1>Validation de 3 familles de formulaires distincts</h1>
+
+
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+
+
+            <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <h2>Topic form</h2>
+                {%  for form in topic_forms %}
+                    {% if form.errors %}
+                        <p> {% bootstrap_alert "Merci de corriger les topics" alert_type='warning' %} </p>
+                    {% endif %}
+
+                    {% bootstrap_form form %}
+                {% endfor %}
+
+                <h2>Event form</h2>
+                {% bootstrap_form event_form %}
+
+                <h2>Here is dates formset</h2>
+                {{ single_occurrence_formset.management_form }}
+                {% for form in single_occurrence_formset %}
+                    <h3>Date n°{{forloop.counter}}</h3>
+                        {% bootstrap_form form %}
+                {% endfor %}
+
+                <h2>Here is multiple_occurrence form</h2>
+                {% bootstrap_form multiple_occurrence_form %}
+
+                {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

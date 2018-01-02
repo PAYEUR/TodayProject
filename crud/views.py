@@ -14,7 +14,6 @@ from django.core.exceptions import PermissionDenied
 from .forms import (EventForm,
                     SingleOccurrenceForm,
                     MultipleOccurrenceForm,
-                    MultipleDateSingleOccurrenceForm,
                     #EventTypeByTopicForm,
                     #EventTypeByTopicFormsListManager,
                     )
@@ -24,74 +23,6 @@ from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
 
 
 # new views
-def add_event2(request,
-               template='crud/add_event2.html'
-               ):
-    """
-    Testing one single form to insert data in database. One single template and one single view.
-    The form consists in 3 part:
-    1) first block given by the topic and corresponding event_types
-    2) second block given by commons event characteristics (image...)
-    3) third block given by the kind of occurrences (single, multiples or dates).
-
-    # TODO: OccurrenceFormSet does not display as common form in the template, so has to be taken into consideration
-    # TODO: validation
-    """
-
-    # OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
-    event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user))
-
-    if request.method == 'POST':
-        # initialization
-        topic_forms = [EventTypeForm(topic, request.POST) for topic in Topic.objects.all()]
-
-        occurrence_forms = [SingleOccurrenceForm(request.POST),
-                            MultipleOccurrenceForm(request.POST),
-                            # MultipleDates
-                            ]
-        event_form = EventForm(request.POST, request.FILES, instance=event)
-
-        # validation
-        # TODO: to be tested
-        valid_topic_forms = get_valid_forms(topic_forms)
-        valid_occurrence_forms = get_valid_forms(occurrence_forms)
-
-        if len(valid_topic_forms) == 1 and len(valid_occurrence_forms) == 1 and event_form.is_valid():
-
-            topic_form = valid_topic_forms[0]
-            occurrence_form = valid_occurrence_forms[0]
-
-            event = event_form.save(commit=False)
-            event.event_type = topic_form.cleaned_data['label']
-            event.save()
-            occurrence_form.save()
-            return redirect('core:event_planner_panel')
-
-    else:
-        event_form = EventForm()
-        topic_forms = [EventTypeForm(topic) for topic in Topic.objects.all()]
-        occurrence_forms = [SingleOccurrenceForm(),
-                            MultipleOccurrenceForm(),
-                            # OccurrenceFormSet()
-                            ]
-
-    context = {'topic_forms': topic_forms,
-               'occurrence_forms': occurrence_forms,
-               'event_form': event_form,
-               'media': occurrence_forms[0].media
-               }
-
-    return render(request, template, context)
-
-
-
-
-
-
-
-
-
-
 
 
 # end of new views
