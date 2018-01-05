@@ -11,12 +11,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
-from .forms import (EventForm,
-                    SingleOccurrenceForm,
-                    MultipleOccurrenceForm,
-                    #EventTypeByTopicForm,
-                    #EventTypeByTopicFormsListManager,
-                    )
+from .forms import (EventTypeByTopicForm,
+                        MultipleOccurrenceForm,
+                        SingleOccurrenceForm,
+                        FormsListManager,
+                        EventForm,
+                        )
 
 
 from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
@@ -24,6 +24,112 @@ from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
 
 # new views
 
+@login_required(login_url='connection:login')
+def add_event(request,
+                   template='test/add_event_test.html'
+                   ):
+    """
+    Testing one single form to insert data in database. One single template and one single view.
+    The form consists in 3 part:
+    1) first block given by the topic and corresponding event_types
+    2) second block given by commons event characteristics (image...)
+    3) third block given by the kind of occurrences (single, multiples or dates).
+
+    # TODO: OccurrenceFormSet does not display as common form in the template, so has to be taken into consideration
+    # TODO: validation
+    """
+
+    # intiating topics stuff
+    topic_forms_manager = FormsListManager()
+
+    # initiating event stuff
+    event_planner = EnjoyTodayUser.objects.get(user=request.user)
+
+    # initiating occurrences stuff
+    occurrences_forms_manager = FormsListManager()
+    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm,
+                                              min_num=1,
+                                              validate_min=True)
+
+    MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm,
+                                                extra=0,
+                                                min_num=1,
+                                                max_num=1,
+                                                validate_min=True,
+                                                validate_max=True)
+
+    # -----------------------------------------------------------
+
+    if request.method == 'POST':
+        # initialization
+        topic_forms = [EventTypeByTopicForm(topic, request.POST) for topic in Topic.objects.all()]
+        event_form = EventForm(request.POST, request.FILES)
+        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix="single")
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix="multiple")
+
+        # validation
+
+        # checking multiple forms
+        topic_forms_manager.check_filled_forms(topic_forms)
+        occurrences_forms_manager.check_filled_forms([single_occurrence_formset, multiple_occurrence_formset])
+
+        if topic_forms_manager.only_one_form_is_filled():
+            topic_forms_manager.set_filled_form()
+
+            if occurrences_forms_manager.only_one_form_is_filled():
+                occurrences_forms_manager.set_filled_form()
+                occurrences_formset = occurrences_forms_manager.filled_form
+
+                # validation of each form
+                if occurrences_formset.is_valid() and \
+                   topic_forms_manager.filled_form.is_valid() and \
+                   event_form.is_valid():
+
+                    # reset potential error messages
+                    occurrences_forms_manager.error = False
+                    topic_forms_manager.error = False
+
+                    # saving event
+                    event = event_form.save(commit=False)
+                    event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
+                    event.event_planner = event_planner
+                    event.save()
+
+                    # saving occurrence
+                    # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+                    for form in occurrences_formset:
+                        print(occurrences_formset)
+                        if form.is_valid and form.cleaned_data:  # TODO: check the syntax and utility of this assertion
+                            print(form.cleaned_data)
+                            print("event_saved")
+
+                    return redirect('core:event_planner_panel')
+
+            else:
+                occurrences_forms_manager.error = True
+                single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
+                multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
+
+        else:
+            topic_forms_manager.error = True
+            # reset forms
+            topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+
+    else:
+        topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+        event_form = EventForm()
+        single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
+
+    context = {'topic_forms': topic_forms,
+               'event_form': event_form,
+               'single_occurrence_formset': single_occurrence_formset,
+               'multiple_occurrence_formset': multiple_occurrence_formset,
+               'topic_error': topic_forms_manager.error,
+               'occurrence_error': occurrences_forms_manager.error,
+               }
+
+    return render(request, template, context)
 
 # end of new views
 
@@ -127,54 +233,6 @@ def add_single_event(request, recurrence_form_class=SingleOccurrenceForm):
     return _add_event(request, recurrence_form_class)
 
 
-@login_required(login_url='connection:login')
-def add_multiple_dates(
-        request,
-        template='crud/add_event_as_dates.html',
-        event_form_class=EventForm,
-        ):
-
-    dtstart = None
-
-    # TODO: topic should become a form field
-    topic = get_object_or_404(Topic, name='spi')
-
-    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
-    if request.method == 'POST':
-        # to add event_planner to event
-        event = Event(event_planner=EnjoyTodayUser.objects.get(user=request.user),
-                      #site=get_current_site(request)
-                      )
-
-        event_form = event_form_class(topic, request.POST, request.FILES, instance=event)
-        formset = OccurrenceFormSet(request.POST)
-        if event_form.is_valid() and formset.is_valid():
-            event.save()
-            for occurrence_form in formset:
-                if occurrence_form.is_valid and occurrence_form.cleaned_data:
-                    occurrence_form.save(event)
-            return redirect('core:event_planner_panel')
-
-    else:
-        if 'dtstart' in request.GET:
-            try:
-                dtstart = parser.parse(request.GET['dtstart'])
-            except(TypeError, ValueError) as exc:
-                # TODO: A badly formatted date is passed to add_event
-                logging.warning(exc)
-
-        dtstart = dtstart or datetime.now()
-        event_form = event_form_class(topic)
-        # initial parameter doesnt work here
-        formset = OccurrenceFormSet()
-
-    context = dict({'dtstart': dtstart,
-                    'event_form': event_form,
-                    'formset': formset,
-                    })
-
-    return render(request, template, context)
-
 
 class UpdateEvent(UserPassesTestMixin, UpdateView):
 
@@ -275,49 +333,3 @@ def test_func(user, Event):
             return user == Event.event_planner.user
         else:
             return False
-
-# TODO: check how to include this in the occurrence manager
-@login_required(login_url='connection:login')
-def add_multiples_occurrences(
-        request,
-        event_id,
-        template='crud/add_multiple_occurrences.html',
-        recurrence_form_class=SingleOccurrenceForm
-        ):
-    """
-    :param request:
-    :param event_id:
-    :param template:
-    :param recurrence_form_class:
-    :return: allow modifying existing event to add more occurrences
-    """
-
-    dtstart = None
-    event = get_object_or_404(Event, pk=int(event_id))
-    OccurrenceFormSet = formset_factory(MultipleDateSingleOccurrenceForm, extra=10)
-    #passes_test
-    if test_func(request.user, event):
-        if request.method == 'POST':
-            formset = OccurrenceFormSet(request.POST)
-            if formset.is_valid():
-                for occurrence_form in formset:
-                    if occurrence_form.is_valid and occurrence_form.cleaned_data:
-                        occurrence_form.save(event)
-                return http.HttpResponseRedirect(reverse_lazy('core:event_planner_panel'))
-
-        else:
-            dtstart = datetime.now()
-            # initial parameter doesnt work here
-            formset = OccurrenceFormSet()
-
-
-        context = dict({'dtstart': dtstart,
-                        'formset': formset,
-                        'event': event,
-                        }
-                       )
-
-        return render(request, template, context)
-
-    else:
-        raise PermissionDenied

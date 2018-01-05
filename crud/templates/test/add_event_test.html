@@ -16,38 +16,31 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Validation de 3 familles de formulaires distincts</h1>
-
-
     <div id="services" class="row">
         <div class="col-sm-12 col-md-12">
 
+            <h1>Ajouter un événement</h1>
 
             <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <h2>Topic form</h2>
-                {%  for form in topic_forms %}
-                    {% if form.errors %}
-                        <p> {% bootstrap_alert "Merci de corriger les topics" alert_type='warning' %} </p>
-                    {% endif %}
+                {% if topic_error %}
+                    <p> {% bootstrap_alert "Sélectionner un seul topic" alert_type='warning' %} </p>
+                {% endif %}
+                {% include "crud/topic_forms_template.html" %}
 
-                    {% bootstrap_form form %}
-                {% endfor %}
 
                 <h2>Event form</h2>
                 {% bootstrap_form event_form %}
 
-                <h2>Here is dates formset</h2>
-                {{ single_occurrence_formset.management_form }}
-                {% for form in single_occurrence_formset %}
-                    <h3>Date n°{{forloop.counter}}</h3>
-                        {% bootstrap_form form %}
-                {% endfor %}
+                <h2>Occurrences form</h2>
+                {% if occurrence_error %}
+                    <p> {% bootstrap_alert "Merci de sélectionner un unique type d'occurrences" alert_type='warning' %} </p>
+                {% endif %}
+                {% include "crud/occurrences_form_template.html" %}
 
-                <h2>Here is multiple_occurrence form</h2>
-                {% bootstrap_form multiple_occurrence_form %}
-
+                </br>
                 {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
             </form>
 

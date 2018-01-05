@@ -120,22 +120,15 @@ class EventTypeByTopicForm(forms.Form):
 
         # need to have a prefix in order to properly select forms
         self.prefix = topic.name
+        self.href = '#' + self.prefix
 
         self.fields['event_type'] = forms.ModelChoiceField(
             queryset=EventType.objects.filter(topic=topic),
-            label=self.topic.name,
+            label="Catégorie",
             required=False,
             widget=forms.widgets.Select
             )
 
-    def clean(self):
-        """ if event_type field is blank, unvalid the form"""
-        cleaned_data = super(EventTypeByTopicForm, self).clean()
-
-        if not cleaned_data['event_type']:
-            raise forms.ValidationError("Sélectionner la catégorie")
-
-        return self.cleaned_data
 
 # ==============================================================================
 # Specified manager function
@@ -250,10 +243,10 @@ class SingleOccurrenceForm(forms.Form):
         :param event:
         :return: end_time = start_time + 1h if end_time is None
         """
-        start_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('start_time'))
+        start_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('start_time'))
 
         if self.cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
-            end_time = datetime.combine(self.cleaned_data.get('date'), self.cleaned_data.get('end_time'))
+            end_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('end_time'))
         else:
             end_time = start_time + timedelta(hours=1)
 
