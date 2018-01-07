@@ -137,9 +137,6 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     # mixin parameters
     raise_exception = True
 
-    def get_form(self, form_class=form_class):
-        return form_class(topic=Event.event_type.topic, **self.get_form_kwargs())
-
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
         return get_object_or_404(Event, pk=pk)
@@ -160,7 +157,6 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
     model = Event
     template_name = 'crud/delete_event.html'
     success_url = reverse_lazy('core:event_planner_panel')
-
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')

@@ -24,6 +24,5 @@ urlpatterns = [
 
     # TODO: rewrite those views
     url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
-    #url(r'^nouvel_evenement$', NewEventView.as_view(), name="new_event"),
 
     ]
