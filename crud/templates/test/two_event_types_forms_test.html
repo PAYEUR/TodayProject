@@ -1,0 +1,34 @@
+{% extends 'crud/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Nouvel événement
+{% endblock %}
+
+{% block content %}
+    <h1>Ajouter un événement</h1>
+
+
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+
+            <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+            {% if error %}
+                <p> {% bootstrap_alert "Plus d'une catégorie ont été sélectionnées" alert_type='warning' %} </p>
+            {%  endif %}
+
+            {%  for form in topic_forms %}
+                {% bootstrap_form form %}
+            {% endfor %}
+
+                {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

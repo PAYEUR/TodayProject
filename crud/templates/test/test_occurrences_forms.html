@@ -1,0 +1,53 @@
+{% extends 'crud/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Nouvel événement
+{% endblock %}
+
+{% block base_extra_head %}
+    {{ multiple_occurrence_form.media }}
+    {{ formset.media }}
+{% endblock %}
+
+{% block content %}
+    <h1>Sélection des occurrences</h1>
+    <p>Sélectionner au moins une date ou bien une occurence multiple</p>
+
+
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+
+            <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if error %}
+                    <p> {% bootstrap_alert "Veuillez resélectionner les dates" alert_type='warning' %} </p>
+                {%  endif %}
+
+                <h2>Formset: une ou plusieurs dates</h2>
+                <p>Vérifier que la sélection d'une date est possible</p>
+                <p>Vérifier que la sélection de plusieurs dates est possible</p>
+                <p>Vérifier que la sélection d'une date et une occurrence multiple est impossible</p>
+                <p>Vérifier que la sélection de plusieurs dates et une occurrence multiple est impossible</p>
+                <p>Vérifier que la sélection d'aucune date et aucune ocurrence impossible</p>
+
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    <h3>Date n°{{forloop.counter}}</h3>
+                        {% bootstrap_form form %}
+                {% endfor %}
+
+                <h2>Here is multiple_occurrence form</h2>
+                {% bootstrap_form multiple_occurrence_form %}
+
+                {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
+
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

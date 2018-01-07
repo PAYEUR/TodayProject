@@ -7,8 +7,8 @@ from datetime import datetime, date, time
 from datetimewidget.widgets import TimeWidget
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
-from core import swingtime_settings
+# TODO remove this asap
+from crud import swingtime_settings
 from .models import EventType  #,City, Occurrence
 
 WEEKDAY_LONG = (
@@ -102,6 +102,8 @@ class IndexForm(forms.Form):
 
         return self.cleaned_data
 
+
+# TODO: remove this asap
 # -------------------------------------------------------------------------------
 def timeslot_options(
     interval=swingtime_settings.TIMESLOT_INTERVAL,

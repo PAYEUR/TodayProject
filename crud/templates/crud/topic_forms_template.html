@@ -1,0 +1,17 @@
+{% load bootstrap3 %}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for form in topic_forms %}
+    <li role="presentation" {% if forloop.first %} class="active" {% endif %}>
+        <a href={{form.href}} aria-controls={{form.prefix}} role="tab" data-toggle="tab">{{form.prefix}}</a
+    ></li>
+{% endfor %}
+</ul>
+
+<div class="tab-content">
+{% for form in topic_forms %}
+    <div role="tabpanel" {% if forloop.first %} class="tab-pane active" {% else %} class="tab-pane" {% endif %} id={{form.prefix}}>
+        {% bootstrap_form form %}
+    </div>
+{% endfor %}
+</div>

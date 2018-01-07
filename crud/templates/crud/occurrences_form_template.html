@@ -1,0 +1,43 @@
+{% load bootstrap3 %}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#single_occurrence" aria-controls="single_occurrence" role="tab" data-toggle="tab">Evénements ponctuels</a></li>
+    <li role="presentation"><a href="#multiple_occurrences" aria-controls="multiple_occurrences" role="tab" data-toggle="tab">Evénements récurrents</a></li>
+</ul>
+
+<div class="tab-content">
+
+    <div role="tabpanel" class="tab-pane active" id="single_occurrence">
+        {{ single_occurrence_formset.management_form }}
+        {% for form in single_occurrence_formset %}
+            {% if forloop.first %}
+                <h3>Date n°{{forloop.counter}}</h3>
+                {% bootstrap_form form %}
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
+                Ajouter une date
+            </button>
+
+            {% elif forloop.last %}
+            <div class="collapse" id="date{{forloop.counter}}">
+                <h3>Date n°{{forloop.counter}}</h3>
+                {% bootstrap_form form %}
+            </div>
+
+            {% else %}
+            <div class="collapse" id="date{{forloop.counter}}">
+                <h3>Date n°{{forloop.counter}}</h3>
+                {% bootstrap_form form %}
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
+                Ajouter une date
+            </button>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="multiple_occurrences">
+        {{ multiple_occurrence_formset.management_form }}
+        {% for form in multiple_occurrence_formset %}
+                {% bootstrap_form form %}
+        {% endfor %}
+    </div>
+</div>

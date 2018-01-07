@@ -28,11 +28,6 @@ class EventPlannerPanelView(LoginRequiredMixin, ListView):
 
         return context
 
-
-class NewEventView(TemplateView):
-    template_name = 'crud/add_event_choice.html'
-
-
 # -----------------------------------------------------------------------------------------
 # Generic static views
 class IndexView(TemplateView):
