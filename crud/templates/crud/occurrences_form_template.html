@@ -7,27 +7,34 @@
 <div class="tab-content">
 
     <div role="tabpanel" class="tab-pane active" id="single_occurrence">
-        <h3>Here is dates formset</h3>
         {{ single_occurrence_formset.management_form }}
         {% for form in single_occurrence_formset %}
             {% if forloop.first %}
-                <h4>Date n°{{forloop.counter}}</h4>
+                <h3>Date n°{{forloop.counter}}</h3>
                 {% bootstrap_form form %}
-            {% else %}
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter}}" aria-expanded="false" aria-controls="date{{forloop.counter}}">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
                 Ajouter une date
             </button>
+
+            {% elif forloop.last %}
             <div class="collapse" id="date{{forloop.counter}}">
-                <h4>Date n°{{forloop.counter}}</h4>
+                <h3>Date n°{{forloop.counter}}</h3>
                 {% bootstrap_form form %}
+            </div>
+
+            {% else %}
+            <div class="collapse" id="date{{forloop.counter}}">
+                <h3>Date n°{{forloop.counter}}</h3>
+                {% bootstrap_form form %}
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
+                Ajouter une date
+            </button>
             </div>
             {% endif %}
         {% endfor %}
     </div>
 
     <div role="tabpanel" class="tab-pane" id="multiple_occurrences">
-
-        <h3>Here is multiple_occurrence formset</h3>
         {{ multiple_occurrence_formset.management_form }}
         {% for form in multiple_occurrence_formset %}
                 {% bootstrap_form form %}

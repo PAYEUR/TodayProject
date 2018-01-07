@@ -24,17 +24,17 @@
             <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <h2>Topic form</h2>
+                <h2>Thématique de l'annonce</h2>
                 {% if topic_error %}
                     <p> {% bootstrap_alert "Sélectionner un seul topic" alert_type='warning' %} </p>
                 {% endif %}
                 {% include "crud/topic_forms_template.html" %}
 
 
-                <h2>Event form</h2>
+                <h2>Description de l'événement</h2>
                 {% bootstrap_form event_form %}
 
-                <h2>Occurrences form</h2>
+                <h2>Occurrences</h2>
                 {% if occurrence_error %}
                     <p> {% bootstrap_alert "Merci de sélectionner un unique type d'occurrences" alert_type='warning' %} </p>
                 {% endif %}
