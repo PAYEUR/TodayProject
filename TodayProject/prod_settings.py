@@ -20,10 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '46x1@ythhko4@w%z4o749u7zub)qok!j6h1!-iizrgf6g(zaiu'
+with open('/etc/enjoytoday_secret_key.txt') as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 # Application definition
@@ -60,7 +61,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-#url corresponding only to navigation through cities
+
 ROOT_URLCONF = 'TodayProject.urls'
 
 TEMPLATES = [
@@ -77,8 +78,6 @@ TEMPLATES = [
                 # added :
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.cities_list',
-                #'TodayProject.context_processors.current_city',
-                #'TodayProject.context_processors.topic_sidebar',
 
             ],
         },
@@ -154,4 +153,4 @@ EASY_MAPS_CENTER = (48.853, 2.35)
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
 
-ALLOWED_HOSTS = ['127.0.0.1:8000']
+ALLOWED_HOSTS = ['enjoytoday.payeur.eu']
