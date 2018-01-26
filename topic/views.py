@@ -23,6 +23,8 @@ if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
 def index(request, topic_name, city_slug, template='topic/research.html'):
     """
     :param request:
+    :param topic_name: name of the considered topic
+    :param city_slug: slug of the current city
     :param template:
     :return: home template with index form
     """
@@ -134,8 +136,8 @@ class DateList(ListView):
     template_name = 'topic/sorted_events.html'
     context_object_name = 'sorted_occurrences'
 
+    # see https://docs.djangoproject.com/fr/2.0/topics/class-based-views/generic-display/
     def get_queryset(self):
-        # queryset = super(DateList, self).get_context_data()
         self.current_location = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
         self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
@@ -180,7 +182,8 @@ class DateList(ListView):
 def today_all_events(request, **kwargs):
     start_time = datetime.combine(date.today(), time.min)
     end_time = datetime.combine(date.today(), time.max)
-    dic = utils.url_all_events_dict(start_time, end_time)
+    topic = Topic.objects.get(name=kwargs['topic_name'])
+    dic = utils.url_all_events_dict(topic, start_time, end_time)
     kwargs = dict(dic, **kwargs)
     return DateList.as_view()(request, **kwargs)
 
@@ -188,7 +191,8 @@ def today_all_events(request, **kwargs):
 def tomorrow_events(request, **kwargs):
     start_time = utils.tomorrow_morning()
     end_time = utils.tomorrow_evening()
-    dic = utils.url_all_events_dict(start_time, end_time)
+    topic = Topic.objects.get(name=kwargs['topic_name'])
+    dic = utils.url_all_events_dict(topic, start_time, end_time)
     kwargs = dict(dic, **kwargs)
     return DateList.as_view()(request, **kwargs)
 
@@ -196,7 +200,8 @@ def tomorrow_events(request, **kwargs):
 def coming_days_events(request, **kwargs):
     start_time = datetime.combine(date.today(), time.min)
     end_time = utils.end_of_next_days(duration=3)
-    dic = utils.url_all_events_dict(start_time, end_time)
+    topic = Topic.objects.get(name=kwargs['topic_name'])
+    dic = utils.url_all_events_dict(topic, start_time, end_time)
     kwargs = dict(dic, **kwargs)
     return DateList.as_view()(request, **kwargs)
 
@@ -238,6 +243,6 @@ def daily_events(request, year, month, day, **kwargs):
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, time.min)
     end_time = utils.construct_time(date_day, time.max)
-    dic = dict(utils.create_date_url_dict(start_time, end_time), d1)
+    dic = dict(utils.create_date_url_dict(start_time, end_time), **d1)
     kwargs = dict(dic, **kwargs)
     return DateList.as_view()(request, **kwargs)

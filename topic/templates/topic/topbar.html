@@ -10,10 +10,10 @@
 
 {% block topics %}
 
-    {% for t in topic_list %}
-          <li {% if t == topic %} class="active" {% endif %} >
-              <a href="{% url 'location:topic:index' city_slug=city.city_slug topic_name=topic.name %}">{{ topic.name|capfirst }}</a>
-          </li>
+    {% for topic in topic_list %}
+      <li {% if topic == current_topic %} class="active" {% endif %} >
+          <a href="{% url 'location:topic:index' city_slug=city.city_slug topic_name=topic.name %}">{{ topic.name|capfirst }}</a>
+      </li>
     {% endfor %}
 
 {% endblock %}

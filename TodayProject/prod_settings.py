@@ -25,10 +25,7 @@ with open('/etc/enjoytoday_secret_key.txt') as f:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-# https stuff
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# DEBUG = True
 
 # Application definition
 
@@ -39,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',

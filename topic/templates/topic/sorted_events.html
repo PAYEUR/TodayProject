@@ -33,7 +33,7 @@
     <div class="thumbnail" >
         <div class="row" >
             <div class="col-sm-12 col-md-6">
-                <a href = {% url  'location:topic:event_type_coming_days' city_slug=city.city_slug topic_name=topic.name event_type_id_string=event_type.pk %}>
+                <a href = "{# url  'location:topic:event_type_coming_days' city_slug=city.city_slug topic_name=topic.name event_type_id_string=event_type.pk #}">
                 <img src="{{ event_type.image.url }}" class="img-responsive" alt="{{event_type.label}}" />
                 </a>
             </div>

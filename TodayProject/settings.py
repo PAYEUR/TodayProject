@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
@@ -77,7 +76,7 @@ TEMPLATES = [
                 # added :
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.cities_list',
-                #'TodayProject.context_processors.current_city',
+                'TodayProject.context_processors.current_topic',
                 #'TodayProject.context_processors.topic_sidebar',
 
             ],
