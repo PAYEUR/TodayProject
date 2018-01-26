@@ -70,6 +70,7 @@ def index(request, topic_name, city_slug, template='topic/research.html'):
     context['form'] = form
     context['topic'] = topic
     context['city'] = city
+    context['current_topic'] = topic
 
     return render(request, template, context)
 
@@ -165,6 +166,7 @@ class DateList(ListView):
         # generic
         context['city'] = self.current_location
         context['topic'] = self.topic
+        context['current_topic'] = self.topic
         # side_bar
         context['all_event_type_list'] = EventType.objects.filter(topic=self.topic)
         # specific

@@ -76,7 +76,7 @@ TEMPLATES = [
                 # added :
                 'TodayProject.context_processors.topic_list',
                 'TodayProject.context_processors.cities_list',
-                'TodayProject.context_processors.current_topic',
+                #'TodayProject.context_processors.current_topic',
                 #'TodayProject.context_processors.topic_sidebar',
 
             ],
