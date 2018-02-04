@@ -92,6 +92,7 @@ def add_event(request,
 
                     # saving occurrence
                     # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+                    # TODO: doesnt work 02.04.2018
                     for form in occurrences_formset:
                         print(occurrences_formset)
                         if form.is_valid and form.cleaned_data:  # TODO: check the syntax and utility of this assertion

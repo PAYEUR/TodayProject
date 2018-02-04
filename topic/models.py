@@ -141,7 +141,7 @@ class Event(models.Model):
                                  default=None,
                                  )
 
-    #auto filled fields
+    # auto filled fields
     event_planner = models.ForeignKey(EnjoyTodayUser,
                                       on_delete=models.CASCADE,
                                       verbose_name='annonceur',

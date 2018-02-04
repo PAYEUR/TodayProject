@@ -101,7 +101,7 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(*args, **kws)
 
         self.fields['location'] = forms.ModelChoiceField(
-            City.objects.all(),
+            queryset=City.objects.all(),
             label='Ville',
         )
 
@@ -111,24 +111,26 @@ class EventForm(forms.ModelForm):
 class EventTypeByTopicForm(forms.Form):
     """
     Choosing event_types related to a topic. Need a topic as input data.
+    see https://docs.djangoproject.com/fr/2.0/topics/forms/formsets/#passing-custom-parameters-to-formset-forms
     """
 
-    # ---------------------------------------------------------------------------
-    def __init__(self, topic, *args, **kws):
-        super(EventTypeByTopicForm, self).__init__(*args, **kws)
+    event_type = forms.ModelChoiceField(queryset=EventType.objects.all(),
+                                        label="Catégorie",
+                                        required=True,
+                                        widget=forms.widgets.Select
+                                        )
 
-        self.topic = topic
+    # ---------------------------------------------------------------------------
+    def __init__(self, *args, **kws):
+        # see https://stackoverflow.com/questions/1697702/how-to-pass-initial-parameter-to-djangos-modelform-instance
+        topic = kws.pop('topic')
+        super(EventTypeByTopicForm, self).__init__(*args, **kws)
 
         # need to have a prefix in order to properly select forms
         self.prefix = topic.name
         self.href = '#' + self.prefix
 
-        self.fields['event_type'] = forms.ModelChoiceField(
-            queryset=EventType.objects.filter(topic=topic),
-            label="Catégorie",
-            required=False,
-            widget=forms.widgets.Select
-            )
+        self.fields['event_type'].queryset = EventType.objects.filter(topic=topic)
 
 
 # ==============================================================================
