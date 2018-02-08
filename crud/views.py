@@ -57,7 +57,7 @@ def add_event(request,
 
     if request.method == 'POST':
         # initialization
-        topic_forms = [EventTypeByTopicForm(topic, request.POST) for topic in Topic.objects.all()]
+        topic_forms = [EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all()]
         event_form = EventForm(request.POST, request.FILES)
         single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix="single")
         multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix="multiple")
@@ -109,10 +109,10 @@ def add_event(request,
         else:
             topic_forms_manager.error = True
             # reset forms
-            topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+            topic_forms = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
 
     else:
-        topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+        topic_forms = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
         event_form = EventForm()
         single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
         multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")

@@ -79,20 +79,14 @@ class EventTypeByTopicFormTest(TestCase):
         self.assertEqual(self.topic1, self.event_type1.topic)
         self.assertEqual(self.topic2, self.event_type2.topic)
 
-    # TODO: finish this
     def test_valid_data1(self):
         form = EventTypeByTopicForm(self.data1, topic=self.topic1)
-        print(form)
-        # the form is correctly constructed
-        #self.assertTrue(form.is_bound)
-        #elf.assertTrue(form.is_valid())
+        # need to call is_valid method in order to create form.cleaned_data attribute
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['event_type'], self.event_type1)
 
-    def test_valid_data2(self):
-        form = EventTypeByTopicForm(self.data2, topic=self.topic2)
-        print(form)
-
+    # depends on required parameter in event_type field
     def test_blank_data(self):
-        form = EventTypeByTopicForm(self.topic, {})
+        form = EventTypeByTopicForm({}, topic=self.topic1)
+        # print(form)
         self.assertFalse(form.is_valid())
-        print(form.errors)
-

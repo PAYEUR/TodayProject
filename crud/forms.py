@@ -114,9 +114,9 @@ class EventTypeByTopicForm(forms.Form):
     see https://docs.djangoproject.com/fr/2.0/topics/forms/formsets/#passing-custom-parameters-to-formset-forms
     """
 
-    event_type = forms.ModelChoiceField(queryset=EventType.objects.all(),
+    event_type = forms.ModelChoiceField(queryset=None,
                                         label="Catégorie",
-                                        required=True,
+                                        # required=False,
                                         widget=forms.widgets.Select
                                         )
 
@@ -126,11 +126,15 @@ class EventTypeByTopicForm(forms.Form):
         topic = kws.pop('topic')
         super(EventTypeByTopicForm, self).__init__(*args, **kws)
 
-        # need to have a prefix in order to properly select forms
-        self.prefix = topic.name
-        self.href = '#' + self.prefix
+        # reset queryset
+        queryset = EventType.objects.filter(topic=topic)
+        self.fields['event_type'].queryset = queryset
 
-        self.fields['event_type'].queryset = EventType.objects.filter(topic=topic)
+        # need to have a prefix in order to properly select forms
+        #self.prefix = topic.name
+        #self.href = '#' + self.prefix
+
+
 
 
 # ==============================================================================
