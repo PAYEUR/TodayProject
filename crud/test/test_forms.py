@@ -6,9 +6,7 @@ from django.test import TestCase
 from crud.forms import EventForm, EventTypeByTopicForm
 from topic.models import Topic, EventType, EnjoyTodayUser, Event
 from location.models import City
-from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
-import os
 
 
 # from http://test-driven-django-development.readthedocs.io/en/latest/05-forms.html
@@ -60,6 +58,7 @@ class EventFormTest(TestCase):
 
         # get the saved event object
         event2 = Event.objects.get(title="Titre")
+
         self.assertEqual(event, event2)
 
 
@@ -90,3 +89,14 @@ class EventTypeByTopicFormTest(TestCase):
         form = EventTypeByTopicForm({}, topic=self.topic1)
         # print(form)
         self.assertFalse(form.is_valid())
+
+
+#class SingleOccurrenceFormTest(TestCase):
+
+#class MultipleOccurrenceFormTest(TestCase):
+
+#class FormListManagerTest(TestCase):
+
+# integration test with 3 forms
+
+# then switch to view test...

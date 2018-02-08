@@ -130,11 +130,9 @@ class EventTypeByTopicForm(forms.Form):
         queryset = EventType.objects.filter(topic=topic)
         self.fields['event_type'].queryset = queryset
 
-        # need to have a prefix in order to properly select forms
-        #self.prefix = topic.name
-        #self.href = '#' + self.prefix
-
-
+        # TODO: fix this at the formset level
+        # self.prefix = topic.name
+        # self.href = '#' + self.prefix
 
 
 # ==============================================================================
