@@ -71,15 +71,16 @@ class EventTypeByTopicFormTest(TestCase):
         self.topic2 = Topic.objects.get(name='jobs')
         self.event_type1 = EventType.objects.get(label='Confession')
         self.event_type2 = EventType.objects.get(label='jardinage')
-        self.data1 = {'event_type': self.event_type1.pk}
-        self.data2 = {'event_type': self.event_type1.pk}
+        # pay attention to the prefix attribute within the form
+        self.key1 = str(self.topic1.name) + "-event_type"
+        self.data = {self.key1: self.event_type1.pk}
 
     def test_good_input_data(self):
         self.assertEqual(self.topic1, self.event_type1.topic)
         self.assertEqual(self.topic2, self.event_type2.topic)
 
-    def test_valid_data1(self):
-        form = EventTypeByTopicForm(self.data1, topic=self.topic1)
+    def test_valid_data_with_prefix(self):
+        form = EventTypeByTopicForm(self.data, topic=self.topic1)
         # need to call is_valid method in order to create form.cleaned_data attribute
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['event_type'], self.event_type1)
