@@ -180,8 +180,20 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        #initial=date.today,
-        label='Date',
+        label='Date de début',
+        widget=DateWidget(
+            options={
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
+                    },
+            usel10n=True,
+            bootstrap_version=3)
+        )
+
+    end_date = forms.DateField(
+        required=False,
+        label='Date de fin',
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -194,7 +206,6 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        #initial='14:00',
         label='Horaire de début',
         widget=TimeWidget(
             options={
@@ -206,7 +217,6 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=True,
-        #initial='22:30',
         label='Horaire de fin',
         widget=TimeWidget(
             options={
@@ -223,41 +233,43 @@ class SingleOccurrenceForm(forms.Form):
         """
         cleaned_data = super(SingleOccurrenceForm, self).clean()
         start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')  # [] if field is not filled
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
 
+        if not end_date:
+            end_date = start_date
+
+        # django uses "if" syntax instead of exception mechanism. See:
+        # https: // docs.djangoproject.com / fr / 2.0 / ref / forms / validation /
         if start_date and start_time and end_time:
 
-            start_time = datetime.combine(start_date, start_time)
-            end_time = datetime.combine(start_date, end_time)
+            start_datetime = datetime.combine(start_date, start_time)
+            end_datetime = datetime.combine(end_date, end_time)
             now = datetime.now()
 
-            # 1st condition
-            if start_time < now:
+            # 1st condition: invalid date
+            if start_datetime < now:
                 raise forms.ValidationError("Verifier que la date correspond")
 
-            # 2nd condition
-            if start_time > end_time or end_time < now:
+            # 2nd condition: invalid_time
+            if start_datetime > end_datetime:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-            return self.cleaned_data
+            else:
+                self.start_datetime = start_datetime
+                self.end_datetime = end_datetime
 
     def save(self, event):
         """
-        :param event:
-        :return: end_time = start_time + 1h if end_time is None
+        :param event: Event object
+        :return: Save event in DB linked with current occurrences and return event.
         """
-        start_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('start_time'))
-
-        if self.cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
-            end_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('end_time'))
-        else:
-            end_time = start_time + timedelta(hours=1)
 
         event.add_occurrences(
-            start_time,
-            end_time,
-            is_multiple=False,  # TODO: remove this feature
+            self.start_datetime,
+            self.end_datetime,
+            is_multiple=False,
         )
 
         return event
