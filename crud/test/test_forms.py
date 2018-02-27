@@ -234,34 +234,28 @@ class FormListManagerTest(TestCase):
         self.blank_form = MockForm()
         self.blank_formset = MockFormSet(blank_mock_formset_data)
 
-    def test_check_two_filled_forms(self):
+    def test_get_two_filled_forms(self):
         # 1 filled formset and 1 filled form
-        form_list_manager = FormsListManager()
-        forms_test_list = [self.filled_form, self.filled_formset]
-        form_list_manager.check_filled_forms(forms_test_list)
-        self.assertEqual(form_list_manager.filled_forms, forms_test_list)
+        form_list_manager = FormsListManager(self.filled_form, self.filled_formset)
+        self.assertEqual(form_list_manager.filled_forms, [self.filled_form, self.filled_formset])
 
-    def test_check_one_filled_forms(self):
+    def test_get_one_filled_forms(self):
         # 1 filled formset and 1 blank form
-        form_list_manager = FormsListManager()
-        form_list_manager.check_filled_forms([self.blank_form, self.filled_formset])
+        form_list_manager = FormsListManager(self.blank_form, self.filled_formset)
         self.assertEqual(form_list_manager.filled_forms, [self.filled_formset])
 
-    def test_check_zero_filled_forms(self):
+    def test_get_zero_filled_forms(self):
         # 1 blank formset and 1 blank form
-        form_list_manager = FormsListManager()
-        form_list_manager.check_filled_forms([self.blank_form, self.blank_formset])
+        form_list_manager = FormsListManager(self.blank_form, self.blank_formset)
         self.assertEqual(form_list_manager.filled_forms, [])
 
-    def test_only_one_form_is_filled1(self):
-        form_list_manager = FormsListManager()
-        form_list_manager.check_filled_forms([self.blank_formset, self.filled_formset])
-        self.assertTrue(form_list_manager.only_one_form_is_filled())
+    def test_get_filled_form_success(self):
+        form_list_manager = FormsListManager(self.blank_formset, self.filled_formset)
+        self.assertEqual(form_list_manager.filled_form, self.filled_formset)
 
-    def test_only_one_form_is_filled2(self):
-        form_list_manager = FormsListManager()
-        form_list_manager.check_filled_forms([self.filled_formset, self.filled_form])
-        self.assertFalse(form_list_manager.only_one_form_is_filled())
+    def test_get_filled_form_fail(self):
+        form_list_manager = FormsListManager(self.filled_formset, self.filled_form)
+        self.assertTrue(form_list_manager.filled_form is None)
 
 # integration test with 3 forms
 

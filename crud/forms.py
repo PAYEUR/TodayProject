@@ -142,31 +142,26 @@ class FormsListManager:
 
     """
 
-    def __init__(self):
-        self.filled_forms = []
-        self.filled_form = None
-        self.error = False
+    def __init__(self, *forms):
+        self.forms = forms
+        self.filled_forms = self.get_filled_forms()
+        self.filled_form = self.get_filled_form()
 
-    def check_filled_forms(self, forms):
+    def get_filled_forms(self):
         """
             Check forms (resp. formsets) that have been modified and put them in filled_forms
         """
+        filled_forms = [f for f in self.forms if f is not None and f.has_changed()]
+        return filled_forms
 
-        filled_forms = [f for f in forms if f is not None and f.has_changed()]
-        self.filled_forms = filled_forms
-
-    def only_one_form_is_filled(self):
-        """
-            Assert if one single form (resp. formset) has been modified.
-        """
-        return len(self.filled_forms) == 1
-
-    def set_filled_form(self):
+    def get_filled_form(self):
         """
             If only one single form (resp formset) has been modified, put this form (resp formset) into filled_form.
         """
-        if self.only_one_form_is_filled():
-            self.filled_form = self.filled_forms[0]
+        if len(self.filled_forms) == 1:
+            return self.filled_forms[0]
+        else:
+            return None
 
 
 # ==============================================================================

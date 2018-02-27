@@ -41,7 +41,9 @@
                 {% include "crud/occurrences_form_template.html" %}
 
                 </br>
-                {% buttons submit='Valider' reset="Annuler" %}{% endbuttons %}
+                {% bootstrap_button "Valider" button_type="submit" button_class="btn-success"%}
+                {% bootstrap_button "Annuler" button_type="reset" button_class="btn-danger"%}
+                </br>
             </form>
 
         </div>
