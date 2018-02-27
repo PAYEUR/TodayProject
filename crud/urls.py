@@ -11,4 +11,7 @@ urlpatterns = [
     #url(r'^evenement(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_occurrences, name="add_occurrences"),
     url(r'^modifier_occurrence(?P<occurrence_id>[0-9]+)$', views.UpdateOccurrence.as_view(), name="update_occurrence"),
     url(r'^supprimer_occurrence(?P<occurrence_id>[0-9]+)$', views.DeleteOccurrence.as_view(), name="delete_occurrence"),
+
+    url(r'^test_add$', test_views.add_event_test2, name="test4"),
+url(r'^two_event_types_test$', test_views.two_event_types_test, name="test1"),
     ]

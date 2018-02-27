@@ -44,9 +44,8 @@ def add_event(request,
     MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm,
                                                 extra=0,
                                                 min_num=1,
-                                                max_num=1,
                                                 validate_min=True,
-                                                validate_max=True)
+                                                )
 
     occurrence_error = False
     topic_error = False
@@ -55,27 +54,27 @@ def add_event(request,
 
     if request.method == 'POST':
         # initialization
-        topic_forms = [EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all()]
         event_form = EventForm(request.POST, request.FILES)
 
-        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix="single")
-        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix="multiple")
+        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix='multiple_occurrence')
 
-        topic_forms_manager = FormsListManager(topic_forms)
+        topic_forms = (EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all())
+        topic_forms_manager = FormsListManager(*topic_forms)
         occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
 
         # reset forms if needed
         if not topic_forms_manager.filled_form:
             topic_error = True
-            topic_forms = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
+            topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
 
         if not occurrences_forms_manager.filled_form:
             occurrence_error = True
-            single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
-            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
+            single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
 
         # validation
-        if occurrences_forms_manager.filled_form.is_valid() and \
+        elif occurrences_forms_manager.filled_form.is_valid() and \
                 topic_forms_manager.filled_form.is_valid() and \
                 event_form.is_valid():
 
@@ -87,22 +86,21 @@ def add_event(request,
 
             # saving occurrence
             # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
-            # TODO: doesnt work 02.04.2018
             for form in occurrences_forms_manager.filled_form:
-                print(occurrences_forms_manager.filled_form)
-                if form.is_valid():
-                    print(form.cleaned_data)
-                    print("event_saved")
+                # has_changed doesn't take empty occurrences into account
+                # is_valid trigger clean method
+                if form.has_changed() and form.is_valid():
+                    form.save(event)
 
             return redirect('core:event_planner_panel')
 
     else:
-        topic_forms = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
+        topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
         event_form = EventForm()
-        single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
-        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
+        single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
 
-    context = {'topic_forms': topic_forms,
+    context = {'topic_forms': list(topic_forms),
                'event_form': event_form,
                'single_occurrence_formset': single_occurrence_formset,
                'multiple_occurrence_formset': multiple_occurrence_formset,

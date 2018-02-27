@@ -22,120 +22,30 @@ from topic.models import EnjoyTodayUser, Event
 
 def two_event_types_test(request, template='test/two_event_types_forms_test.html'):
 
-    manager = FormsListManager()
     only_one_form_error = False
 
     if request.method == 'POST':
-        topic_forms = [EventTypeByTopicForm(topic, request.POST) for topic in Topic.objects.all()]
+        print('post request')
+        topic_forms = (EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all())
 
-        manager.check_filled_forms(topic_forms)
+        manager = FormsListManager(*topic_forms)
 
-        if manager.only_one_form_is_filled():
-            manager.set_filled_form()
-            filled_form = manager.filled_form
-            msg1 = "only one form is valid"
-
-            if filled_form.is_valid():
-                event_type = filled_form.cleaned_data['event_type']
-                msg2 = "filled_form is valid"
-
-                return HttpResponse(msg1 + " AND " + msg2 + " AND " + "label : " + event_type.label)
-
-        else:
-            # flush all if more than one form has been filled
-            topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+        if not manager.filled_form:
+            print("not only one form is valid")
             only_one_form_error = True
+            topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+
+        elif manager.filled_form.is_valid():
+            print("first if triggered")
+            event_type = manager.filled_form.cleaned_data['event_type']
+            msg2 = "filled_form is valid"
+            return HttpResponse(msg2 + " AND " + "label : " + event_type.label)
 
     else:
-        topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+        topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
 
-    context = {'topic_forms': topic_forms,
+    context = {'topic_forms': list(topic_forms),
                'error': only_one_form_error,
-               }
-
-    return render(request, template, context)
-
-
-def occurrences_test(request, template='test/test_occurrences_forms.html'):
-
-    manager = FormsListManager()
-    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm, extra=1, min_num=1, validate_min=True)
-
-    if request.method == 'POST':
-        dates_formset = SingleOccurrenceFormSet(request.POST)
-        multiple_occurrence_form = MultipleOccurrenceForm(request.POST)
-
-        manager.check_filled_forms([dates_formset, multiple_occurrence_form])
-
-        if manager.only_one_form_is_filled():
-            manager.set_filled_form()
-            filled_form = manager.filled_form
-            msg1 = "only one form has been filled"
-
-            if filled_form.is_valid():
-                # valid_form.save()
-                msg2 = "the date is correct"
-                return HttpResponse(msg1 + " AND " + msg2)
-
-            else:
-                return HttpResponse(msg1 + " but date not correct")
-
-        else:
-            # flush all if more than one form has been filled
-            dates_formset = SingleOccurrenceFormSet()
-            multiple_occurrence_form = MultipleOccurrenceForm()
-            manager.error = True
-
-    else:
-        dates_formset = SingleOccurrenceFormSet()
-        multiple_occurrence_form = MultipleOccurrenceForm()
-
-    context = {'formset': dates_formset,
-               'multiple_occurrence_form': multiple_occurrence_form,
-               'error': manager.error,
-               }
-
-    return render(request, template, context)
-
-
-def test_occurrences_as_formset(request, template='test/test_occurrences_as_formset.html'):
-
-    manager = FormsListManager()
-    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm, min_num=1, validate_min=True)
-    MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm, min_num=1, max_num=1, validate_min=True)
-
-    if request.method == 'POST':
-        dates_formset = SingleOccurrenceFormSet(request.POST)
-        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST)
-
-        manager.check_filled_forms([dates_formset, multiple_occurrence_formset])
-
-        if manager.only_one_form_is_filled():
-            manager.set_filled_form()
-            filled_form = manager.filled_form
-            msg1 = "only one form has been filled"
-
-            if filled_form.is_valid():
-                # valid_form.save()
-                msg2 = "the date is correct"
-                return HttpResponse(msg1 + " AND " + msg2)
-
-            else:
-                return HttpResponse(msg1 + " but date not correct")
-
-        else:
-            # flush all if more than one form has been filled
-            dates_formset = SingleOccurrenceFormSet()
-            multiple_occurrence_formset = MultipleOccurrenceFormSet()
-            manager.error = True
-
-    else:
-        dates_formset = SingleOccurrenceFormSet()
-        multiple_occurrence_formset = MultipleOccurrenceFormSet()
-
-    context = {'dates_formset': dates_formset,
-               'multiple_occurrence_formset': multiple_occurrence_formset,
-               'error': manager.error,
                }
 
     return render(request, template, context)
@@ -244,6 +154,105 @@ def add_event_test(request,
                'multiple_occurrence_formset': multiple_occurrence_formset,
                'topic_error': topic_forms_manager.error,
                'occurrence_error': occurrences_forms_manager.error,
+               }
+
+    return render(request, template, context)
+
+
+@login_required(login_url='connection:login')
+def add_event_test2(request,
+              # number_of_extra_dates_forms,
+              template='test/add_event_test.html'
+              ):
+    """
+    # number of dates: number of extra dates forms to display
+    Testing one single form to insert data in database. One single template and one single view.
+    The form consists in 3 part:
+    1) first block given by the topic and corresponding event_types
+    2) second block given by commons event characteristics (image...)
+    3) third block given by the kind of occurrences (single, multiples or dates).
+
+    """
+
+    # initiating event stuff
+    event_planner = EnjoyTodayUser.objects.get(user=request.user)
+
+    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm,
+                                              min_num=1,
+                                              extra=9,  # or number_of_extra_dates_forms
+                                              validate_min=True)
+
+    MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm,
+                                                extra=0,
+                                                min_num=1,
+                                                #max_num=1,
+                                                validate_min=True,
+                                                #validate_max=True
+                                                )
+
+    occurrence_error = False
+    topic_error = False
+
+    # -----------------------------------------------------------
+    if request.method == 'POST':
+        print("post request")
+        # initialization
+        event_form = EventForm(request.POST, request.FILES)
+
+        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix='multiple_occurrence')
+
+        topic_forms = (EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all())
+        topic_forms_manager = FormsListManager(*topic_forms)
+        occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
+
+        # reset forms if needed
+        if not topic_forms_manager.filled_form:
+            topic_error = True
+            topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+
+        if not occurrences_forms_manager.filled_form:
+            occurrence_error = True
+            single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+
+        # validation
+        elif occurrences_forms_manager.filled_form.is_valid() and \
+                topic_forms_manager.filled_form.is_valid() and \
+                event_form.is_valid():
+
+            # saving event
+            event = event_form.save(commit=False)
+            event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
+            event.event_planner = event_planner
+            event.save()
+
+            # saving occurrence
+            # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+            print(len(occurrences_forms_manager.filled_form))
+            for form in occurrences_forms_manager.filled_form:
+                print("I see a form")
+                if form.has_changed() and form.is_valid():  # to trigger the clean method
+                    form.save(event)
+                    print(form.cleaned_data)
+                    print("event_saved")
+
+            return redirect('core:event_planner_panel')
+
+
+    else:
+        print("non post request")
+        topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+        event_form = EventForm()
+        single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+
+    context = {'topic_forms': list(topic_forms),
+               'event_form': event_form,
+               'single_occurrence_formset': single_occurrence_formset,
+               'multiple_occurrence_formset': multiple_occurrence_formset,
+               'topic_error': topic_error,
+               'occurrence_error': occurrence_error,
                }
 
     return render(request, template, context)

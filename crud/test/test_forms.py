@@ -97,7 +97,7 @@ class EventTypeByTopicFormTest(TestCase):
     def test_blank_data(self):
         form = EventTypeByTopicForm({}, topic=self.topic1)
         # print(form)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
 
 class SingleOccurrenceFormTest(TestCase):
@@ -107,10 +107,10 @@ class SingleOccurrenceFormTest(TestCase):
     def setUp(self):
 
         self.data = {
-            'single_occurrence-start_date': date.today() + timedelta(days=1),
-            'single_occurrence-end_date': date.today() + timedelta(days=2),
-            'single_occurrence-start_time': time(hour=14, minute=25),
-            'single_occurrence-end_time': time(hour=15, minute=25),
+            'start_date': date.today() + timedelta(days=1),
+            'end_date': date.today() + timedelta(days=2),
+            'start_time': time(hour=14, minute=25),
+            'end_time': time(hour=15, minute=25),
         }
 
     def test_valid_data(self):
@@ -122,7 +122,7 @@ class SingleOccurrenceFormTest(TestCase):
         :return: check that start_time < now raises a ValidationError
         """
         data = self.data.copy()
-        data['single_occurrence-end_date'] = data['single_occurrence-start_date'] - timedelta(days=5)
+        data['end_date'] = data['start_date'] - timedelta(days=5)
         form = SingleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
@@ -132,7 +132,7 @@ class SingleOccurrenceFormTest(TestCase):
         :return: check that start_time > end_time raises a ValidationError
         """
         data = self.data.copy()
-        data['single_occurrence-start_date'] += timedelta(days=5)
+        data['start_date'] += timedelta(days=5)
         form = SingleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
@@ -156,11 +156,11 @@ class MultipleOccurrenceFormTest(TestCase):
     def setUp(self):
 
         self.data = {
-            'multiple_occurrence-start_date': date.today() + timedelta(days=1),
-            'multiple_occurrence-end_date': date.today() + timedelta(days=2),
-            'multiple_occurrence-start_time': time(hour=8, minute=25),
-            'multiple_occurrence-end_time': time(hour=9, minute=25),
-            'multiple_occurrence-week_days': [1, 2]
+            'start_date': date.today() + timedelta(days=1),
+            'end_date': date.today() + timedelta(days=2),
+            'start_time': time(hour=8, minute=25),
+            'end_time': time(hour=9, minute=25),
+            'week_days': [1, 2]
         }
 
     def test_valid_data(self):
@@ -172,7 +172,7 @@ class MultipleOccurrenceFormTest(TestCase):
         :return: check that start_time < now raises a ValidationError
         """
         data = self.data.copy()
-        data['multiple_occurrence-end_date'] = data['multiple_occurrence-start_date'] - timedelta(days=5)
+        data['end_date'] = data['start_date'] - timedelta(days=5)
         form = MultipleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
@@ -182,17 +182,17 @@ class MultipleOccurrenceFormTest(TestCase):
         :return: check that start_time > end_time raises a ValidationError
         """
         data = self.data.copy()
-        data['multiple_occurrence-start_date'] += timedelta(days=5)
+        data['start_date'] += timedelta(days=5)
         form = MultipleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
 
     def test_invalid_week_days(self):
         data = self.data.copy()
-        data['multiple_occurrence-week_days'] = [18]
+        data['week_days'] = [18]
         form = MultipleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
-        data['multiple_occurrence-week_days'] = ['foo']
+        data['week_days'] = ['foo']
         form = MultipleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
 
@@ -256,6 +256,93 @@ class FormListManagerTest(TestCase):
     def test_get_filled_form_fail(self):
         form_list_manager = FormsListManager(self.filled_formset, self.filled_form)
         self.assertTrue(form_list_manager.filled_form is None)
+
+
+class EventTypeByTopicFormListManagerTest(TestCase):
+
+    fixtures = ['data_test.json']
+
+    def setUp(self):
+        self.topic1 = Topic.objects.get(name='spi')
+        self.topic2 = Topic.objects.get(name='jobs')
+        self.event_type1 = EventType.objects.get(label='Confession')
+        self.event_type2 = EventType.objects.get(label='jardinage')
+        self.key1 = str(self.topic1.name) + "-event_type"
+        self.data1 = {self.key1: self.event_type1.pk}
+        self.key2 = str(self.topic2.name) + "-event_type"
+        self.data2 = {self.key2: self.event_type2.pk}
+        self.data3 = dict(self.data1, **self.data2)
+
+    def test_two_forms(self):
+        form1 = EventTypeByTopicForm(self.data1, topic=self.topic1)
+        form2 = EventTypeByTopicForm(self.data2, topic=self.topic2)
+        form_list_manager = FormsListManager(form1, form2)
+        self.assertTrue(form_list_manager.filled_form is None)
+
+    def test_all_forms(self):
+        topic_forms = (EventTypeByTopicForm(self.data3, topic=topic) for topic in Topic.objects.all())
+        form_list_manager = FormsListManager(*topic_forms)
+        self.assertTrue(form_list_manager.filled_form is None)
+
+
+class OccurrenceFormListManagerTest(TestCase):
+
+    def setUp(self):
+        self.multi_formset_data = {
+            'multiple_occurrence-TOTAL_FORMS': '1',
+            'multiple_occurrence-INITIAL_FORMS': '1',
+            'multiple_occurrence-MIN_NUM_FORMS': '1',
+            'multiple_occurrence-0-start_date': date.today() + timedelta(days=1),
+            'multiple_occurrence-0-end_date': date.today() + timedelta(days=2),
+            'multiple_occurrence-0-start_time': time(hour=8, minute=25),
+            'multiple_occurrence-0-end_time': time(hour=9, minute=25),
+            'multiple_occurrence-0-week_days': [1, 2]
+            }
+
+        self.single_formset_data = {
+            'single_occurrence-TOTAL_FORMS': '10',
+            'single_occurrence-INITIAL_FORMS': '1',
+            'single_occurrence-MIN_NUM_FORMS': '1',
+            'single_occurrence-0-start_date': date.today() + timedelta(days=1),
+            'single_occurrence-0-end_date': date.today() + timedelta(days=2),
+            'single_occurrence-0-start_time': time(hour=14, minute=25),
+            'single_occurrence-0-end_time': time(hour=15, minute=25),
+            }
+
+        self.single_formset_empty_data = {
+            'single_occurrence-TOTAL_FORMS': '10',
+            'single_occurrence-INITIAL_FORMS': '1',
+            'single_occurrence-MIN_NUM_FORMS': '1',
+            }
+
+        SingleOccurrenceFormSet = forms.formset_factory(SingleOccurrenceForm,
+                                                        min_num=1,
+                                                        extra=9,  # or number_of_extra_dates_forms
+                                                        validate_min=True)
+
+        MultipleOccurrenceFormSet = forms.formset_factory(MultipleOccurrenceForm,
+                                                          extra=0,
+                                                          min_num=1,
+                                                          max_num=1,
+                                                          validate_min=True,
+                                                          validate_max=True
+                                                          )
+
+        self.single_formset = SingleOccurrenceFormSet(self.single_formset_data,
+                                                      prefix='single_occurrence')
+        self.single_empty_formset = SingleOccurrenceFormSet(self.single_formset_empty_data,
+                                                            prefix='single_occurrence')
+        self.multi_formset = MultipleOccurrenceFormSet(self.multi_formset_data,
+                                                       prefix='multiple_occurrence')
+
+    def test_one_filled_form(self):
+        occurrences_forms_manager = FormsListManager(self.single_empty_formset, self.multi_formset)
+        self.assertTrue(occurrences_forms_manager.filled_form.is_valid())
+
+    def test_two_filled_form(self):
+        occurrences_forms_manager = FormsListManager(self.single_formset, self.multi_formset)
+        self.assertTrue(occurrences_forms_manager.filled_form is None)
+
 
 # integration test with 3 forms
 

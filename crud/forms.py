@@ -116,7 +116,7 @@ class EventTypeByTopicForm(forms.Form):
 
     event_type = forms.ModelChoiceField(queryset=None,
                                         label="Catégorie",
-                                        # required=False,
+                                        required=False,
                                         widget=forms.widgets.Select
                                         )
 
@@ -173,8 +173,6 @@ class SingleOccurrenceForm(forms.Form):
 
     """
     # ==========================================================================
-    prefix = 'single_occurrence'
-
     start_date = forms.DateField(
         required=True,
         label='Date de début',
@@ -275,8 +273,6 @@ class MultipleOccurrenceForm(forms.Form):
     """
     Complex occurrences form
     """
-
-    prefix = 'multiple_occurrence'
 
     # ----------------------------------------------------------------------------
     # fields
