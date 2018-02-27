@@ -178,6 +178,8 @@ class SingleOccurrenceForm(forms.Form):
 
     """
     # ==========================================================================
+    prefix = 'single_occurrence'
+
     start_date = forms.DateField(
         required=True,
         label='Date de début',
@@ -246,10 +248,9 @@ class SingleOccurrenceForm(forms.Form):
 
             start_datetime = datetime.combine(start_date, start_time)
             end_datetime = datetime.combine(end_date, end_time)
-            now = datetime.now()
 
             # 1st condition: invalid date
-            if start_datetime < now:
+            if start_datetime < datetime.now():
                 raise forms.ValidationError("Verifier que la date correspond")
 
             # 2nd condition: invalid_time
@@ -280,9 +281,12 @@ class MultipleOccurrenceForm(forms.Form):
     Complex occurrences form
     """
 
-    # frequency
-    ## hour
-    starting_hour = forms.TimeField(
+    prefix = 'multiple_occurrence'
+
+    # ----------------------------------------------------------------------------
+    # fields
+
+    start_time = forms.TimeField(
         label='Horaire de début',
         #initial='14:00',
         widget=TimeWidget(
@@ -292,7 +296,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ending_hour = forms.TimeField(
+    end_time = forms.TimeField(
         required=True,
         label='Horaire de fin',
         #initial='22:30',
@@ -303,8 +307,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ## date options
-    start_day = forms.DateField(
+    start_date = forms.DateField(
         required=True,
         label='A partir du',
         #initial=date.today,
@@ -318,7 +321,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    end_day = forms.DateField(
+    end_date = forms.DateField(
         required=True,
         label='Jusqu\'au',
         #initial=date(date.today().year, 12, 31),
@@ -332,38 +335,36 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ### weekly options
     week_days = MultipleIntegerField(
         WEEKDAY_LONG,
         label='Jours de la semaine',
         widget=forms.CheckboxSelectMultiple
     )
 
-    prefix = 'multiple_occurrence'
-
+    # -----------------------------------------------------------------------------
     def clean(self):
         cleaned_data = super(MultipleOccurrenceForm, self).clean()
-        starting_hour = cleaned_data.get('starting_hour')
-        ending_hour = cleaned_data.get('ending_hour')
-        start_day = cleaned_data.get('start_day')
-        end_day = cleaned_data.get('end_day')
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        week_days = cleaned_data.get('week_days')
 
-        if starting_hour and ending_hour and start_day and end_day:
+        if start_time and end_time and start_date and end_date and week_days:
 
-            start_time = datetime.combine(start_day, starting_hour)
-            end_time = datetime.combine(end_day, ending_hour)
-            now = datetime.now()
+            start_datetime = datetime.combine(start_date, start_time)
+            end_datetime = datetime.combine(end_date, end_time)
 
             # 1st condition
-            if start_time > end_time or end_time < now:
+            if start_datetime > end_datetime or end_datetime < datetime.now():
                 raise forms.ValidationError("Verifier que la date correspond")
 
             # 2nd condition
-            if starting_hour > ending_hour:
+            if start_datetime > end_datetime:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-            self.cleaned_data['first_day_start_time'] = start_time
-            self.cleaned_data['first_day_end_time'] = end_time
+            self.start_datetime = start_datetime
+            self.end_datetime = end_datetime
 
             return self.cleaned_data
 
@@ -373,8 +374,8 @@ class MultipleOccurrenceForm(forms.Form):
         params = self._build_rrule_params()
 
         event.add_occurrences(
-            self.cleaned_data['first_day_start_time'],
-            self.cleaned_data['first_day_end_time'],
+            self.start_datetime,
+            self.end_datetime,
             is_multiple=True,
             **params
         )
@@ -386,7 +387,7 @@ class MultipleOccurrenceForm(forms.Form):
 
         data = self.cleaned_data
         params = dict(
-            until=data['end_day'],
+            until=data['end_date'],
             byweekday=data['week_days'],
             interval=1,
             freq=rrule.WEEKLY,

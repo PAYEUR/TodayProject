@@ -3,7 +3,11 @@ from __future__ import (unicode_literals, absolute_import,
                         print_function, division)
 
 from django.test import TestCase
-from crud.forms import EventForm, EventTypeByTopicForm, SingleOccurrenceForm
+from crud.forms import (EventForm,
+                        EventTypeByTopicForm,
+                        SingleOccurrenceForm,
+                        MultipleOccurrenceForm,
+                        )
 from topic.models import Topic, EventType, EnjoyTodayUser, Event, Occurrence
 from location.models import City
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -98,14 +102,12 @@ class SingleOccurrenceFormTest(TestCase):
     fixtures = ['data_test.json']
 
     def setUp(self):
-        self.start_time = time(hour=14, minute=25)
-        self.end_time = time(hour=15, minute=25)
 
         self.data = {
-            'start_date': date.today() + timedelta(days=1),
-            'end_date': date.today() + timedelta(days=2),
-            'start_time': self.start_time,
-            'end_time': self.end_time,
+            'single_occurrence-start_date': date.today() + timedelta(days=1),
+            'single_occurrence-end_date': date.today() + timedelta(days=2),
+            'single_occurrence-start_time': time(hour=14, minute=25),
+            'single_occurrence-end_time': time(hour=15, minute=25),
         }
 
     def test_valid_data(self):
@@ -117,7 +119,7 @@ class SingleOccurrenceFormTest(TestCase):
         :return: check that start_time < now raises a ValidationError
         """
         data = self.data.copy()
-        data['end_date'] = data['start_date'] - timedelta(days=5)
+        data['single_occurrence-end_date'] = data['single_occurrence-start_date'] - timedelta(days=5)
         form = SingleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
@@ -127,7 +129,7 @@ class SingleOccurrenceFormTest(TestCase):
         :return: check that start_time > end_time raises a ValidationError
         """
         data = self.data.copy()
-        data['start_date'] += timedelta(days=5)
+        data['single_occurrence-start_date'] += timedelta(days=5)
         form = SingleOccurrenceForm(data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors.as_data().keys())
@@ -135,28 +137,72 @@ class SingleOccurrenceFormTest(TestCase):
     def test_save(self):
         form = SingleOccurrenceForm(self.data)
         event = Event.objects.get(title="ConferenceTest")
-        # event.title = "Title"
-        # event.image = None
-        # event.description = "this is a description"
-        # event.event_type = EventType.objects.get(label='ConferenceTest')
-        # event.price = 18
-        # event.contact = "foo"
-        # event.address = "7, rue perronnet 75007 Paris"
-        # event.public_transport = "this is a bus"
-        # event.location = City.objects.get(city_slug="paris")
-        # event.event_planner = EnjoyTodayUser.objects.get(user__username='machin')
-        # event.created_at = datetime.today()
-        # event.image_main = None
 
         if form.is_valid():
-            saved_event = form.save(event)
+            form.save(event)
 
-        occurrence = Occurrence.objects.get(start_time=self.start_time,
-                                            end_time=self.end_time)
+        occurrence = Occurrence.objects.get(start_time=form.start_datetime,
+                                            end_time=form.end_datetime)
         self.assertEqual(occurrence.event, event)
 
 
-#class MultipleOccurrenceFormTest(TestCase):
+class MultipleOccurrenceFormTest(TestCase):
+
+    fixtures = ['data_test.json']
+
+    def setUp(self):
+
+        self.data = {
+            'multiple_occurrence-start_date': date.today() + timedelta(days=1),
+            'multiple_occurrence-end_date': date.today() + timedelta(days=2),
+            'multiple_occurrence-start_time': time(hour=8, minute=25),
+            'multiple_occurrence-end_time': time(hour=9, minute=25),
+            'multiple_occurrence-week_days': [1, 2]
+        }
+
+    def test_valid_data(self):
+        form = MultipleOccurrenceForm(self.data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_date(self):
+        """
+        :return: check that start_time < now raises a ValidationError
+        """
+        data = self.data.copy()
+        data['multiple_occurrence-end_date'] = data['multiple_occurrence-start_date'] - timedelta(days=5)
+        form = MultipleOccurrenceForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue('__all__' in form.errors.as_data().keys())
+
+    def test_invalid_time(self):
+        """
+        :return: check that start_time > end_time raises a ValidationError
+        """
+        data = self.data.copy()
+        data['multiple_occurrence-start_date'] += timedelta(days=5)
+        form = MultipleOccurrenceForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue('__all__' in form.errors.as_data().keys())
+
+    def test_invalid_week_days(self):
+        data = self.data.copy()
+        data['multiple_occurrence-week_days'] = [18]
+        form = MultipleOccurrenceForm(data)
+        self.assertFalse(form.is_valid())
+        data['multiple_occurrence-week_days'] = ['foo']
+        form = MultipleOccurrenceForm(data)
+        self.assertFalse(form.is_valid())
+
+    def test_save(self):
+        form = MultipleOccurrenceForm(self.data)
+        event = Event.objects.get(title="ConferenceTest")
+
+        if form.is_valid():
+            form.save(event)
+
+        occurrence = Occurrence.objects.get(start_time=form.start_datetime,
+                                            end_time=form.end_datetime)
+        self.assertEqual(occurrence.event, event)
 
 #class FormListManagerTest(TestCase):
 

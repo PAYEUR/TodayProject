@@ -117,11 +117,11 @@ class DateList(ListView):
         - event_type_id_string: string, id of requested events
         - start_year
         - start_month
-        - start_day
+        - start_date
         - start_hour_string
         - end_year
         - end_month
-        - end_day
+        - end_date
         - end_hour_string
 
     return context:
@@ -143,11 +143,11 @@ class DateList(ListView):
         self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
 
-        start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_day'])
+        start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_date'])
         start_hour = utils.construct_hour(self.kwargs['start_hour_string'])
         self.start_time = utils.construct_time(start_date, start_hour)
 
-        end_date = utils.construct_day(self.kwargs['end_year'], self.kwargs['end_month'], self.kwargs['end_day'])
+        end_date = utils.construct_day(self.kwargs['end_year'], self.kwargs['end_month'], self.kwargs['end_date'])
         end_hour = utils.construct_hour(self.kwargs['end_hour_string'])
         self.end_time = utils.construct_time(end_date, end_hour)
 

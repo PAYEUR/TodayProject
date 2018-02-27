@@ -31,7 +31,7 @@ class TestUtils(TestCase):
 
     def test_create_date_url_dict(self):
         date_url_dict = utils.create_date_url_dict(self.start_time, self.end_time)
-        self.assertEqual(date_url_dict['start_day'], '1')
+        self.assertEqual(date_url_dict['start_date'], '1')
 
     def test_create_id_string(self):
         object_list = EventType.objects.filter(topic=self.topic1)

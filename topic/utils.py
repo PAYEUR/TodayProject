@@ -49,11 +49,11 @@ def construct_hour_string(datetime_hour):
 def create_date_url_dict(start_time, end_time):
     return {'start_year': str(start_time.year),
             'start_month': str(start_time.month),
-            'start_day': str(start_time.day),
+            'start_date': str(start_time.day),
             'start_hour_string': "00h00",
             'end_year': str(end_time.year),
             'end_month': str(end_time.month),
-            'end_day': str(end_time.day),
+            'end_date': str(end_time.day),
             'end_hour_string': "23h59",
             }
 
