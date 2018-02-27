@@ -342,8 +342,3 @@ class OccurrenceFormListManagerTest(TestCase):
     def test_two_filled_form(self):
         occurrences_forms_manager = FormsListManager(self.single_formset, self.multi_formset)
         self.assertTrue(occurrences_forms_manager.filled_form is None)
-
-
-# integration test with 3 forms
-
-# then switch to view test...
