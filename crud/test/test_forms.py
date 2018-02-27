@@ -3,20 +3,23 @@ from __future__ import (unicode_literals, absolute_import,
                         print_function, division)
 
 from django.test import TestCase
+from django import forms
 from crud.forms import (EventForm,
                         EventTypeByTopicForm,
                         SingleOccurrenceForm,
                         MultipleOccurrenceForm,
+                        FormsListManager,
                         )
 from topic.models import Topic, EventType, EnjoyTodayUser, Event, Occurrence
 from location.models import City
 from django.core.files.uploadedfile import SimpleUploadedFile
-from datetime import datetime, date, timedelta, time
+from datetime import date, timedelta, time
 
 
 # from http://test-driven-django-development.readthedocs.io/en/latest/05-forms.html
 # https://docs.djangoproject.com/fr/1.11/topics/testing/tools/
 # testing file upload:
+
 class EventFormTest(TestCase):
 
     fixtures = ['data_test.json']
@@ -204,7 +207,61 @@ class MultipleOccurrenceFormTest(TestCase):
                                             end_time=form.end_datetime)
         self.assertEqual(occurrence.event, event)
 
-#class FormListManagerTest(TestCase):
+
+class MockForm(forms.Form):
+
+    mock_field = forms.CharField()
+
+
+class FormListManagerTest(TestCase):
+
+    def setUp(self):
+        mock_data = {'mock_field': "foo"}
+        filled_mock_formset_data = {
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+            'form-MIN_NUM_FORMS': '1',
+            'form-0-mock_field': "foo"
+            }
+        blank_mock_formset_data = {
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+            'form-MIN_NUM_FORMS': '1',
+            }
+        MockFormSet = forms.formset_factory(MockForm, min_num=1, validate_min=True)
+        self.filled_form = MockForm(mock_data)
+        self.filled_formset = MockFormSet(filled_mock_formset_data)
+        self.blank_form = MockForm()
+        self.blank_formset = MockFormSet(blank_mock_formset_data)
+
+    def test_check_two_filled_forms(self):
+        # 1 filled formset and 1 filled form
+        form_list_manager = FormsListManager()
+        forms_test_list = [self.filled_form, self.filled_formset]
+        form_list_manager.check_filled_forms(forms_test_list)
+        self.assertEqual(form_list_manager.filled_forms, forms_test_list)
+
+    def test_check_one_filled_forms(self):
+        # 1 filled formset and 1 blank form
+        form_list_manager = FormsListManager()
+        form_list_manager.check_filled_forms([self.blank_form, self.filled_formset])
+        self.assertEqual(form_list_manager.filled_forms, [self.filled_formset])
+
+    def test_check_zero_filled_forms(self):
+        # 1 blank formset and 1 blank form
+        form_list_manager = FormsListManager()
+        form_list_manager.check_filled_forms([self.blank_form, self.blank_formset])
+        self.assertEqual(form_list_manager.filled_forms, [])
+
+    def test_only_one_form_is_filled1(self):
+        form_list_manager = FormsListManager()
+        form_list_manager.check_filled_forms([self.blank_formset, self.filled_formset])
+        self.assertTrue(form_list_manager.only_one_form_is_filled())
+
+    def test_only_one_form_is_filled2(self):
+        form_list_manager = FormsListManager()
+        form_list_manager.check_filled_forms([self.filled_formset, self.filled_form])
+        self.assertFalse(form_list_manager.only_one_form_is_filled())
 
 # integration test with 3 forms
 

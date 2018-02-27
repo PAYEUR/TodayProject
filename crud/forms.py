@@ -27,7 +27,7 @@ MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
 # ===============================================================================
-# TOD0 old features, remove this
+# TODO old features, remove this
 
 def timeslot_options(
     interval=swingtime_settings.TIMESLOT_INTERVAL,
