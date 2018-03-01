@@ -132,3 +132,14 @@ class AddEventTest(TestCase):
 
             with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
                 get_object_or_404(Event, title="Random title hrgjzefaj")
+
+    def test_valid_data_logout(self):
+        self.client.logout()
+
+        with open("crud/test/adoration.jpg", 'rb') as image:
+
+            response = self.client.post('/nouvel_evenement',
+                                        dict(self.data, **{'image': image}),
+                                        )
+
+            self.assertRedirects(response, '/connexion/login?next=/nouvel_evenement')
