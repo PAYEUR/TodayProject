@@ -3,7 +3,9 @@ from __future__ import (unicode_literals, absolute_import,
                         print_function, division)
 
 from django.test import TestCase
-from topic.models import Topic, EventType, EnjoyTodayUser
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+from topic.models import Topic, EventType, Event
 from location.models import City
 from datetime import date, timedelta, time
 
@@ -17,12 +19,15 @@ class AddEventTest(TestCase):
     fixtures = ['data_test.json']
 
     def setUp(self):
+
+        self.client.login(username='machin', password='machinchose')
+
         # Event_data
         self.event_data = {
             # using SimpleUploadedFile for image field
-            'title': "Titre",
+            'title': "Random title hrgjzefaj",
             'description': "Description",
-            'price': '1',
+            'price': '4683',
             'contact': "Ceci est un contact",
             'address': "Ceci est une adresse",
             'public_transport': "Ceci est un métro",
@@ -74,17 +79,56 @@ class AddEventTest(TestCase):
                 super_dict.setdefault(k, []).append(v)
         self.data = super_dict
 
+        # multi invalid data
+        super_dict = {}
+        for d in [self.event_data,
+                  self.event_type_by_topic_data,
+                  self.single_formset_data,
+                  self.multi_formset_data]:
+            for k, v in d.iteritems():
+                super_dict.setdefault(k, []).append(v)
+        self.multi_invalid_data = super_dict
+
     def test_valid_data(self):
-        #TODO: fix this
+
         with open("crud/test/adoration.jpg", 'rb') as image:
-            self.client.login(username='machin', password='machinchose')
+
             response = self.client.post('/nouvel_evenement',
                                         dict(self.data, **{'image': image}),
                                         )
 
-            self.assertEqual(response.status_code, 200)
+            # raise Http404 error if event not saved
+            get_object_or_404(Event, title="Random title hrgjzefaj")
 
-    #def test_blank_data(self):
+            self.assertRedirects(response, '/tableau-de-bord')
 
+    def test_invalid_occurrence_data(self):
+        data = self.data.copy()
+        data['single_occurrence-0-start_date'] = date.today() + timedelta(days=5)
+        with open("crud/test/adoration.jpg", 'rb') as image:
+            self.client.post('/nouvel_evenement',
+                             dict(data, **{'image': image}),
+                             )
 
+            with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
+                get_object_or_404(Event, title="Random title hrgjzefaj")
 
+    def test_invalid_event_data(self):
+        data = self.data.copy()
+        data['description'] = ''
+        with open("crud/test/adoration.jpg", 'rb') as image:
+            self.client.post('/nouvel_evenement',
+                             dict(data, **{'image': image}),
+                             )
+
+            with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
+                get_object_or_404(Event, title="Random title hrgjzefaj")
+
+    def test_multi_occurrences_data(self):
+        with open("crud/test/adoration.jpg", 'rb') as image:
+            self.client.post('/nouvel_evenement',
+                             dict(self.multi_invalid_data, **{'image': image}),
+                             )
+
+            with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
+                get_object_or_404(Event, title="Random title hrgjzefaj")

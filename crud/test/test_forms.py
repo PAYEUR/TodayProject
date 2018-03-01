@@ -27,7 +27,7 @@ class EventFormTest(TestCase):
     def setUp(self):
         self.data = {
             # using SimpleUploadedFile for image field
-            'title': "Titre",
+            'title': "Random title iopurtaeoirea",
             'description': "Description",
             'price': '1',
             'contact': "Ceci est un contact",
@@ -65,7 +65,7 @@ class EventFormTest(TestCase):
         event.save()
 
         # get the saved event object
-        event2 = Event.objects.get(title="Titre")
+        event2 = Event.objects.get(title="Random title iopurtaeoirea")
 
         self.assertEqual(event, event2)
 
