@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^charte-post-d-evenement', CharteView.as_view(), name="charte"),
     url(r'^presentation-des-categories', ExplainCategoriesView.as_view(), name="explain_categories"),
 
-    # TODO: rewrite those views
+    # TODO: rewrite this view
     url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
 
     ]

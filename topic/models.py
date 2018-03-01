@@ -27,7 +27,7 @@ class Topic(models.Model):
     """
     name = models.CharField(verbose_name="Thématique",
                             max_length=50,
-                            default='catho')
+                            default='spi')
 
     class Meta:
         verbose_name = 'topic'
@@ -141,7 +141,7 @@ class Event(models.Model):
                                  default=None,
                                  )
 
-    #auto filled fields
+    # auto filled fields
     event_planner = models.ForeignKey(EnjoyTodayUser,
                                       on_delete=models.CASCADE,
                                       verbose_name='annonceur',

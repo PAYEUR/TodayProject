@@ -25,10 +25,7 @@ with open('/etc/enjoytoday_secret_key.txt') as f:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-# https stuff
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# DEBUG = True
 
 # Application definition
 
@@ -39,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
@@ -137,10 +133,10 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'topic/media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # modify this if not on the same computer to avoid error 500
 MEDIA_URL = '/media/'
 

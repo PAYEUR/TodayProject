@@ -27,6 +27,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^(?P<city_slug>[\w-]+)/', include('location.urls')),
 
-
     # media images deployment in development. Need change for production
     ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

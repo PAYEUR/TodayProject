@@ -33,14 +33,9 @@ def add_event(request,
 
     """
 
-    # intiating topics stuff
-    topic_forms_manager = FormsListManager()
-
     # initiating event stuff
     event_planner = EnjoyTodayUser.objects.get(user=request.user)
 
-    # initiating occurrences stuff
-    occurrences_forms_manager = FormsListManager()
     SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm,
                                               min_num=1,
                                               extra=9,  # or number_of_extra_dates_forms
@@ -49,79 +44,68 @@ def add_event(request,
     MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm,
                                                 extra=0,
                                                 min_num=1,
-                                                max_num=1,
                                                 validate_min=True,
-                                                validate_max=True)
+                                                )
+
+    occurrence_error = False
+    topic_error = False
 
     # -----------------------------------------------------------
 
     if request.method == 'POST':
         # initialization
-        topic_forms = [EventTypeByTopicForm(topic, request.POST) for topic in Topic.objects.all()]
         event_form = EventForm(request.POST, request.FILES)
-        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix="single")
-        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix="multiple")
+
+        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix='multiple_occurrence')
+
+        topic_forms = (EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all())
+        topic_forms_manager = FormsListManager(*topic_forms)
+        occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
+
+        # reset forms if needed
+        if not topic_forms_manager.filled_form:
+            topic_error = True
+            topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+
+        if not occurrences_forms_manager.filled_form:
+            occurrence_error = True
+            single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
 
         # validation
+        elif occurrences_forms_manager.filled_form.is_valid() and \
+                topic_forms_manager.filled_form.is_valid() and \
+                event_form.is_valid():
 
-        # checking multiple forms
-        topic_forms_manager.check_filled_forms(topic_forms)
-        occurrences_forms_manager.check_filled_forms([single_occurrence_formset, multiple_occurrence_formset])
+            # saving event
+            event = event_form.save(commit=False)
+            event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
+            event.event_planner = event_planner
+            event.save()
 
-        if topic_forms_manager.only_one_form_is_filled():
-            topic_forms_manager.set_filled_form()
+            # saving occurrence
+            # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+            for form in occurrences_forms_manager.filled_form:
+                # has_changed doesn't take empty occurrences into account
+                # is_valid trigger clean method
+                if form.has_changed() and form.is_valid():
+                    form.save(event)
 
-            if occurrences_forms_manager.only_one_form_is_filled():
-                occurrences_forms_manager.set_filled_form()
-                occurrences_formset = occurrences_forms_manager.filled_form
-
-                # validation of each form
-                if occurrences_formset.is_valid() and \
-                   topic_forms_manager.filled_form.is_valid() and \
-                   event_form.is_valid():
-
-                    # reset potential error messages
-                    occurrences_forms_manager.error = False
-                    topic_forms_manager.error = False
-
-                    # saving event
-                    event = event_form.save(commit=False)
-                    event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
-                    event.event_planner = event_planner
-                    event.save()
-
-                    # saving occurrence
-                    # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
-                    for form in occurrences_formset:
-                        print(occurrences_formset)
-                        if form.is_valid and form.cleaned_data:  # TODO: check the syntax and utility of this assertion
-                            print(form.cleaned_data)
-                            print("event_saved")
-
-                    return redirect('core:event_planner_panel')
-
-            else:
-                occurrences_forms_manager.error = True
-                single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
-                multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
-
-        else:
-            topic_forms_manager.error = True
-            # reset forms
-            topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+            return redirect('core:event_planner_panel')
 
     else:
-        topic_forms = [EventTypeByTopicForm(topic) for topic in Topic.objects.all()]
+        topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
         event_form = EventForm()
-        single_occurrence_formset = SingleOccurrenceFormSet(prefix="single")
-        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix="multiple")
+        single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
 
-    context = {'topic_forms': topic_forms,
+    context = {'topic_forms': list(topic_forms),
                'event_form': event_form,
                'single_occurrence_formset': single_occurrence_formset,
                'multiple_occurrence_formset': multiple_occurrence_formset,
-               'topic_error': topic_forms_manager.error,
-               'occurrence_error': occurrences_forms_manager.error,
+               'topic_error': topic_error,
+               'occurrence_error': occurrence_error,
                }
 
     return render(request, template, context)

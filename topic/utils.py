@@ -4,15 +4,6 @@ from .models import EventType
 
 # temporal useful functions
 # -------------------------------------------------------------------------------
-def time_delta_total_seconds(time_delta):
-    """
-    Calculate the total number of seconds represented by a 
-    ``datetime.timedelta`` object
-    
-    """
-    return time_delta.days * 3600 + time_delta.seconds
-
-
 def tomorrow_morning():
     return datetime.combine(date.today()+timedelta(days=+1), time.min)
 
@@ -58,11 +49,11 @@ def construct_hour_string(datetime_hour):
 def create_date_url_dict(start_time, end_time):
     return {'start_year': str(start_time.year),
             'start_month': str(start_time.month),
-            'start_day': str(start_time.day),
+            'start_date': str(start_time.day),
             'start_hour_string': "00h00",
             'end_year': str(end_time.year),
             'end_month': str(end_time.month),
-            'end_day': str(end_time.day),
+            'end_date': str(end_time.day),
             'end_hour_string': "23h59",
             }
 
@@ -80,8 +71,9 @@ def create_id_string(object_list):
     return '&'.join([str(thing.id) for thing in object_list])
 
 
-def url_all_events_dict(start_time, end_time):
-    d1 = {'event_type_id_string': create_id_string(EventType.objects.all())}
+def url_all_events_dict(topic, start_time, end_time):
+    object_list = EventType.objects.filter(topic=topic)
+    d1 = {'event_type_id_string': create_id_string(object_list)}
     d2 = create_date_url_dict(start_time, end_time)
     return dict(d1, **d2)
 

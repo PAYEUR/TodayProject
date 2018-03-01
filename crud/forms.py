@@ -27,7 +27,7 @@ MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
 # ===============================================================================
-# TOD0 old features, remove this
+# TODO old features, remove this
 
 def timeslot_options(
     interval=swingtime_settings.TIMESLOT_INTERVAL,
@@ -101,7 +101,7 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(*args, **kws)
 
         self.fields['location'] = forms.ModelChoiceField(
-            City.objects.all(),
+            queryset=City.objects.all(),
             label='Ville',
         )
 
@@ -111,24 +111,27 @@ class EventForm(forms.ModelForm):
 class EventTypeByTopicForm(forms.Form):
     """
     Choosing event_types related to a topic. Need a topic as input data.
+    see https://docs.djangoproject.com/fr/2.0/topics/forms/formsets/#passing-custom-parameters-to-formset-forms
     """
 
+    event_type = forms.ModelChoiceField(queryset=None,
+                                        label="Catégorie",
+                                        required=False,
+                                        widget=forms.widgets.Select
+                                        )
+
     # ---------------------------------------------------------------------------
-    def __init__(self, topic, *args, **kws):
+    def __init__(self, *args, **kws):
+        # see https://stackoverflow.com/questions/1697702/how-to-pass-initial-parameter-to-djangos-modelform-instance
+        topic = kws.pop('topic')
         super(EventTypeByTopicForm, self).__init__(*args, **kws)
 
-        self.topic = topic
+        # reset queryset
+        queryset = EventType.objects.filter(topic=topic)
+        self.fields['event_type'].queryset = queryset
 
-        # need to have a prefix in order to properly select forms
         self.prefix = topic.name
         self.href = '#' + self.prefix
-
-        self.fields['event_type'] = forms.ModelChoiceField(
-            queryset=EventType.objects.filter(topic=topic),
-            label="Catégorie",
-            required=False,
-            widget=forms.widgets.Select
-            )
 
 
 # ==============================================================================
@@ -139,31 +142,26 @@ class FormsListManager:
 
     """
 
-    def __init__(self):
-        self.filled_forms = []
-        self.filled_form = None
-        self.error = False
+    def __init__(self, *forms):
+        self.forms = forms
+        self.filled_forms = self.get_filled_forms()
+        self.filled_form = self.get_filled_form()
 
-    def check_filled_forms(self, forms):
+    def get_filled_forms(self):
         """
             Check forms (resp. formsets) that have been modified and put them in filled_forms
         """
+        filled_forms = [f for f in self.forms if f is not None and f.has_changed()]
+        return filled_forms
 
-        filled_forms = [f for f in forms if f is not None and f.has_changed()]
-        self.filled_forms = filled_forms
-
-    def only_one_form_is_filled(self):
-        """
-            Assert if one single form (resp. formset) has been modified.
-        """
-        return len(self.filled_forms) == 1
-
-    def set_filled_form(self):
+    def get_filled_form(self):
         """
             If only one single form (resp formset) has been modified, put this form (resp formset) into filled_form.
         """
-        if self.only_one_form_is_filled():
-            self.filled_form = self.filled_forms[0]
+        if len(self.filled_forms) == 1:
+            return self.filled_forms[0]
+        else:
+            return None
 
 
 # ==============================================================================
@@ -177,8 +175,20 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        #initial=date.today,
-        label='Date',
+        label='Date de début',
+        widget=DateWidget(
+            options={
+                    'todayHighlight': True,
+                    'weekStart': 1,
+                    'pickerPosition': 'top-left'
+                    },
+            usel10n=True,
+            bootstrap_version=3)
+        )
+
+    end_date = forms.DateField(
+        required=False,
+        label='Date de fin',
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -191,7 +201,6 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        #initial='14:00',
         label='Horaire de début',
         widget=TimeWidget(
             options={
@@ -203,7 +212,6 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=True,
-        #initial='22:30',
         label='Horaire de fin',
         widget=TimeWidget(
             options={
@@ -220,41 +228,42 @@ class SingleOccurrenceForm(forms.Form):
         """
         cleaned_data = super(SingleOccurrenceForm, self).clean()
         start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')  # [] if field is not filled
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
 
+        if not end_date:
+            end_date = start_date
+
+        # django uses "if" syntax instead of exception mechanism. See:
+        # https: // docs.djangoproject.com / fr / 2.0 / ref / forms / validation /
         if start_date and start_time and end_time:
 
-            start_time = datetime.combine(start_date, start_time)
-            end_time = datetime.combine(start_date, end_time)
-            now = datetime.now()
+            start_datetime = datetime.combine(start_date, start_time)
+            end_datetime = datetime.combine(end_date, end_time)
 
-            # 1st condition
-            if start_time < now:
+            # 1st condition: invalid date
+            if start_datetime < datetime.now():
                 raise forms.ValidationError("Verifier que la date correspond")
 
-            # 2nd condition
-            if start_time > end_time or end_time < now:
+            # 2nd condition: invalid_time
+            if start_datetime > end_datetime:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-            return self.cleaned_data
+            else:
+                self.start_datetime = start_datetime
+                self.end_datetime = end_datetime
 
     def save(self, event):
         """
-        :param event:
-        :return: end_time = start_time + 1h if end_time is None
+        :param event: Event object
+        :return: Save event in DB linked with current occurrences and return event.
         """
-        start_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('start_time'))
-
-        if self.cleaned_data.get('end_time') is not None:  # TODO: specs have to clarify this
-            end_time = datetime.combine(self.cleaned_data.get('start_date'), self.cleaned_data.get('end_time'))
-        else:
-            end_time = start_time + timedelta(hours=1)
 
         event.add_occurrences(
-            start_time,
-            end_time,
-            is_multiple=False,  # TODO: remove this feature
+            self.start_datetime,
+            self.end_datetime,
+            is_multiple=False,
         )
 
         return event
@@ -265,9 +274,10 @@ class MultipleOccurrenceForm(forms.Form):
     Complex occurrences form
     """
 
-    # frequency
-    ## hour
-    starting_hour = forms.TimeField(
+    # ----------------------------------------------------------------------------
+    # fields
+
+    start_time = forms.TimeField(
         label='Horaire de début',
         #initial='14:00',
         widget=TimeWidget(
@@ -277,7 +287,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ending_hour = forms.TimeField(
+    end_time = forms.TimeField(
         required=True,
         label='Horaire de fin',
         #initial='22:30',
@@ -288,8 +298,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ## date options
-    start_day = forms.DateField(
+    start_date = forms.DateField(
         required=True,
         label='A partir du',
         #initial=date.today,
@@ -303,7 +312,7 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    end_day = forms.DateField(
+    end_date = forms.DateField(
         required=True,
         label='Jusqu\'au',
         #initial=date(date.today().year, 12, 31),
@@ -317,38 +326,36 @@ class MultipleOccurrenceForm(forms.Form):
             bootstrap_version=3)
         )
 
-    ### weekly options
     week_days = MultipleIntegerField(
         WEEKDAY_LONG,
         label='Jours de la semaine',
         widget=forms.CheckboxSelectMultiple
     )
 
-    prefix = 'multiple_occurrence'
-
+    # -----------------------------------------------------------------------------
     def clean(self):
         cleaned_data = super(MultipleOccurrenceForm, self).clean()
-        starting_hour = cleaned_data.get('starting_hour')
-        ending_hour = cleaned_data.get('ending_hour')
-        start_day = cleaned_data.get('start_day')
-        end_day = cleaned_data.get('end_day')
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        week_days = cleaned_data.get('week_days')
 
-        if starting_hour and ending_hour and start_day and end_day:
+        if start_time and end_time and start_date and end_date and week_days:
 
-            start_time = datetime.combine(start_day, starting_hour)
-            end_time = datetime.combine(end_day, ending_hour)
-            now = datetime.now()
+            start_datetime = datetime.combine(start_date, start_time)
+            end_datetime = datetime.combine(end_date, end_time)
 
             # 1st condition
-            if start_time > end_time or end_time < now:
+            if start_datetime > end_datetime or end_datetime < datetime.now():
                 raise forms.ValidationError("Verifier que la date correspond")
 
             # 2nd condition
-            if starting_hour > ending_hour:
+            if start_datetime > end_datetime:
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
-            self.cleaned_data['first_day_start_time'] = start_time
-            self.cleaned_data['first_day_end_time'] = end_time
+            self.start_datetime = start_datetime
+            self.end_datetime = end_datetime
 
             return self.cleaned_data
 
@@ -358,8 +365,8 @@ class MultipleOccurrenceForm(forms.Form):
         params = self._build_rrule_params()
 
         event.add_occurrences(
-            self.cleaned_data['first_day_start_time'],
-            self.cleaned_data['first_day_end_time'],
+            self.start_datetime,
+            self.end_datetime,
             is_multiple=True,
             **params
         )
@@ -371,7 +378,7 @@ class MultipleOccurrenceForm(forms.Form):
 
         data = self.cleaned_data
         params = dict(
-            until=data['end_day'],
+            until=data['end_date'],
             byweekday=data['week_days'],
             interval=1,
             freq=rrule.WEEKLY,

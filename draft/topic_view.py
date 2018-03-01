@@ -62,7 +62,7 @@ def index2(request, topic_name, city_slug, template='topic/research.html'):
 #         self.topic = get_object_or_404(Topic, name=self.kwargs['topic_name'])
 #         self.event_type_list = utils.get_event_type_list(self.kwargs['event_type_id_string'])
 #
-#         start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_day'])
+#         start_date = utils.construct_day(self.kwargs['start_year'], self.kwargs['start_month'], self.kwargs['start_date'])
 #         start_hour = utils.construct_hour(self.kwargs['start_hour_string'])
 #         self.start_time = utils.construct_time(start_date, start_hour)
 #

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
+from draft import test_views
 from . import views
-from test import test_views
 
 app_name = 'crud'
 urlpatterns = [
