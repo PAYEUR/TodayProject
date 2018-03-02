@@ -1,35 +1,59 @@
-{% extends 'core/bootstrap3.html' %}
+<!DOCTYPE html>
+<html lang="fr">
 
 {% load bootstrap3 %}
 {% load static %}
 {% load imagekit %}
 
-{# make sure that childrens of this template don't call bootstrap3_extra_head #}
-{% block bootstrap3_extra_head %}
+<head>
+
+    <meta charset="utf-8">
+        <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="description"
+          content="{% block description %}
+                        Le moteur de recherche des activités proposées dans chaque ville.
+                    {% endblock %}">
+    <meta name="keywords"
+          content="{% block keywords %}
+                        Evénement, proposition, en ville, ce soir
+                    {% endblock %}">
+
+    <!-- CSS -->
+
+    <!-- Bootstrap -->
+    {% bootstrap_css %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    <!-- End Bootstrap -->
+
+    <!-- TodayProject -->
     <link href="{%  static 'core/base.css' %}" rel="stylesheet">
     <link href="{%  static 'core/topbar.css' %}" rel="stylesheet">
     <link href="{%  static 'core/footer.css' %}" rel="stylesheet">
     <link rel="icon" type="image/png" href="{% static 'core/logo_carre.png'%}" />
     <link href="{%  static 'core/jquery.cookiebar.css' %}" rel="stylesheet">
     <link href="{%  static 'core/font-awesome-4.7.0/css/font-awesome.min.css' %}"  rel="stylesheet">
-    {% block base_extra_head %}{% endblock %}
-{% endblock %}
+    <!-- End TodayProject -->
 
+    <!-- End CSS -->
 
-{% block title %}
-    (no content)
-{% endblock %}
+    <!-- SPECIAL CASES JAVASCRIPT --> {# see https://github.com/asaglimbeni/django-datetime-widget/issues/75 #}
+    <!-- Bootstrap -->
+    {% bootstrap_javascript jquery=1 %}
+    <!-- End Bootstrap -->
+    <!-- End SPECIAL CASES JAVASCRIPT -->
 
-{% block keywords %}
-    Evénement, proposition, en ville, ce soir
-{% endblock %}
+    {% block base_extra_head%}{% endblock %}
 
-{% block description %}
-    Le moteur de recherche des activités proposées dans chaque ville.
-{% endblock %}
+</head>
 
-{% block bootstrap3_content %}
-
+<body>
     {% block topbar %}
         {% include "core/topbar.html" %}
     {% endblock %}
@@ -51,27 +75,31 @@
     </div>
 
     {% block footer %}
-    {% include "core/footer.html" %}
+        {% include "core/footer.html" %}
     {% endblock %}
 
-{% endblock %}
+    <!-- JAVASCRIPT -->
 
-{% block bootstrap3_extra_script %}
+    <!-- Bootstrap -->
+    {# bootstrap_javascript jquery=1 #}
+    <!-- End Bootstrap -->
+
+    <!-- TodayProject -->
     <script type="text/javascript" src="{%  static 'core/jquery.cookiebar.js' %}"></script>
-    <script type="text/javascript">
-      $(document).ready(function(){
-         $.cookieBar({
-             message: 'En poursuivant la navigation vous acceptez les cookies',
-             acceptText: 'OK',
-             policyButton: true,
-             policyText: 'Conditions',
-             policyURL: '{% url 'core:cookies' %}',
-          {# dev purpose only #}
-             forceShow: false,
-             renewOnVisit: false
-
-         });
-      });
-    </script>
+    <script type="text/javascript" src="{%  static 'core/jquery.cookiebar_config.js' %}"></script>
     {% block base_extra_script %}{% endblock %}
-{% endblock %}
+    <!-- End TodayProject -->
+
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-NG96JD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NG96JD');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- End JAVASCRIPT -->
+</body>
+</html>

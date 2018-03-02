@@ -78,7 +78,7 @@ class EventTypeByTopicFormTest(TestCase):
         self.topic1 = Topic.objects.get(name='spi')
         self.topic2 = Topic.objects.get(name='jobs')
         self.event_type1 = EventType.objects.get(label='Confession')
-        self.event_type2 = EventType.objects.get(label='jardinage')
+        self.event_type2 = EventType.objects.get(label='Jardinage')
         # pay attention to the prefix attribute within the form
         self.key1 = str(self.topic1.name) + "-event_type"
         self.data = {self.key1: self.event_type1.pk}
@@ -160,7 +160,7 @@ class MultipleOccurrenceFormTest(TestCase):
             'end_date': date.today() + timedelta(days=2),
             'start_time': time(hour=8, minute=25),
             'end_time': time(hour=9, minute=25),
-            'week_days': [1, 2]
+            'week_days': [0, 1, 2, 3, 4, 5, 6]  # in order that today() is actually saved
         }
 
     def test_valid_data(self):
@@ -266,7 +266,7 @@ class EventTypeByTopicFormListManagerTest(TestCase):
         self.topic1 = Topic.objects.get(name='spi')
         self.topic2 = Topic.objects.get(name='jobs')
         self.event_type1 = EventType.objects.get(label='Confession')
-        self.event_type2 = EventType.objects.get(label='jardinage')
+        self.event_type2 = EventType.objects.get(label='Jardinage')
         self.key1 = str(self.topic1.name) + "-event_type"
         self.data1 = {self.key1: self.event_type1.pk}
         self.key2 = str(self.topic2.name) + "-event_type"
