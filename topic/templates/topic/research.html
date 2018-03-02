@@ -40,7 +40,7 @@
 
             <div class="col-md-4 col-sm-12" align="left">
                 <h2> Où ? </h2><br>
-                <a href="{{ city.get_absolute_url }}" role="button" class="btn btn-danger btn-lg">
+                <a href="{% url 'core:index' %}" role="button" class="btn btn-danger btn-lg">
                     <span class="glyphicon glyphicon-map-marker"></span>
                     {{ city.city_name }}
                 </a>
