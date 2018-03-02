@@ -48,7 +48,7 @@
                     <p role = presentation>Date de l'événement:</p>
                     <p role = presentation>
                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                        <a href="{% url 'topic:daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' %}">{{ occurrence.start_time|date:"l d F" }}</a>
+                        <a href="{# url 'location:topic:daily_events' occurrence.start_time|date:'Y' occurrence.start_time|date:'m' occurrence.start_time|date:'d' #}">{{ occurrence.start_time|date:"l d F" }}</a>
                     </p>
                     <p role = presentation>
                         <span class="glyphicon glyphicon-time" aria-hidden="true"></span>

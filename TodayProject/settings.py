@@ -147,6 +147,9 @@ SWINGTIME_SETTINGS_MODULE = 'topic.swingtime_settings'
 
 EASY_MAPS_CENTER = (48.853, 2.35)
 
+with open('/etc/easy_map_key') as f:
+    EASY_MAPS_GOOGLE_MAPS_API_KEY = f.read().strip()
+
 # to overwrite when we will properly separate login process from core
 LOGIN_URL = ''
 

@@ -25,9 +25,8 @@ urlpatterns = [
     #url(r'^categorie(?P<event_type_id_string>.+)/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/$',
         #views.single_day_event_type_list, name="single_day_event_type_list"),
 
-    # this one is not really usefull
-    #url(r'^toutes-categories/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/$', views.daily_events,
-        #name="daily_events"),
+    url(r'^toutes-categories/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/$', views.daily_events,
+        name="daily_events"),
 
 
     #url(r'^categorie(?P<event_type_id_string>.+)/(?P<year>\d{4})/(?P<month>0?[1-9]|1[012])/(?P<day>[0-3]?\d)/(?P<start_hour_string>.+)-(?P<end_hour_string>.+)$',
