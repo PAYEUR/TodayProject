@@ -64,35 +64,38 @@ def add_event(request,
         occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
 
         # reset forms if needed
-        if not topic_forms_manager.filled_form:
+        try:
+            topic_forms_manager.filled_form.is_valid()
+        except AttributeError:
             topic_error = True
             topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+        else:
+            try:
+                occurrences_forms_manager.filled_form.is_valid()
+            except AttributeError:
+                occurrence_error = True
+                single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+                multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+            else:
+                if occurrences_forms_manager.filled_form.is_valid() and \
+                        topic_forms_manager.filled_form.is_valid() and \
+                        event_form.is_valid():
 
-        if not occurrences_forms_manager.filled_form:
-            occurrence_error = True
-            single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
-            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+                    # saving event
+                    event = event_form.save(commit=False)
+                    event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
+                    event.event_planner = event_planner
+                    event.save()
 
-        # validation
-        elif occurrences_forms_manager.filled_form.is_valid() and \
-                topic_forms_manager.filled_form.is_valid() and \
-                event_form.is_valid():
+                    # saving occurrence
+                    # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+                    for form in occurrences_forms_manager.filled_form:
+                        # has_changed doesn't take empty occurrences into account
+                        # is_valid trigger clean method
+                        if form.has_changed() and form.is_valid():
+                            form.save(event)
 
-            # saving event
-            event = event_form.save(commit=False)
-            event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
-            event.event_planner = event_planner
-            event.save()
-
-            # saving occurrence
-            # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
-            for form in occurrences_forms_manager.filled_form:
-                # has_changed doesn't take empty occurrences into account
-                # is_valid trigger clean method
-                if form.has_changed() and form.is_valid():
-                    form.save(event)
-
-            return redirect('core:event_planner_panel')
+                    return redirect('core:event_planner_panel')
 
     else:
         topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
