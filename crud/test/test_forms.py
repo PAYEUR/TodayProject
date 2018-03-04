@@ -60,13 +60,29 @@ class EventFormTest(TestCase):
         event = form.save(commit=False)
         event.event_type = EventType.objects.get(label='Confession')
         event.event_planner = EnjoyTodayUser.objects.get(user__username='machin')
-        # print(event.event_type)
-        # print(event.event_planner)
         event.save()
 
         # get the saved event object
         event2 = Event.objects.get(title="Random title iopurtaeoirea")
 
+        self.assertEqual(event, event2)
+
+    def test_save_image_with_particular_names(self):
+        upload_file = open("crud/test/image whith é and space.jpg", 'rb')
+        file_data = {'image': SimpleUploadedFile(upload_file.name,
+                                                 upload_file.read())}
+        data = self.data
+        random_title = "Random title gzefghsne"
+        data['title'] = random_title
+        form = EventForm(data, file_data)
+
+        event = form.save(commit=False)
+        event.event_type = EventType.objects.get(label='Confession')
+        event.event_planner = EnjoyTodayUser.objects.get(user__username='machin')
+        event.save()
+
+        # get the saved event object
+        event2 = Event.objects.get(title=random_title)
         self.assertEqual(event, event2)
 
 
