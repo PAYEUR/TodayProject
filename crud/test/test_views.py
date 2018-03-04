@@ -126,12 +126,30 @@ class AddEventTest(TestCase):
 
     def test_multi_occurrences_data(self):
         with open("crud/test/adoration.jpg", 'rb') as image:
-            self.client.post('/nouvel_evenement',
-                             dict(self.multi_invalid_data, **{'image': image}),
-                             )
+            response = self.client.post('/nouvel_evenement',
+                                         dict(self.multi_invalid_data, **{'image': image}),
+                                         )
 
-            with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
-                get_object_or_404(Event, title="Random title hrgjzefaj")
+            self.assertEquals(response.context['occurrence_error'], True)
+
+    def test_multi_event_type_by_topic_form_data(self):
+        """
+        Test two filled event_type_by_topic_form.
+        Must raise topic_error = True
+        :return:
+        """
+        topic2 = Topic.objects.get(name='jobs')
+        event_type2 = EventType.objects.get(label='Jardinage')
+        key2 = str(topic2.name) + "-event_type"
+
+        event_type_by_topic_data_2 = {key2: event_type2.pk}
+        data = dict(self.data, **event_type_by_topic_data_2)
+        with open("crud/test/adoration.jpg", 'rb') as image:
+            response = self.client.post('/nouvel_evenement',
+                                        dict(data, **{'image': image}),
+                                        )
+
+            self.assertEquals(response.context['topic_error'], True)
 
     def test_valid_data_logout(self):
         self.client.logout()
@@ -143,3 +161,5 @@ class AddEventTest(TestCase):
                                         )
 
             self.assertRedirects(response, '/connexion/login?next=/nouvel_evenement')
+
+
