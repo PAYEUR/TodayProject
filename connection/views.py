@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from forms import ConnexionForm, MyUserCreationForm
-from .models import EnjoyTodayUser
+from models import EnjoyTodayUser
 
 
 def connexion(request):

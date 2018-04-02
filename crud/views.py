@@ -1,22 +1,29 @@
+# coding = utf-8
 from django.shortcuts import get_object_or_404, render, redirect
 from django.forms import formset_factory
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic import UpdateView, DeleteView, ListView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import (EventTypeByTopicForm,
-                    MultipleOccurrenceForm,
-                    SingleOccurrenceForm,
-                    FormsListManager,
-                    EventForm,
-                    )
+from topic.models import Occurrence, Event, Topic
+from connection.models import EnjoyTodayUser
+
+from forms import (EventTypeByTopicForm,
+                   MultipleOccurrenceForm,
+                   SingleOccurrenceForm,
+                   FormsListManager,
+                   EventForm,
+                   )
 
 
-from topic.models import Occurrence, Event, EnjoyTodayUser, Topic
+def has_event_planner(user, event):
+        if event.event_planner:
+            return user == event.event_planner.user
+        else:
+            return False
 
-
-# new views
 
 @login_required(login_url='connection:login')
 def add_event(request,
@@ -95,7 +102,7 @@ def add_event(request,
                         if form.has_changed() and form.is_valid():
                             form.save(event)
 
-                    return redirect('core:event_planner_panel')
+                    return redirect('crud:event_planner_panel')
 
     else:
         topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
@@ -119,7 +126,7 @@ class UpdateEvent(UserPassesTestMixin, UpdateView):
     model = Event
     template_name = 'crud/update_event.html'
     form_class = EventForm
-    success_url = reverse_lazy('core:event_planner_panel')
+    success_url = reverse_lazy('crud:event_planner_panel')
 
     # mixin parameters
     raise_exception = True
@@ -143,7 +150,7 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     model = Event
     template_name = 'crud/delete_event.html'
-    success_url = reverse_lazy('core:event_planner_panel')
+    success_url = reverse_lazy('crud:event_planner_panel')
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('event_id')
@@ -167,7 +174,7 @@ class DeleteOccurrence(UserPassesTestMixin, DeleteView):
 
     model = Occurrence
     template_name = 'crud/delete_occurrence.html'
-    success_url = reverse_lazy('core:event_planner_panel')
+    success_url = reverse_lazy('crud:event_planner_panel')
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get('occurrence_id')
@@ -188,7 +195,7 @@ class UpdateOccurrence(UserPassesTestMixin, UpdateView):
     template_name = 'crud/update_occurrence.html'
     fields = ['start_time', 'end_time']
     # form_class = SingleOccurrenceForm
-    success_url = reverse_lazy('core:event_planner_panel')
+    success_url = reverse_lazy('crud:event_planner_panel')
     raise_exception = True
 
     # condition to be authorized to CRUD
@@ -203,11 +210,28 @@ class UpdateOccurrence(UserPassesTestMixin, UpdateView):
         return get_object_or_404(Occurrence, pk=pk)
 
 
-def test_func(user, event):
-        if event.event_planner:
-            return user == event.event_planner.user
-        else:
-            return False
-
-
 # Todo: create AddOccurrences(view)
+
+# ------------------------------------------------------------------------------------------
+# Dynamic views, TODO: improve them
+class EventPlannerPanelView(LoginRequiredMixin, ListView):
+
+    # mixin parameters
+    login_url = 'connection:login'
+
+    # view parameters
+    model = Event
+    context_object_name = 'events'
+    template_name = 'crud/event_planner_panel.html'
+
+    def get_event_planner(self):
+        return EnjoyTodayUser.objects.get(user=self.request.user)
+
+    def get_queryset(self):
+        return Event.objects.filter(event_planner=self.get_event_planner()).order_by('location')
+
+    def get_context_data(self, **kwargs):
+        context = super(EventPlannerPanelView, self).get_context_data(**kwargs)
+        context['event_planner'] = self.get_event_planner()
+
+        return context

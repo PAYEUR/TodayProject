@@ -3,12 +3,6 @@ from django.conf.urls import url
 from .views import *
 
 
-# here is the main application:
-# we arrive on it whether coming from enjoytoday or from paris.enjoytoday
-## index let us choose which topic we do want (catho, jobs, etc...)
-## contact give the main information about enjoytoday team
-## event_planner_pannel does not depends on city nor core
-
 app_name = 'core'
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index"),
@@ -21,8 +15,4 @@ urlpatterns = [
     url(r'^presentation-du-projet', PresentationView.as_view(), name="presentation"),
     url(r'^charte-post-d-evenement', CharteView.as_view(), name="charte"),
     url(r'^presentation-des-categories', ExplainCategoriesView.as_view(), name="explain_categories"),
-
-    # TODO: rewrite this view
-    url(r'^tableau-de-bord$', EventPlannerPanelView.as_view(), name="event_planner_panel"),
-
     ]

@@ -130,7 +130,7 @@ def add_event_test(request,
                             print(form.cleaned_data)
                             print("event_saved")
 
-                    return redirect('core:event_planner_panel')
+                    return redirect('crud:event_planner_panel')
 
             else:
                 occurrences_forms_manager.error = True
@@ -237,7 +237,7 @@ def add_event_test2(request,
                     print(form.cleaned_data)
                     print("event_saved")
 
-            return redirect('core:event_planner_panel')
+            return redirect('crud:event_planner_panel')
 
 
     else:

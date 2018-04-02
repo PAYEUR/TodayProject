@@ -24,4 +24,4 @@ class EnjoyTodayUser(models.Model):
         return "{0} posts in EnjoyToday".format(self.user.username)
 
     # def get_absolute_url(self):
-        # return reverse('core:event_planner_panel')
+        # return reverse('crud:event_planner_panel')
