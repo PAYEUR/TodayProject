@@ -18,7 +18,7 @@ from location.models import City
 
 class AddEventTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = ['fixtures/data_test.json']
 
     def setUp(self):
 
@@ -167,12 +167,13 @@ class AddEventTest(TestCase):
 
 class EventPlannerPanelViewTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = ['fixtures/data_test.json']
 
-    def SetUp(self):
+    def setUp(self):
         self.client.login(username='machin', password='machinchose')
-        self.event1 = Event.get(title="AdorationAlbi Test")
-        self.event2 = Event.get(title="ConferenceTest")
+        self.event1 = Event.objects.get(title="AdorationAlbi Test")
+        self.event2 = Event.objects.get(title="ConferenceTest")
+        self.response = self.client.get(reverse('crud:event_planner_panel'))
 
     # def test_event_planner_panel_view(self):
 
@@ -180,13 +181,17 @@ class EventPlannerPanelViewTest(TestCase):
         """
         :return: redirects to 'crud:event_planner' if user is logged
         """
-        response = self.client.get(reverse('crud:event_planner_panel'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(self.response.status_code, 200)
 
     def test_is_not_logged(self):
         """
         :return: redirects to 'connection:login' if user is not logged
         """
         self.client.logout()
-        response = self.client.get(reverse('crud:event_planner_panel'))
-        self.assertRedirects(response, '/connexion/login?next=/tableau-de-bord')
+        self.response = self.client.get(reverse('crud:event_planner_panel'))
+        self.assertRedirects(self.response, '/connexion/login?next=/tableau-de-bord')
+
+    def test_context(self):
+        context = self.response.context
+        assert self.event1, self.event2 in context['events']
+
