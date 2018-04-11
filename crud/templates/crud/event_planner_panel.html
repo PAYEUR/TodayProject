@@ -26,20 +26,39 @@
                 </p>
             </div>
         </div>
-        <h2>Vos événements:</h2>
 
+        <h2>Vos événements:</h2>
         {% if events %}
-            {% for event in events %}
-                {# city topbar #}
-                    {# topic topbar  #}
-                        <div class="col-sm-12 col-md-4">
-                            <div class="thumbnail">
-                                {% include "crud/event_planner_thumbnail.html" %}
-                            </div>
+        <ul class="nav nav-tabs" role="tablist">
+            {% for topic in topic_list %}
+            <li role="presentation" {% if forloop.first %} class="active" {% endif %}>
+                <a href="#{{ topic.name }}" aria-controls="{{ topic.name }}" role="tab" data-toggle="tab">{{ topic.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+
+        <div class="tab-content">
+            {% for topic in topic_list %}
+                <div role="tabpanel"
+                     class="{% if forloop.first %} tab-pane active {% else %} tab-pane {% endif %}"
+                     id="{{ topic.name }}">
+
+                    {% for event in events %}
+                    {% if topic == event.event_type.topic %}
+                    <div class="col-sm-12 col-md-4">
+                        <div class="thumbnail">
+                            {% include "crud/event_planner_thumbnail.html" %}
                         </div>
-            {%  endfor %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
         {% else %}
-            <p>Pas d'événements programmés</p>
+        <p>Pas d'événements programmés</p>
         {% endif %}
     </div>
 

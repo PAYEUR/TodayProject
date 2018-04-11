@@ -1,0 +1,23 @@
+        <ul class="nav nav-tabs" role="tablist">
+            {% for city in cities_list %}
+            <li role="presentation" class="active"><a href="#{{ city.city_slug }}" aria-controls="{{ city.city_slug }}" role="tab" data-toggle="tab">{{ city.city_name }}</a></li>
+            {% endfor %}
+        </ul>
+
+
+
+
+
+<div role="tabpanel" class="tab-pane active" id="topic.name">
+                    {% for city in cities_list %}
+                    {% if city == event.location %}
+                    <div role="tabpanel" class="tab-pane active" id="city.city_slug">
+                        <div class="col-sm-12 col-md-4">
+                            <div class="thumbnail">
+                                {% include "crud/event_planner_thumbnail.html" %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
