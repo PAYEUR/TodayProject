@@ -1,9 +1,10 @@
-
-<a href = "{% if event.next_occurrence %}
-             {{ event.next_occurrence.get_absolute_url }}
-           {% endif %}">
-    <img src=  class="img-responsive" alt="{{ event.title }}" />
+{% if event.next_occurrence %}
+<a href = "{{ event.next_occurrence.get_absolute_url }}">
+    <img src="{{event.image_main.url}}" class="img-responsive" alt="{{ event.title }}" />
 </a>
+{% else %}
+<img src="{{event.image_main.url}}" class="img-responsive" alt="{{ event.title }}" />
+{% endif %}
 
 <div class="caption">
     {% if event.next_occurrence %}
