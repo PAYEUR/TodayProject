@@ -176,8 +176,6 @@ class EventPlannerPanelViewTest(TestCase):
         self.event2 = Event.objects.get(title="ConferenceTest")
         self.response = self.client.get(reverse('crud:event_planner_panel'))
 
-    # def test_event_planner_panel_view(self):
-
     def test_is_logged(self):
         """
         :return: redirects to 'crud:event_planner' if user is logged
