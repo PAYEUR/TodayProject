@@ -43,16 +43,16 @@
                 <div role="tabpanel"
                      class="{% if forloop.first %} tab-pane active {% else %} tab-pane {% endif %}"
                      id="{{ topic.name }}">
-
-                    {% for event in events %}
-                    {% if topic == event.event_type.topic %}
+                <br>
+                {% for event in events %}
+                {% if topic == event.event_type.topic %}
                     <div class="col-sm-12 col-md-4">
                         <div class="thumbnail">
                             {% include "crud/event_planner_thumbnail.html" %}
                         </div>
                     </div>
-                    {% endif %}
-                    {% endfor %}
+                {% endif %}
+                {% endfor %}
                 </div>
             {% endfor %}
         </div>
