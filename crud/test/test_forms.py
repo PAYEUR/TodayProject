@@ -15,14 +15,16 @@ from location.models import City
 from django.core.files.uploadedfile import SimpleUploadedFile
 from datetime import date, timedelta, time
 
+FIXTURES = ['fixtures/data_test.json']
 
 # from http://test-driven-django-development.readthedocs.io/en/latest/05-forms.html
 # https://docs.djangoproject.com/fr/1.11/topics/testing/tools/
 # testing file upload:
 
+
 class EventFormTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
         self.data = {
@@ -88,7 +90,7 @@ class EventFormTest(TestCase):
 
 class EventTypeByTopicFormTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
         self.topic1 = Topic.objects.get(name='spi')
@@ -118,7 +120,7 @@ class EventTypeByTopicFormTest(TestCase):
 
 class SingleOccurrenceFormTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
 
@@ -167,7 +169,7 @@ class SingleOccurrenceFormTest(TestCase):
 
 class MultipleOccurrenceFormTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
 
@@ -276,7 +278,7 @@ class FormListManagerTest(TestCase):
 
 class EventTypeByTopicFormListManagerTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
         self.topic1 = Topic.objects.get(name='spi')
