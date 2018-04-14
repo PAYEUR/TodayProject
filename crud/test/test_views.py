@@ -194,3 +194,14 @@ class EventPlannerPanelViewTest(TestCase):
         context = self.response.context
         assert self.event1, self.event2 in context['events']
 
+    def test_template(self):
+        # test with events
+        self.assertNotContains(self.response, "Pas d'événements programmés")
+
+        # tests with no events
+        self.client.login(username='tata', password='thisisanotherpassword')
+        response = self.client.get(reverse('crud:event_planner_panel'))
+        self.assertContains(response, "Pas d'événements programmés")
+
+
+
