@@ -1,8 +1,7 @@
 from django.test import TestCase
-from datetime import datetime, timedelta, time
-from topic import utils, views
-from topic.models import EventType, Topic, Event, Occurrence
-from location.models import City
+from datetime import datetime, time
+from topic import utils
+from topic.models import EventType, Topic
 
 
 # utils

@@ -253,6 +253,7 @@ class SingleOccurrenceForm(forms.Form):
             else:
                 self.start_datetime = start_datetime
                 self.end_datetime = end_datetime
+                self.delta_hour = end_datetime - start_datetime
 
     def save(self, event):
         """
@@ -261,8 +262,8 @@ class SingleOccurrenceForm(forms.Form):
         """
 
         event.add_occurrences(
-            self.start_datetime,
-            self.end_datetime,
+            [self.start_datetime],
+            self.delta_hour,
             is_multiple=False,
         )
 
@@ -355,33 +356,27 @@ class MultipleOccurrenceForm(forms.Form):
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
             self.start_datetime = start_datetime
-            self.end_datetime = end_datetime
+            self.end_datetime_starting_hour = datetime.combine(end_date, start_time)
+            self.end_datetime_ending_hour = end_datetime
+            self.delta_hour = self.end_datetime_ending_hour - self.end_datetime_starting_hour
+            self.week_days = week_days
 
             return self.cleaned_data
 
     # ---------------------------------------------------------------------------
     def save(self, event):
 
-        params = self._build_rrule_params()
-
-        event.add_occurrences(
-            self.start_datetime,
-            self.end_datetime,
-            is_multiple=True,
-            **params
-        )
+        event.add_occurrences(self._datetime_list(),
+                              delta_hour=self.delta_hour,
+                              is_multiple=True,
+                              )
 
         return event
 
     # ---------------------------------------------------------------------------
-    def _build_rrule_params(self):
-
-        data = self.cleaned_data
-        params = dict(
-            until=data['end_date'],
-            byweekday=data['week_days'],
-            interval=1,
-            freq=rrule.WEEKLY,
-        )
-
-        return params
+    def _datetime_list(self):
+        return rrule.rrule(dtstart=self.start_datetime,
+                           until=self.end_datetime_starting_hour,
+                           byweekday=self.week_days,
+                           freq=rrule.WEEKLY,
+                           )

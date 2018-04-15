@@ -156,6 +156,11 @@ class DateList(ListView):
                                                                        event__location=self.current_location,
                                                                        event__event_type__topic=self.topic,
                                                                        )
+
+        print self.current_location
+        print self.topic
+        print self.end_time
+
         return sorted_occurrences
 
     def get_context_data(self, **kwargs):
