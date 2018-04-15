@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from topic.models import Occurrence, Event, Topic
+from topic.models import Occurrence, Event, Topic, EventType
 from connection.models import EnjoyTodayUser
 
 from forms import (EventTypeByTopicForm,
@@ -26,10 +26,7 @@ def has_event_planner(user, event):
 
 
 @login_required(login_url='connection:login')
-def add_event(request,
-              # number_of_extra_dates_forms,
-              template='crud/add_event.html'
-              ):
+def add_event_and_occurrences(request, template='crud/add_event_and_occurrences.html'):
     """
     # number of dates: number of extra dates forms to display
     Testing one single form to insert data in database. One single template and one single view.
@@ -121,26 +118,63 @@ def add_event(request,
     return render(request, template, context)
 
 
-class UpdateEvent(UserPassesTestMixin, UpdateView):
+@login_required(login_url='connection:login')
+def update_event(request, event_id, template='crud/update_event.html'):
+    """
+    """
 
-    model = Event
-    template_name = 'crud/update_event.html'
-    form_class = EventForm
-    success_url = reverse_lazy('crud:event_planner_panel')
+    # initiating event stuff
+    event_planner = EnjoyTodayUser.objects.get(user=request.user)
+    topic_error = False
+    current_event = get_object_or_404(Event, pk=event_id)
+    try:
+        current_topic = get_object_or_404(Topic, pk=current_event.event_type.topic.pk)
+    except AttributeError:
+        current_topic = Topic.objects.get(name='spi')
 
-    # mixin parameters
-    raise_exception = True
+    # -----------------------------------------------------------
 
-    def get_object(self, queryset=None):
-        pk = self.kwargs.get('event_id')
-        return get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        # initialization
+        event_form = EventForm(request.POST, request.FILES)
+        topic_forms = [EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all()]
 
-    # condition to be authorized to CRUD
-    def test_func(self):
-        if self.get_object().event_planner:
-            return self.request.user == self.get_object().event_planner.user
+        topic_forms_manager = FormsListManager(*topic_forms)
+
+        # reset forms if needed
+        try:
+            topic_forms_manager.filled_form.is_valid()
+        except AttributeError:
+            topic_error = True
+            topic_forms = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
         else:
-            return False
+            if topic_forms_manager.filled_form.is_valid() and event_form.is_valid():
+
+                # saving event
+                event = event_form.save(commit=False)
+                event.event_type = topic_forms_manager.filled_form.cleaned_data['event_type']
+                event.event_planner = event_planner
+                event.save()
+
+                return redirect('crud:event_planner_panel')
+
+    else:
+        event_form = EventForm(instance=current_event)
+
+        topic_forms = []
+        for topic in Topic.objects.all():
+            if topic == current_topic:
+                topic_forms.append(EventTypeByTopicForm(topic=topic,
+                                                        initial={'event_type': current_event.event_type}))
+            else:
+                topic_forms.append(EventTypeByTopicForm(topic=topic))
+
+    context = {'topic_forms': topic_forms,
+               'event_form': event_form,
+               'topic_error': topic_error,
+               }
+
+    return render(request, template, context)
 
 
 class DeleteEvent(UserPassesTestMixin, DeleteView):
@@ -210,10 +244,7 @@ class UpdateOccurrence(UserPassesTestMixin, UpdateView):
         return get_object_or_404(Occurrence, pk=pk)
 
 
-# Todo: create AddOccurrences(view)
-
 # ------------------------------------------------------------------------------------------
-# Dynamic views, TODO: improve them
 class EventPlannerPanelView(LoginRequiredMixin, ListView):
 
     # mixin parameters

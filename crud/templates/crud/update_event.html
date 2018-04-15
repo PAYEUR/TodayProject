@@ -17,16 +17,23 @@
     <div id="services" class="row">
         <div class="col-sm-12 col-md-12">
 
-            {% if form.errors %}
-                <p> {% bootstrap_alert "Merci de corriger le formulaire" alert_type='warning' %} </p>
-            {% endif %}
-
             <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% bootstrap_form form %}
-                {% buttons submit='Modifier' reset="Annuler" %}{% endbuttons %}
-            </form>
 
+                <h2>Thématique de l'annonce</h2>
+                {% if topic_error %}
+                    <p> {% bootstrap_alert "Sélectionner un seul topic" alert_type='warning' %} </p>
+                {% endif %}
+                {% include "crud/topic_forms_template.html" %}
+
+                <h2>Description de l'événement</h2>
+                {% bootstrap_form event_form %}
+
+                </br>
+                {% bootstrap_button "Valider" button_type="submit" button_class="btn-success"%}
+                {% bootstrap_button "Annuler" button_type="reset" button_class="btn-danger"%}
+                </br>
+            </form>
         </div>
     </div>
 

@@ -12,9 +12,6 @@ from topic.models import Topic, EventType, Event
 from location.models import City
 
 FIXTURES = ['fixtures/data_test.json']
-# from http://test-driven-django-development.readthedocs.io/en/latest/05-forms.html
-# https://docs.djangoproject.com/fr/1.11/topics/testing/tools/
-# testing file upload:
 
 
 class AddEventTest(TestCase):

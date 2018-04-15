@@ -4,8 +4,8 @@ import views
 
 app_name = 'crud'
 urlpatterns = [
-    url(r'^nouvel_evenement', views.add_event, name="create_event"),
-    url(r'^evenement(?P<event_id>[0-9]+)/modifier$', views.UpdateEvent.as_view(), name="update_event"),
+    url(r'^nouvel_evenement', views.add_event_and_occurrences, name="create_event"),
+    url(r'^evenement(?P<event_id>[0-9]+)/modifier$', views.update_event, name="update_event"),
     url(r'^evenement(?P<event_id>[0-9]+)/supprimer$', views.DeleteEvent.as_view(), name="delete_event"),
     # url(r'^evenement(?P<event_id>[0-9]+)/ajouter_occurrences$', views.add_occurrences, name="add_occurrences"),
     url(r'^modifier_occurrence(?P<occurrence_id>[0-9]+)$', views.UpdateOccurrence.as_view(), name="update_occurrence"),
