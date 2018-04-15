@@ -172,6 +172,9 @@ class Event(models.Model):
     def update_url(self):
         return reverse('crud:update_event', kwargs={'event_id': self.pk})
 
+    def add_occurrences_url(self):
+        return reverse('crud:add_occurrences', kwargs={'event_id': self.pk})
+
     # --------------------------------------------------------------------------
     def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
         """

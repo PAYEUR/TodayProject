@@ -25,6 +25,16 @@ def has_event_planner(user, event):
             return False
 
 
+def get_event_and_topic(event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    try:
+        topic = get_object_or_404(Topic, pk=event.event_type.topic.pk)
+    except AttributeError:
+        topic = Topic.objects.get(name='spi')
+
+    return event, topic
+
+
 @login_required(login_url='connection:login')
 def add_event_and_occurrences(request, template='crud/add_event_and_occurrences.html'):
     """
@@ -126,11 +136,7 @@ def update_event(request, event_id, template='crud/update_event.html'):
     # initiating event stuff
     event_planner = EnjoyTodayUser.objects.get(user=request.user)
     topic_error = False
-    current_event = get_object_or_404(Event, pk=event_id)
-    try:
-        current_topic = get_object_or_404(Topic, pk=current_event.event_type.topic.pk)
-    except AttributeError:
-        current_topic = Topic.objects.get(name='spi')
+    current_event, current_topic = get_event_and_topic(event_id)
 
     # -----------------------------------------------------------
 
@@ -200,6 +206,66 @@ class DeleteEvent(UserPassesTestMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteEvent, self).get_context_data(**kwargs)
+
+
+@login_required(login_url='connection:login')
+def add_occurrences(request, event_id, template='crud/add_occurrences.html'):
+    """
+    """
+
+    # initiating event stuff
+    SingleOccurrenceFormSet = formset_factory(SingleOccurrenceForm,
+                                              min_num=1,
+                                              extra=9,  # or number_of_extra_dates_forms
+                                              validate_min=True)
+
+    MultipleOccurrenceFormSet = formset_factory(MultipleOccurrenceForm,
+                                                extra=0,
+                                                min_num=1,
+                                                validate_min=True,
+                                                )
+
+    occurrence_error = False
+    current_event = get_object_or_404(Event, pk=event_id)
+    # -----------------------------------------------------------
+
+    if request.method == 'POST':
+        # initialization
+        single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix='multiple_occurrence')
+        occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
+
+        # reset forms if needed
+        try:
+            occurrences_forms_manager.filled_form.is_valid()
+        except AttributeError:
+            occurrence_error = True
+            single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+            multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+        else:
+            if occurrences_forms_manager.filled_form.is_valid():
+
+                # saving occurrence
+                # as occurrences_forms_manager.filled_form are formsets, one need a loop to call .save()
+                for form in occurrences_forms_manager.filled_form:
+                    # has_changed doesn't take empty occurrences into account
+                    # is_valid trigger clean method
+                    if form.has_changed() and form.is_valid():
+                        form.save(current_event)
+
+                return redirect('crud:event_planner_panel')
+
+    else:
+        single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
+        multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
+
+    context = {'event': current_event,
+               'single_occurrence_formset': single_occurrence_formset,
+               'multiple_occurrence_formset': multiple_occurrence_formset,
+               'occurrence_error': occurrence_error,
+               }
+
+    return render(request, template, context)
 
 
 class DeleteOccurrence(UserPassesTestMixin, DeleteView):

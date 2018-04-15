@@ -1,0 +1,41 @@
+{% extends 'crud/base.html' %}
+
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+    Ajouter des échéances
+{% endblock %}
+
+{# to allow recurrence_form.query #}
+{% block base_extra_head %}
+    {{ single_occurrence_formset.media }}
+    {{ multiple_occurrence_formset.media }}
+{% endblock %}
+
+{% block content %}
+    <div id="services" class="row">
+        <div class="col-sm-12 col-md-12">
+
+            <h1>Ajouter des échéances</h1>
+
+            <h2>{{ event.title }}</h2>
+
+            <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if occurrence_error %}
+                    <p> {% bootstrap_alert "Merci de sélectionner un unique type d'occurrences" alert_type='warning' %} </p>
+                {% endif %}
+                {% include "crud/occurrences_form_template.html" %}
+
+                </br>
+                {% bootstrap_button "Valider" button_type="submit" button_class="btn-success"%}
+                {% bootstrap_button "Annuler" button_type="reset" button_class="btn-danger"%}
+                </br>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}
