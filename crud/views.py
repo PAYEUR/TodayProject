@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from topic.models import Occurrence, Event, Topic, EventType
+from topic.models import Occurrence, Event, Topic
 from connection.models import EnjoyTodayUser
 
 from forms import (EventTypeByTopicForm,
@@ -136,7 +136,8 @@ def update_event(request, event_id, template='crud/update_event.html'):
 
     if request.method == 'POST':
         # initialization
-        event_form = EventForm(request.POST, request.FILES)
+        # instance=current_event allows to resubmit image file whether it changed or not
+        event_form = EventForm(request.POST, request.FILES, instance=current_event)
         topic_forms = [EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all()]
 
         topic_forms_manager = FormsListManager(*topic_forms)
