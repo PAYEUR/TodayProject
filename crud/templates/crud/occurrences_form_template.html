@@ -10,8 +10,8 @@
         {{ single_occurrence_formset.management_form }}
         {% for form in single_occurrence_formset %}
             {% if forloop.first %}
-                <h3>Date n°{{forloop.counter}}</h3>
-                {% bootstrap_form form %}
+            <h3>Date n°{{forloop.counter}}</h3>
+            {% bootstrap_form form %}
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
                 Ajouter une date
             </button>

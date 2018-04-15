@@ -88,9 +88,6 @@ class OccurrenceDetail(DetailView):
         city = get_object_or_404(City, city_slug=self.kwargs['city_slug'])
 
         address = self.object.event.address
-        # TODO improve this using location.address
-        # if address == u'non précisé':
-            # address += str(", " + str(self.request.site.name))
 
         # generic
         context['city'] = city

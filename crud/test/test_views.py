@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import (unicode_literals, absolute_import,
                         print_function, division)
+from datetime import date, timedelta, time
 
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.core.urlresolvers import reverse
+
 from topic.models import Topic, EventType, Event
 from location.models import City
-from datetime import date, timedelta, time
 
+FIXTURES = ['fixtures/data_test.json']
 
-# from http://test-driven-django-development.readthedocs.io/en/latest/05-forms.html
-# https://docs.djangoproject.com/fr/1.11/topics/testing/tools/
-# testing file upload:
 
 class AddEventTest(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
 
@@ -93,20 +93,20 @@ class AddEventTest(TestCase):
 
         with open("crud/test/adoration.jpg", 'rb') as image:
 
-            response = self.client.post('/nouvel_evenement',
+            response = self.client.post(reverse('crud:create_event'),
                                         dict(self.data, **{'image': image}),
                                         )
 
             # raise Http404 error if event not saved
             get_object_or_404(Event, title="Random title hrgjzefaj")
 
-            self.assertRedirects(response, '/tableau-de-bord')
+            self.assertRedirects(response, reverse('crud:event_planner_panel'))
 
     def test_invalid_occurrence_data(self):
         data = self.data.copy()
         data['single_occurrence-0-start_date'] = date.today() + timedelta(days=5)
         with open("crud/test/adoration.jpg", 'rb') as image:
-            self.client.post('/nouvel_evenement',
+            self.client.post(reverse('crud:create_event'),
                              dict(data, **{'image': image}),
                              )
 
@@ -117,7 +117,7 @@ class AddEventTest(TestCase):
         data = self.data.copy()
         data['description'] = ''
         with open("crud/test/adoration.jpg", 'rb') as image:
-            self.client.post('/nouvel_evenement',
+            self.client.post(reverse('crud:create_event'),
                              dict(data, **{'image': image}),
                              )
 
@@ -126,7 +126,7 @@ class AddEventTest(TestCase):
 
     def test_multi_occurrences_data(self):
         with open("crud/test/adoration.jpg", 'rb') as image:
-            response = self.client.post('/nouvel_evenement',
+            response = self.client.post(reverse('crud:create_event'),
                                          dict(self.multi_invalid_data, **{'image': image}),
                                          )
 
@@ -145,7 +145,7 @@ class AddEventTest(TestCase):
         event_type_by_topic_data_2 = {key2: event_type2.pk}
         data = dict(self.data, **event_type_by_topic_data_2)
         with open("crud/test/adoration.jpg", 'rb') as image:
-            response = self.client.post('/nouvel_evenement',
+            response = self.client.post(reverse('crud:create_event'),
                                         dict(data, **{'image': image}),
                                         )
 
@@ -156,10 +156,49 @@ class AddEventTest(TestCase):
 
         with open("crud/test/adoration.jpg", 'rb') as image:
 
-            response = self.client.post('/nouvel_evenement',
+            response = self.client.post(reverse('crud:create_event'),
                                         dict(self.data, **{'image': image}),
                                         )
 
             self.assertRedirects(response, '/connexion/login?next=/nouvel_evenement')
+
+
+class EventPlannerPanelViewTest(TestCase):
+
+    fixtures = FIXTURES
+
+    def setUp(self):
+        self.client.login(username='machin', password='machinchose')
+        self.event1 = Event.objects.get(title="AdorationAlbi Test")
+        self.event2 = Event.objects.get(title="ConferenceTest")
+        self.response = self.client.get(reverse('crud:event_planner_panel'))
+
+    def test_is_logged(self):
+        """
+        :return: redirects to 'crud:event_planner' if user is logged
+        """
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_is_not_logged(self):
+        """
+        :return: redirects to 'connection:login' if user is not logged
+        """
+        self.client.logout()
+        self.response = self.client.get(reverse('crud:event_planner_panel'))
+        self.assertRedirects(self.response, '/connexion/login?next=/tableau-de-bord')
+
+    def test_context(self):
+        context = self.response.context
+        assert self.event1, self.event2 in context['events']
+
+    def test_template(self):
+        # test with events
+        self.assertNotContains(self.response, "Pas d'événements programmés")
+
+        # tests with no events
+        self.client.login(username='tata', password='thisisanotherpassword')
+        response = self.client.get(reverse('crud:event_planner_panel'))
+        self.assertContains(response, "Pas d'événements programmés")
+
 
 

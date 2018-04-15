@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Tableau Organisateur
+{% endblock %}
+
+{% block description %}
+    Gérez vos annonces dans votre ville.
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Tableau de bord</h1>
+    </div>
+
+    <div id="services" class="row">
+        <h2>Bonjour {{ event_planner.user.username }}</h2>
+        <div class="col-sm-12 col-md-12">
+            <div class="thumbnail">
+                <p>Votre login: {{ event_planner.user.username }}</p>
+                <p>Votre email: {{ event_planner.user.email }}</p>
+                <p> <em> Pour modifier des paramètres liés à votre compte, ou pour toute question, merci de nous contacter:</em><br>
+                    <a href="mailto:enjoytodayproject@gmail.com">enjoytodayproject@gmail.com</a>
+                </p>
+            </div>
+        </div>
+
+        <h2>Vos événements:</h2>
+        {% if events %}
+        <ul class="nav nav-tabs" role="tablist">
+            {% for topic in topic_list %}
+            <li role="presentation" {% if forloop.first %} class="active" {% endif %}>
+                <a href="#{{ topic.name }}" aria-controls="{{ topic.name }}" role="tab" data-toggle="tab">{{ topic.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+
+        <div class="tab-content">
+            {% for topic in topic_list %}
+                <div role="tabpanel"
+                     class="{% if forloop.first %} tab-pane active {% else %} tab-pane {% endif %}"
+                     id="{{ topic.name }}">
+                <br>
+                {% for event in events %}
+                {% if topic == event.event_type.topic %}
+                    <div class="col-sm-12 col-md-4">
+                        <div class="thumbnail">
+                            {% include "crud/event_planner_thumbnail.html" %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <p>Pas d'événements programmés</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

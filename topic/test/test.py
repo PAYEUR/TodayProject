@@ -65,7 +65,7 @@ class TestUtils(TestCase):
 # url
 class TestUrl(TestCase):
 
-    fixtures = ['data_test.json']
+    fixtures = ['fixtures/data_test.json']
 
     def test_full_list_url(self):
         url = '/paris/spi/categorie1/du_21-05-2017_a_12h00/au_21-05-2017_a_13h00'

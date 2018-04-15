@@ -58,11 +58,6 @@ class EventType(models.Model):
                               null=True,
                               upload_to='event_types/')
 
-    #image_main = ImageSpecField(source='image',
-                                #processors=[ResizeToFit(450, 300)],
-                                #format='JPEG',
-                                #options={'quality': 100})
-
     # ==========================================================================
     class Meta:
         verbose_name = 'event type'
@@ -171,13 +166,14 @@ class Event(models.Model):
         return self.title
 
     # --------------------------------------------------------------------------
-    # def get_absolute_url(self): used? useful?
-
     def delete_url(self):
         return reverse('crud:delete_event', kwargs={'event_id': self.pk})
 
     def update_url(self):
         return reverse('crud:update_event', kwargs={'event_id': self.pk})
+
+    def add_occurrences_url(self):
+        return reverse('crud:add_occurrences', kwargs={'event_id': self.pk})
 
     # --------------------------------------------------------------------------
     def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
