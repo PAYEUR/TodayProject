@@ -57,14 +57,13 @@ class EventForm(forms.ModelForm):
         fields = ['image',
                   'title',
                   'description',
+                  'location',
+                  'address',
                   'price',
                   'contact',
-                  'address',
                   'public_transport',
-                  'location',
                   ]
 
-    # TODO: add event_type here instead of locating it in an outside form
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
