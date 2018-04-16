@@ -231,8 +231,6 @@ class MultipleOccurrenceFormTest(TestCase):
         self.assertEqual(occurrence2.event, event)
 
 
-
-
 class MockForm(forms.Form):
 
     mock_field = forms.CharField()

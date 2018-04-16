@@ -3,6 +3,7 @@ import calendar
 from datetime import datetime, date, time
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView
 from location.models import City
 # TODO remove this asap
@@ -16,6 +17,16 @@ from .models import Occurrence, EventType, Topic
 # TODO remove this asap
 if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
     calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
+
+
+# utilitary view
+def get_event_type_url(event_type, current_location, topic):
+    return reverse('location:topic:event_type_coming_days',
+                   kwargs={'event_type_id_string': str(event_type.pk),
+                           'city_slug': current_location.city_slug,
+                           'topic_name': topic.name,
+                           }
+                   )
 
 
 # -----------------------------------------------------------------------------
@@ -132,7 +143,7 @@ class DateList(ListView):
 
     model = Occurrence
     template_name = 'topic/sorted_events.html'
-    context_object_name = 'sorted_occurrences'
+    context_object_name = 'event_type_dict'
 
     # see https://docs.djangoproject.com/fr/2.0/topics/class-based-views/generic-display/
     def get_queryset(self):
@@ -148,20 +159,19 @@ class DateList(ListView):
         end_hour = utils.construct_hour(self.kwargs['end_hour_string'])
         self.end_time = utils.construct_time(end_date, end_hour)
 
-        sorted_occurrences = dict()
+        event_type_dict = dict()
         for event_type in self.event_type_list:
-            sorted_occurrences[event_type] = Occurrence.objects.filter(event__event_type=event_type,
-                                                                       start_time__gte=self.start_time,
-                                                                       end_time__lte=self.end_time,
-                                                                       event__location=self.current_location,
-                                                                       event__event_type__topic=self.topic,
-                                                                       )
+            occurrences = Occurrence.objects.filter(event__event_type=event_type,
+                                                    start_time__gte=self.start_time,
+                                                    end_time__lte=self.end_time,
+                                                    event__location=self.current_location,
+                                                    event__event_type__topic=self.topic,
+                                                    )
+            url = get_event_type_url(event_type, self.current_location, self.topic)
 
-        print self.current_location
-        print self.topic
-        print self.end_time
+            event_type_dict[event_type] = url, occurrences
 
-        return sorted_occurrences
+        return event_type_dict
 
     def get_context_data(self, **kwargs):
         context = super(DateList, self).get_context_data(**kwargs)
@@ -169,6 +179,7 @@ class DateList(ListView):
         context['city'] = self.current_location
         context['topic'] = self.topic
         context['current_topic'] = self.topic
+
         # side_bar
         context['all_event_type_list'] = EventType.objects.filter(topic=self.topic)
         # specific
@@ -176,6 +187,7 @@ class DateList(ListView):
         context['title'] = ' - '.join([event.label for event in self.event_type_list])
 
         return context
+
 
 
 # child functions

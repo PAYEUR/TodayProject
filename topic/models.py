@@ -1,15 +1,15 @@
 # coding=utf-8
 
 from datetime import datetime
-from dateutil import rrule
+
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.core.urlresolvers import reverse
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+
 from connection.models import EnjoyTodayUser
 from location.models import City
-from TodayProject import utils
 
 __all__ = (
     'EventType',
@@ -66,6 +66,8 @@ class EventType(models.Model):
     # --------------------------------------------------------------------------
     def __str__(self):
         return self.label
+
+    # Impossible to define get_absolute_url because location can't be retrieved from here
 
 
 # ==============================================================================

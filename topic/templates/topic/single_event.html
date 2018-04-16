@@ -15,13 +15,20 @@
 
 {% block content %}
 
-
     <div class="row" xmlns="http://www.w3.org/1999/html">
         <div class="col-sm-12 col-md-12">
             <div align="center">
                 <img src="{{ occurrence.event.image_main.url }}" class="img-responsive" alt="{{ occurrence.event.title|capfirst }}">
             </div>
-            <h1>{{ occurrence.event.title|capfirst }}</h1>
+            <div>
+                {% comment %}
+                {# TODO: put event_type glyphicon  here #}
+                <a href = "{{ occurrence.event.event_type_coming_days_url }}">
+                    <img src="{{ event_type.image.url }}" class="img-responsive" alt="{{event_type.label}}" />
+                </a>
+                {% endcomment %}
+                <h1>{{ occurrence.event.title|capfirst }}</h1>
+            </div>
         </div>
     </div>
 
