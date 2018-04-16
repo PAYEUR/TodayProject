@@ -1,16 +1,15 @@
 # coding=utf-8
 
 from __future__ import print_function, unicode_literals
-
-from datetime import datetime, date, time
+from datetime import datetime
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
+
 from django import forms
-from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
-from crud import swingtime_settings
 from topic.models import Event, EventType
+from location.models import City
 
 WEEKDAY_LONG = (
     (0, _('Monday')),
@@ -24,33 +23,6 @@ WEEKDAY_LONG = (
 
 
 # ===============================================================================
-# TODO old features, remove this
-
-def timeslot_options(
-    interval=swingtime_settings.TIMESLOT_INTERVAL,
-    start_time=swingtime_settings.TIMESLOT_START_TIME,
-    end_delta=swingtime_settings.TIMESLOT_END_TIME_DURATION,
-    fmt=swingtime_settings.TIMESLOT_TIME_FORMAT
-):
-    """
-    Create a list of time slot options for use in swingtime forms.
-
-    The list is comprised of 2-tuples containing a 24-hour time value and a
-    12-hour temporal representation of that offset.
-
-    """
-    dt = datetime.combine(date.today(), time(0))
-    dtstart = datetime.combine(dt.date(), start_time)
-    dtend = dtstart + end_delta
-    options = []
-
-    while dtstart <= dtend:
-        options.append((str(dtstart.time()), dtstart.strftime(fmt)))
-        dtstart += interval
-
-    return options
-
-
 class MultipleIntegerField(forms.MultipleChoiceField):
     """
     A form field for handling multiple integers.

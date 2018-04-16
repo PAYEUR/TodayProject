@@ -1,23 +1,15 @@
 # coding=utf-8
-import calendar
-calendar.setfirstweekday(0)
+
 from datetime import datetime, date, time
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView
 from location.models import City
-# TODO remove this asap
-from crud import swingtime_settings
 
-from . import utils
-from .forms import IndexForm
-from .models import Occurrence, EventType, Topic
-
-
-# TODO remove this asap
-if swingtime_settings.CALENDAR_FIRST_WEEKDAY is not None:
-    calendar.setfirstweekday(swingtime_settings.CALENDAR_FIRST_WEEKDAY)
+import utils
+from forms import IndexForm
+from models import Occurrence, EventType, Topic
 
 
 # utilitary view
