@@ -18,7 +18,6 @@ urlpatterns = [
     r'^categorie(?P<event_type_id_string>.+)/du_(?P<start_day>[0-3]?\d)-(?P<start_month>0?[1-9]|1[012])-(?P<start_year>\d{4})_a_(?P<start_hour_string>.+)/au_(?P<end_day>[0-3]?\d)-(?P<end_month>0?[1-9]|1[012])-(?P<end_year>\d{4})_a_(?P<end_hour_string>.+)$',
     views.DateList.as_view(), name="full_list"),
 
-    # this one is not really usefull
     # TODO try to rewrite this
     url(r'^categorie(?P<event_type_id_string>[0-9]+)/$', views.event_type_coming_days, name="event_type_coming_days"),
 

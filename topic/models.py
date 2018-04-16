@@ -1,15 +1,15 @@
 # coding=utf-8
 
 from datetime import datetime
-from dateutil import rrule
+
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.core.urlresolvers import reverse
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+
 from connection.models import EnjoyTodayUser
 from location.models import City
-from TodayProject import utils
 
 __all__ = (
     'EventType',
@@ -66,6 +66,8 @@ class EventType(models.Model):
     # --------------------------------------------------------------------------
     def __str__(self):
         return self.label
+
+    # Impossible to define get_absolute_url because location can't be retrieved from here
 
 
 # ==============================================================================
@@ -176,32 +178,21 @@ class Event(models.Model):
         return reverse('crud:add_occurrences', kwargs={'event_id': self.pk})
 
     # --------------------------------------------------------------------------
-    def add_occurrences(self, start_time, end_time, is_multiple, **rrule_params):
+    def add_occurrences(self, datetime_list, delta_hour, is_multiple):
         """
-        Add one or more occurences to the event using a comparable API to
-        ``dateutil.rrule``.
-
-        Because ``rrule.rrule`` returns an iterator that can essentially be
-        unbounded, we need to slightly alter the expected behavior here in order
-        to enforce a finite number of occurrence creation.
-
-        If ``until`` entry is missing from ``rrule_params``,
-        only a single ``Occurrence`` instance will be created using the exact
-        ``start_time`` and ``end_time`` values.
+        :param datetime_list: list of datetimes
+        :param delta_hour: duration of the occurrence
+        :param is_multiple: bool
+        :return: Add occurrences (usually multiples ones) to an event
         """
 
-        until = rrule_params.get('until')
-        if not until:
-            self.occurrence_set.create(start_time=start_time, end_time=end_time)
-        else:
-            delta_hour = end_time - start_time
-            occurrences = []
-            for ev in rrule.rrule(dtstart=start_time, **rrule_params):
-                occurrences.append(Occurrence(start_time=ev,
-                                              end_time=ev + delta_hour,
-                                              event=self,
-                                              is_multiple=is_multiple))
-            self.occurrence_set.bulk_create(occurrences)
+        occurrences = []
+        for ev in datetime_list:
+            occurrences.append(Occurrence(start_time=ev,
+                                          end_time=ev + delta_hour,
+                                          event=self,
+                                          is_multiple=is_multiple))
+        self.occurrence_set.bulk_create(occurrences)
 
     # --------------------------------------------------------------------------
     def upcoming_occurrences(self):
@@ -289,6 +280,16 @@ class Occurrence(models.Model):
     def get_absolute_url(self):
         return reverse('location:topic:get_occurrence',
                        kwargs={'pk': self.pk,
+                               'city_slug': self.event.location.city_slug,
+                               'topic_name': self.event.event_type.topic.name
+                               }
+                       )
+
+    def get_events_for_same_day_url(self):
+        return reverse('location:topic:daily_events',
+                       kwargs={'year': str(self.start_time.year),
+                               'month': str(self.start_time.month),
+                               'day': str(self.start_time.day),
                                'city_slug': self.event.location.city_slug,
                                'topic_name': self.event.event_type.topic.name
                                }

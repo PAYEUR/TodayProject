@@ -29,18 +29,18 @@
 
 
 
-    {% for event_type, occurrences in sorted_occurrences.items %}
+    {% for event_type, url_and_occurrences in event_type_dict.items %}
     <div class="thumbnail" >
         <div class="row" >
             <div class="col-sm-12 col-md-6">
-                <a href = "{# url  'location:topic:event_type_coming_days' city_slug=city.city_slug topic_name=topic.name event_type_id_string=event_type.pk #}">
+                <a href = "{{ url_and_occurrences.0 }}">
                 <img src="{{ event_type.image.url }}" class="img-responsive" alt="{{event_type.label}}" />
                 </a>
             </div>
         </div>
-        {% if occurrences %}
+        {% if url_and_occurrences.1 %}
             <div class="caption">
-                {% for occurrence in occurrences %}
+                {% for occurrence in url_and_occurrences.1 %}
                     {% if forloop.first %}<div class="row" >{% endif %}
                         <div class="col-md-4">
                             {%  include "topic/thumbnail.html" %}

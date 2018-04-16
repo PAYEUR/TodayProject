@@ -1,16 +1,15 @@
 # coding=utf-8
 
 from __future__ import print_function, unicode_literals
-
-from datetime import datetime, date, time, timedelta
+from datetime import datetime
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
+
 from django import forms
-from location.models import City
 from django.utils.translation import ugettext_lazy as _
 
-from crud import swingtime_settings
 from topic.models import Event, EventType
+from location.models import City
 
 WEEKDAY_LONG = (
     (0, _('Monday')),
@@ -23,37 +22,7 @@ WEEKDAY_LONG = (
 )
 
 
-MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
-
-
 # ===============================================================================
-# TODO old features, remove this
-
-def timeslot_options(
-    interval=swingtime_settings.TIMESLOT_INTERVAL,
-    start_time=swingtime_settings.TIMESLOT_START_TIME,
-    end_delta=swingtime_settings.TIMESLOT_END_TIME_DURATION,
-    fmt=swingtime_settings.TIMESLOT_TIME_FORMAT
-):
-    """
-    Create a list of time slot options for use in swingtime forms.
-
-    The list is comprised of 2-tuples containing a 24-hour time value and a
-    12-hour temporal representation of that offset.
-
-    """
-    dt = datetime.combine(date.today(), time(0))
-    dtstart = datetime.combine(dt.date(), start_time)
-    dtend = dtstart + end_delta
-    options = []
-
-    while dtstart <= dtend:
-        options.append((str(dtstart.time()), dtstart.strftime(fmt)))
-        dtstart += interval
-
-    return options
-
-
 class MultipleIntegerField(forms.MultipleChoiceField):
     """
     A form field for handling multiple integers.
@@ -88,14 +57,13 @@ class EventForm(forms.ModelForm):
         fields = ['image',
                   'title',
                   'description',
+                  'location',
+                  'address',
                   'price',
                   'contact',
-                  'address',
                   'public_transport',
-                  'location',
                   ]
 
-    # TODO: add event_type here instead of locating it in an outside form
     # ---------------------------------------------------------------------------
     def __init__(self, *args, **kws):
         super(EventForm, self).__init__(*args, **kws)
@@ -175,7 +143,7 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        label='Date de début',
+        label='Date',  # change it if end_date is not masked anymore. cf occurrences_form_template.html
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -253,6 +221,7 @@ class SingleOccurrenceForm(forms.Form):
             else:
                 self.start_datetime = start_datetime
                 self.end_datetime = end_datetime
+                self.delta_hour = end_datetime - start_datetime
 
     def save(self, event):
         """
@@ -261,8 +230,8 @@ class SingleOccurrenceForm(forms.Form):
         """
 
         event.add_occurrences(
-            self.start_datetime,
-            self.end_datetime,
+            [self.start_datetime],
+            self.delta_hour,
             is_multiple=False,
         )
 
@@ -355,33 +324,27 @@ class MultipleOccurrenceForm(forms.Form):
                 raise forms.ValidationError("Verifier que les heures correspondent")
 
             self.start_datetime = start_datetime
-            self.end_datetime = end_datetime
+            self.end_datetime_starting_hour = datetime.combine(end_date, start_time)
+            self.end_datetime_ending_hour = end_datetime
+            self.delta_hour = self.end_datetime_ending_hour - self.end_datetime_starting_hour
+            self.week_days = week_days
 
             return self.cleaned_data
 
     # ---------------------------------------------------------------------------
     def save(self, event):
 
-        params = self._build_rrule_params()
-
-        event.add_occurrences(
-            self.start_datetime,
-            self.end_datetime,
-            is_multiple=True,
-            **params
-        )
+        event.add_occurrences(self._datetime_list(),
+                              delta_hour=self.delta_hour,
+                              is_multiple=True,
+                              )
 
         return event
 
     # ---------------------------------------------------------------------------
-    def _build_rrule_params(self):
-
-        data = self.cleaned_data
-        params = dict(
-            until=data['end_date'],
-            byweekday=data['week_days'],
-            interval=1,
-            freq=rrule.WEEKLY,
-        )
-
-        return params
+    def _datetime_list(self):
+        return rrule.rrule(dtstart=self.start_datetime,
+                           until=self.end_datetime_starting_hour,
+                           byweekday=self.week_days,
+                           freq=rrule.WEEKLY,
+                           )

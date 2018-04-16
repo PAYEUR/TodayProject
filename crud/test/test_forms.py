@@ -221,9 +221,14 @@ class MultipleOccurrenceFormTest(TestCase):
         if form.is_valid():
             form.save(event)
 
-        occurrence = Occurrence.objects.get(start_time=form.start_datetime,
-                                            end_time=form.end_datetime)
-        self.assertEqual(occurrence.event, event)
+        occurrence1 = Occurrence.objects.get(start_time=form.start_datetime,
+                                             end_time=form.start_datetime + timedelta(hours=1))
+
+        occurrence2 = Occurrence.objects.get(start_time=form.end_datetime_starting_hour,
+                                             end_time=form.end_datetime_ending_hour)
+
+        self.assertEqual(occurrence1.event, event)
+        self.assertEqual(occurrence2.event, event)
 
 
 class MockForm(forms.Form):
