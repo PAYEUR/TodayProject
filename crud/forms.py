@@ -2,7 +2,7 @@
 
 from __future__ import print_function, unicode_literals
 
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time
 from datetimewidget.widgets import DateWidget, TimeWidget
 from dateutil import rrule
 from django import forms
@@ -21,9 +21,6 @@ WEEKDAY_LONG = (
     (5, _('Saturday')),
     (6, _('Sunday')),
 )
-
-
-MINUTES_INTERVAL = swingtime_settings.TIMESLOT_INTERVAL.seconds // 60
 
 
 # ===============================================================================

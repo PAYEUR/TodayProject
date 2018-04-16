@@ -285,6 +285,16 @@ class Occurrence(models.Model):
                                }
                        )
 
+    def get_events_for_same_day_url(self):
+        return reverse('location:topic:daily_events',
+                       kwargs={'year': str(self.start_time.year),
+                               'month': str(self.start_time.month),
+                               'day': str(self.start_time.day),
+                               'city_slug': self.event.location.city_slug,
+                               'topic_name': self.event.event_type.topic.name
+                               }
+                       )
+
     def delete_url(self):
         return reverse('crud:delete_occurrence',
                        kwargs={'occurrence_id': self.pk},

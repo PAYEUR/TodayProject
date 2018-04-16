@@ -1,5 +1,6 @@
 # coding=utf-8
 import calendar
+calendar.setfirstweekday(0)
 from datetime import datetime, date, time
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -189,10 +190,8 @@ class DateList(ListView):
         return context
 
 
-
 # child functions
 # city and topic already in context and query
-# TODO maybe redirect to get all informations in url, instead of having all_events/today in url
 
 # time queries
 def today_all_events(request, **kwargs):
@@ -255,7 +254,8 @@ def event_type_coming_days(request, event_type_id_string, **kwargs):
 
 
 def daily_events(request, year, month, day, **kwargs):
-    d1 = {'event_type_id_string': utils.create_id_string(EventType.objects.all())}
+    topic = Topic.objects.get(name=kwargs['topic_name'])
+    d1 = {'event_type_id_string': utils.create_id_string(EventType.objects.filter(topic=topic))}
     date_day = utils.construct_day(year, month, day)
     start_time = utils.construct_time(date_day, time.min)
     end_time = utils.construct_time(date_day, time.max)
