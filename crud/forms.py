@@ -144,7 +144,7 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        label='Date de début',
+        label='Date',  # change it if end_date is not masked anymore. cf occurrences_form_template.html
         widget=DateWidget(
             options={
                     'todayHighlight': True,

@@ -1,4 +1,6 @@
 {% load bootstrap3 %}
+{# SETTING: form.end_time is masked #}
+
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#single_occurrence" aria-controls="single_occurrence" role="tab" data-toggle="tab">Evénements ponctuels</a></li>
     <li role="presentation"><a href="#multiple_occurrences" aria-controls="multiple_occurrences" role="tab" data-toggle="tab">Evénements récurrents</a></li>
@@ -11,7 +13,10 @@
         {% for form in single_occurrence_formset %}
             {% if forloop.first %}
             <h3>Date n°{{forloop.counter}}</h3>
-            {% bootstrap_form form %}
+                {% bootstrap_form_errors form %}
+                {% bootstrap_field form.start_date %}
+                {% bootstrap_field form.start_time %}
+                {% bootstrap_field form.end_time %}
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
                 Ajouter une date
             </button>
@@ -19,13 +24,19 @@
             {% elif forloop.last %}
             <div class="collapse" id="date{{forloop.counter}}">
                 <h3>Date n°{{forloop.counter}}</h3>
-                {% bootstrap_form form %}
+                {% bootstrap_form_errors form %}
+                {% bootstrap_field form.start_date %}
+                {% bootstrap_field form.start_time %}
+                {% bootstrap_field form.end_time %}
             </div>
 
             {% else %}
             <div class="collapse" id="date{{forloop.counter}}">
                 <h3>Date n°{{forloop.counter}}</h3>
-                {% bootstrap_form form %}
+                {% bootstrap_form_errors form %}
+                {% bootstrap_field form.start_date %}
+                {% bootstrap_field form.start_time %}
+                {% bootstrap_field form.end_time %}
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#date{{forloop.counter|add:'1' }}" aria-expanded="false" aria-controls="date{{forloop.counter|add:'1'}}">
                 Ajouter une date
             </button>
