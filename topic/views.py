@@ -96,12 +96,13 @@ class OccurrenceDetail(DetailView):
         # generic
         context['city'] = city
         context['topic'] = topic
-        context['current_topic'] = topic
+        context['address'] = address
 
         # side_bar
         context['all_event_type_list'] = EventType.objects.filter(topic=topic)
 
-        context['address'] = address
+        # top_bar
+        context['current_topic'] = topic
 
         return context
 
@@ -161,7 +162,7 @@ class DateList(ListView):
                                                     end_time__lte=self.end_time,
                                                     event__location=self.current_location,
                                                     event__event_type__topic=self.topic,
-                                                    )
+                                                    ).order_by('is_multiple')
             url = get_event_type_url(event_type, self.current_location, self.topic)
 
             event_type_dict[event_type] = url, occurrences
@@ -173,6 +174,8 @@ class DateList(ListView):
         # generic
         context['city'] = self.current_location
         context['topic'] = self.topic
+
+        # top_bar
         context['current_topic'] = self.topic
 
         # side_bar
