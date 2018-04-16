@@ -12,7 +12,7 @@ from forms import IndexForm
 from models import Occurrence, EventType, Topic
 
 
-# utilitary view
+# utilitarian function
 def get_event_type_url(event_type, current_location, topic):
     return reverse('location:topic:event_type_coming_days',
                    kwargs={'event_type_id_string': str(event_type.pk),
@@ -96,6 +96,8 @@ class OccurrenceDetail(DetailView):
         # generic
         context['city'] = city
         context['topic'] = topic
+        context['current_topic'] = topic
+
         # side_bar
         context['all_event_type_list'] = EventType.objects.filter(topic=topic)
 
@@ -182,8 +184,7 @@ class DateList(ListView):
         return context
 
 
-# child functions
-# city and topic already in context and query
+# child functions; city and topic already in context and query
 
 # time queries
 def today_all_events(request, **kwargs):
