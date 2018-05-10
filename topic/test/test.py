@@ -8,6 +8,8 @@ from django.test import TestCase
 from topic import utils
 from topic.models import EventType, Topic, Occurrence
 
+FIXTURES = ['fixtures/data_test.json']
+
 
 # utils
 class TestUtils(TestCase):
@@ -69,7 +71,7 @@ class TestUtils(TestCase):
 # url
 class TestUrl(TestCase):
 
-    fixtures = ['fixtures/data_test.json']
+    fixtures = FIXTURES
 
     def test_full_list_url(self):
         url = '/paris/spi/categorie1/du_21-05-2017_a_12h00/au_21-05-2017_a_13h00'
@@ -79,14 +81,14 @@ class TestUrl(TestCase):
 
 class TestOccurrenceDetail(TestCase):
 
-    fixtures = ['fixtures/data_test.json']
+    fixtures = FIXTURES
 
     def setUp(self):
         self.url = '/paris/spi/evenement79'
         self.event = Occurrence.objects.get(pk=79).event
+        self.response = self.client.get(self.url)
 
     def test_public_transport(self):
-        self.response = self.client.get(self.url)
         self.assertNotContains(self.response, "Accès")
 
         self.event.public_transport = "one public transport"
@@ -95,10 +97,17 @@ class TestOccurrenceDetail(TestCase):
         self.assertContains(self.response, "Accès")
 
     def test_contact(self):
-        self.response = self.client.get(self.url)
         self.assertNotContains(self.response, "Contact :")
 
         self.event.contact = "one contact"
         self.event.save()
         self.response = self.client.get(self.url)
         self.assertContains(self.response, "Contact :")
+
+    def test_address_displaying(self):
+        self.assertContains(self.response, "<!-- Map creation script -->")
+
+        self.event.address = "not matching location query"
+        self.event.save()
+        self.response = self.client.get(self.url)
+        self.assertContains(self.response, "<!-- geocoding error -->")
