@@ -37,8 +37,12 @@
             <div class="thumbnail">
                 <div class="caption">
                     <p>{{ occurrence.event.description|linebreaks }}</p>
-                    <p> <strong> Contact : </strong>{{ occurrence.event.contact|urlizetrunc:30|linebreaks }}</p>
-                    <p> <strong> Accès : </strong>{{ occurrence.event.public_transport }}</p>
+                    {% if occurrence.event.contact %}
+                        <p> <strong> Contact : </strong>{{ occurrence.event.contact|urlizetrunc:30|linebreaks }}</p>
+                    {% endif %}
+                    {% if occurrence.event.public_transport %}
+                        <p> <strong> Accès : </strong>{{ occurrence.event.public_transport }}</p>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
