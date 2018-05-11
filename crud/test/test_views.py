@@ -92,7 +92,6 @@ class AddEventTest(TestCase):
     def test_valid_data(self):
 
         with open("crud/test/adoration.jpg", 'rb') as image:
-
             response = self.client.post(reverse('crud:create_event'),
                                         dict(self.data, **{'image': image}),
                                         )
@@ -113,7 +112,7 @@ class AddEventTest(TestCase):
             with self.assertRaisesMessage(Http404, 'No Event matches the given query.'):
                 get_object_or_404(Event, title="Random title hrgjzefaj")
 
-    def test_invalid_event_data(self):
+    def test_invalid_event_description(self):
         data = self.data.copy()
         data['description'] = ''
         with open("crud/test/adoration.jpg", 'rb') as image:
@@ -136,7 +135,6 @@ class AddEventTest(TestCase):
         """
         Test two filled event_type_by_topic_form.
         Must raise topic_error = True
-        :return:
         """
         topic2 = Topic.objects.get(name='jobs')
         event_type2 = EventType.objects.get(label='Jardinage')
@@ -161,6 +159,20 @@ class AddEventTest(TestCase):
                                         )
 
             self.assertRedirects(response, '/connexion/login?next=/nouvel_evenement')
+
+    def test_event_type_by_topic_form_list_manager_display_when_event_image_misses(self):
+        # if no image -> doesn't display event_type_by_topic_form_list_manager
+        response = self.client.post(reverse('crud:create_event'),
+                                    dict(self.data)
+                                    )
+        self.assertContains(response, 'jobs')
+
+    def test_event_type_by_topic_form_list_manager_display_when_bad_image_file_format(self):
+        with open("crud/test/image_svg.svg", 'rb') as image:
+            response = self.client.post(reverse('crud:create_event'),
+                                        dict(self.data, **{'image': image}),
+                                        )
+        self.assertContains(response, 'jobs')
 
 
 class EventPlannerPanelViewTest(TestCase):
