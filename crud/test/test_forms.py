@@ -260,25 +260,25 @@ class FormListManagerTest(TestCase):
 
     def test_get_two_filled_forms(self):
         # 1 filled formset and 1 filled form
-        form_list_manager = FormsListManager(self.filled_form, self.filled_formset)
+        form_list_manager = FormsListManager([self.filled_form, self.filled_formset])
         self.assertEqual(form_list_manager.filled_forms, [self.filled_form, self.filled_formset])
 
     def test_get_one_filled_forms(self):
         # 1 filled formset and 1 blank form
-        form_list_manager = FormsListManager(self.blank_form, self.filled_formset)
+        form_list_manager = FormsListManager([self.blank_form, self.filled_formset])
         self.assertEqual(form_list_manager.filled_forms, [self.filled_formset])
 
     def test_get_zero_filled_forms(self):
         # 1 blank formset and 1 blank form
-        form_list_manager = FormsListManager(self.blank_form, self.blank_formset)
+        form_list_manager = FormsListManager([self.blank_form, self.blank_formset])
         self.assertEqual(form_list_manager.filled_forms, [])
 
     def test_get_filled_form_success(self):
-        form_list_manager = FormsListManager(self.blank_formset, self.filled_formset)
+        form_list_manager = FormsListManager([self.blank_formset, self.filled_formset])
         self.assertEqual(form_list_manager.filled_form, self.filled_formset)
 
     def test_get_filled_form_fail(self):
-        form_list_manager = FormsListManager(self.filled_formset, self.filled_form)
+        form_list_manager = FormsListManager([self.filled_formset, self.filled_form])
         self.assertTrue(form_list_manager.filled_form is None)
 
 
@@ -300,12 +300,12 @@ class EventTypeByTopicFormListManagerTest(TestCase):
     def test_two_forms(self):
         form1 = EventTypeByTopicForm(self.data1, topic=self.topic1)
         form2 = EventTypeByTopicForm(self.data2, topic=self.topic2)
-        form_list_manager = FormsListManager(form1, form2)
+        form_list_manager = FormsListManager([form1, form2])
         self.assertTrue(form_list_manager.filled_form is None)
 
     def test_all_forms(self):
-        topic_forms = (EventTypeByTopicForm(self.data3, topic=topic) for topic in Topic.objects.all())
-        form_list_manager = FormsListManager(*topic_forms)
+        topic_forms = [EventTypeByTopicForm(self.data3, topic=topic) for topic in Topic.objects.all()]
+        form_list_manager = FormsListManager(topic_forms)
         self.assertTrue(form_list_manager.filled_form is None)
 
 
@@ -360,9 +360,9 @@ class OccurrenceFormListManagerTest(TestCase):
                                                        prefix='multiple_occurrence')
 
     def test_one_filled_form(self):
-        occurrences_forms_manager = FormsListManager(self.single_empty_formset, self.multi_formset)
+        occurrences_forms_manager = FormsListManager([self.single_empty_formset, self.multi_formset])
         self.assertTrue(occurrences_forms_manager.filled_form.is_valid())
 
     def test_two_filled_form(self):
-        occurrences_forms_manager = FormsListManager(self.single_formset, self.multi_formset)
+        occurrences_forms_manager = FormsListManager([self.single_formset, self.multi_formset])
         self.assertTrue(occurrences_forms_manager.filled_form is None)

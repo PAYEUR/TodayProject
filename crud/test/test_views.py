@@ -161,17 +161,18 @@ class AddEventTest(TestCase):
             self.assertRedirects(response, '/connexion/login?next=/nouvel_evenement')
 
     def test_event_type_by_topic_form_list_manager_display_when_event_image_misses(self):
-        # if no image or bad format image file -> doesn't display event_type_by_topic_form_list_manager
+        # if no image -> doesn't display event_type_by_topic_form_list_manager
         response = self.client.post(reverse('crud:create_event'),
                                     dict(self.data)
                                     )
-        self.assertNotContains(response, 'jobs')
+        self.assertContains(response, 'jobs')
 
+    def test_event_type_by_topic_form_list_manager_display_when_bad_image_file_format(self):
         with open("crud/test/image_svg.svg", 'rb') as image:
             response = self.client.post(reverse('crud:create_event'),
                                         dict(self.data, **{'image': image}),
                                         )
-        self.assertNotContains(response, 'jobs')
+        self.assertContains(response, 'jobs')
 
 
 class EventPlannerPanelViewTest(TestCase):

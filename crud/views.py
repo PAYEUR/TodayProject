@@ -68,21 +68,22 @@ def add_event_and_occurrences(request, template='crud/add_event_and_occurrences.
 
     if request.method == 'POST':
         # initialization
+        topic_form_list = [EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all()]
+        topic_forms_manager = FormsListManager(topic_form_list)
+
         event_form = EventForm(request.POST, request.FILES)
 
         single_occurrence_formset = SingleOccurrenceFormSet(request.POST, prefix='single_occurrence')
         multiple_occurrence_formset = MultipleOccurrenceFormSet(request.POST, prefix='multiple_occurrence')
 
-        topic_forms = (EventTypeByTopicForm(request.POST, topic=topic) for topic in Topic.objects.all())
-        topic_forms_manager = FormsListManager(*topic_forms)
-        occurrences_forms_manager = FormsListManager(single_occurrence_formset, multiple_occurrence_formset)
+        occurrences_forms_manager = FormsListManager([single_occurrence_formset, multiple_occurrence_formset])
 
         # reset forms if needed
         try:
             topic_forms_manager.filled_form.is_valid()
         except AttributeError:
             topic_error = True
-            topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+            topic_form_list = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
         else:
             try:
                 occurrences_forms_manager.filled_form.is_valid()
@@ -112,12 +113,12 @@ def add_event_and_occurrences(request, template='crud/add_event_and_occurrences.
                     return redirect('crud:event_planner_panel')
 
     else:
-        topic_forms = (EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all())
+        topic_form_list = [EventTypeByTopicForm(topic=topic) for topic in Topic.objects.all()]
         event_form = EventForm()
         single_occurrence_formset = SingleOccurrenceFormSet(prefix='single_occurrence')
         multiple_occurrence_formset = MultipleOccurrenceFormSet(prefix='multiple_occurrence')
 
-    context = {'topic_forms': list(topic_forms),
+    context = {'topic_forms': topic_form_list,
                'event_form': event_form,
                'single_occurrence_formset': single_occurrence_formset,
                'multiple_occurrence_formset': multiple_occurrence_formset,

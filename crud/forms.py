@@ -110,8 +110,8 @@ class FormsListManager:
 
     """
 
-    def __init__(self, *forms):
-        self.forms = forms
+    def __init__(self, form_list):
+        self.form_list = form_list
         self.filled_forms = self.get_filled_forms()
         self.filled_form = self.get_filled_form()
 
@@ -119,7 +119,10 @@ class FormsListManager:
         """
             Check forms (resp. formsets) that have been modified and put them in filled_forms
         """
-        filled_forms = [f for f in self.forms if f is not None and f.has_changed()]
+        filled_forms = []
+        for f in self.form_list:
+            if f is not None and f.has_changed():
+                filled_forms.append(f)
         return filled_forms
 
     def get_filled_form(self):
