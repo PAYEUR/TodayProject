@@ -1,7 +1,14 @@
-from django.test import TestCase
+# -*- coding: utf-8 -*-
+from __future__ import (unicode_literals, absolute_import,
+                        print_function, division)
 from datetime import datetime, time
+
+from django.test import TestCase
+
 from topic import utils
-from topic.models import EventType, Topic
+from topic.models import EventType, Topic, Occurrence
+
+FIXTURES = ['fixtures/data_test.json']
 
 
 # utils
@@ -30,7 +37,7 @@ class TestUtils(TestCase):
 
     def test_create_date_url_dict(self):
         date_url_dict = utils.create_date_url_dict(self.start_time, self.end_time)
-        self.assertEqual(date_url_dict['start_date'], '1')
+        self.assertEqual(date_url_dict['start_day'], '1')
 
     def test_create_id_string(self):
         object_list = EventType.objects.filter(topic=self.topic1)
@@ -64,10 +71,43 @@ class TestUtils(TestCase):
 # url
 class TestUrl(TestCase):
 
-    fixtures = ['fixtures/data_test.json']
+    fixtures = FIXTURES
 
     def test_full_list_url(self):
         url = '/paris/spi/categorie1/du_21-05-2017_a_12h00/au_21-05-2017_a_13h00'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+
+class TestOccurrenceDetail(TestCase):
+
+    fixtures = FIXTURES
+
+    def setUp(self):
+        self.url = '/paris/spi/evenement79'
+        self.event = Occurrence.objects.get(pk=79).event
+        self.response = self.client.get(self.url)
+
+    def test_public_transport(self):
+        self.assertNotContains(self.response, "Accès")
+
+        self.event.public_transport = "one public transport"
+        self.event.save()
+        self.response = self.client.get(self.url)
+        self.assertContains(self.response, "Accès")
+
+    def test_contact(self):
+        self.assertNotContains(self.response, "Contact :")
+
+        self.event.contact = "one contact"
+        self.event.save()
+        self.response = self.client.get(self.url)
+        self.assertContains(self.response, "Contact :")
+
+    def test_address_displaying(self):
+        self.assertContains(self.response, "<!-- Map creation script -->")
+
+        self.event.address = "not matching location query"
+        self.event.save()
+        self.response = self.client.get(self.url)
+        self.assertContains(self.response, "<!-- geocoding error -->")
