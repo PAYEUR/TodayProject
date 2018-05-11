@@ -32,7 +32,7 @@ class MultipleIntegerField(forms.MultipleChoiceField):
     # ---------------------------------------------------------------------------
     def __init__(self, choices, size=None, label=None, widget=None):
         if widget is None:
-            widget = forms.SelectMultiple(attrs={'size' : size or len(choices)})
+            widget = forms.SelectMultiple(attrs={'size': size or len(choices)})
         super(MultipleIntegerField, self).__init__(
             required=False,
             choices=choices,
@@ -70,7 +70,7 @@ class EventForm(forms.ModelForm):
 
         self.fields['location'] = forms.ModelChoiceField(
             queryset=City.objects.all(),
-            label='Ville',
+            label='Ville *',
         )
 
 
@@ -83,7 +83,7 @@ class EventTypeByTopicForm(forms.Form):
     """
 
     event_type = forms.ModelChoiceField(queryset=None,
-                                        label="Catégorie",
+                                        label="Catégorie *",
                                         required=False,
                                         widget=forms.widgets.Select
                                         )
@@ -146,7 +146,7 @@ class SingleOccurrenceForm(forms.Form):
     # ==========================================================================
     start_date = forms.DateField(
         required=True,
-        label='Date',  # change it if end_date is not masked anymore. cf occurrences_form_template.html
+        label='Date *',  # change it if end_date is not masked anymore. cf occurrences_form_template.html
         widget=DateWidget(
             options={
                     'todayHighlight': True,
@@ -172,7 +172,7 @@ class SingleOccurrenceForm(forms.Form):
 
     start_time = forms.TimeField(
         required=True,
-        label='Horaire de début',
+        label='Horaire de début *',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -183,7 +183,7 @@ class SingleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=True,
-        label='Horaire de fin',
+        label='Horaire de fin *',
         widget=TimeWidget(
             options={
                     'pickerPosition': 'top-left',
@@ -250,7 +250,7 @@ class MultipleOccurrenceForm(forms.Form):
     # fields
 
     start_time = forms.TimeField(
-        label='Horaire de début',
+        label='Horaire de début *',
         #initial='14:00',
         widget=TimeWidget(
             options={'pickerPosition': 'top-left',
@@ -261,7 +261,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     end_time = forms.TimeField(
         required=True,
-        label='Horaire de fin',
+        label='Horaire de fin *',
         #initial='22:30',
         widget=TimeWidget(
             options={'pickerPosition': 'top-left',
@@ -272,7 +272,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     start_date = forms.DateField(
         required=True,
-        label='A partir du',
+        label='A partir du *',
         #initial=date.today,
         widget=DateWidget(
             options={
@@ -286,7 +286,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     end_date = forms.DateField(
         required=True,
-        label='Jusqu\'au',
+        label='Jusqu\'au *',
         #initial=date(date.today().year, 12, 31),
         widget=DateWidget(
             options={
@@ -300,7 +300,7 @@ class MultipleOccurrenceForm(forms.Form):
 
     week_days = MultipleIntegerField(
         WEEKDAY_LONG,
-        label='Jours de la semaine',
+        label='Jours de la semaine *',
         widget=forms.CheckboxSelectMultiple
     )
 
