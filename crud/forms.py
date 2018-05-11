@@ -71,6 +71,7 @@ class EventForm(forms.ModelForm):
         self.fields['location'] = forms.ModelChoiceField(
             queryset=City.objects.all(),
             label='Ville *',
+            help_text="Agglomération la plus proche du lieu l'événement",
         )
 
 

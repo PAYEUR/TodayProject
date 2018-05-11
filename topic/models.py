@@ -83,13 +83,13 @@ class Event(models.Model):
 
     image = models.ImageField(verbose_name="Image *",
                               upload_to='events/',
-                              help_text="image affichée pour l'événement",
+                              help_text="Photo de l'événement",
                               default=None
                               )
 
-    title = models.CharField(verbose_name="Titre *",
+    title = models.CharField(verbose_name="Nom de l'événement *",
                              max_length=100,
-                             help_text="Titre affiché pour l'événement",
+                             help_text="Choisissez un nom court et clair",
                              default=None,
                              )
 
@@ -134,7 +134,7 @@ class Event(models.Model):
 
     location = models.ForeignKey(City,
                                  on_delete=models.SET_DEFAULT,
-                                 help_text="ville dans laquelle sera posté l'événement",
+                                 help_text="Ville ou agglomération où a lieu l'événement",
                                  default=None,
                                  )
 
