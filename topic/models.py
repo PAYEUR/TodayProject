@@ -81,19 +81,19 @@ class Event(models.Model):
     # blank = True: validation thing: not required if True
     # see also https://docs.djangoproject.com/fr/1.10/ref/models/fields/
 
-    image = models.ImageField(verbose_name="Image",
+    image = models.ImageField(verbose_name="Image *",
                               upload_to='events/',
-                              help_text="image affichée pour l'événement",
+                              help_text="Photo de l'événement",
                               default=None
                               )
 
-    title = models.CharField(verbose_name="Titre",
+    title = models.CharField(verbose_name="Nom de l'événement *",
                              max_length=100,
-                             help_text="Titre affiché pour l'événement",
+                             help_text="Choisissez un nom court et clair",
                              default=None,
                              )
 
-    description = models.TextField(verbose_name="Description",
+    description = models.TextField(verbose_name="Description *",
                                    help_text="Description de l'événement. Ajouter également tout détails utiles",
                                    default=None
                                    )
@@ -119,22 +119,22 @@ class Event(models.Model):
                                default=None,
                                )
 
-    address = models.CharField(verbose_name="Adresse",
+    address = models.CharField(verbose_name="Adresse *",
                                max_length=150,
                                help_text="Donner l'adresse postale <u>au sens de google</u>",
                                default=None,
                                )
 
-    public_transport = models.CharField(verbose_name="Transport en commun",
+    public_transport = models.CharField(verbose_name="Accessibilité",
                                         max_length=150,
                                         blank=True,
-                                        help_text="Arrêt de métro,...",
+                                        help_text="Transports, parkings, ...",
                                         default=None,
                                         )
 
     location = models.ForeignKey(City,
                                  on_delete=models.SET_DEFAULT,
-                                 help_text="ville dans laquelle sera posté l'événement",
+                                 help_text="Ville ou agglomération où a lieu l'événement",
                                  default=None,
                                  )
 

@@ -46,10 +46,11 @@ class City(models.Model):
                        kwargs={'city_slug': self.city_slug,
                                }
                        )
+
     # ==========================================================================
     class Meta:
-        verbose_name ='city'
-        verbose_name_plural ='cities'
+        verbose_name = 'city'
+        verbose_name_plural = 'cities'
 
     # --------------------------------------------------------------------------
     def __str__(self):
