@@ -27,9 +27,10 @@ class EventFormTest(TestCase):
     fixtures = FIXTURES
 
     def setUp(self):
+        self.event_title = "Random title iopurtaeoirea"
         self.data = {
             # using SimpleUploadedFile for image field
-            'title': "Random title iopurtaeoirea",
+            'title': self.event_title,
             'description': "Description",
             'price': '1',
             'contact': "Ceci est un contact",
@@ -45,9 +46,6 @@ class EventFormTest(TestCase):
 
     def test_valid_data(self):
         form = EventForm(self.data, self.file_data)
-        print(form.errors)
-        # print(self.file_data)
-        # print(City.objects.get(city_slug="paris"))
         self.assertTrue(form.is_bound)
         self.assertTrue(form.is_valid())
 
@@ -65,7 +63,7 @@ class EventFormTest(TestCase):
         event.save()
 
         # get the saved event object
-        event2 = Event.objects.get(title="Random title iopurtaeoirea")
+        event2 = Event.objects.get(title=self.event_title)
 
         self.assertEqual(event, event2)
 
@@ -73,10 +71,7 @@ class EventFormTest(TestCase):
         upload_file = open("crud/test/image whith é and space.jpg", 'rb')
         file_data = {'image': SimpleUploadedFile(upload_file.name,
                                                  upload_file.read())}
-        data = self.data
-        random_title = "Random title gzefghsne"
-        data['title'] = random_title
-        form = EventForm(data, file_data)
+        form = EventForm(self.data, file_data)
 
         event = form.save(commit=False)
         event.event_type = EventType.objects.get(label='Confession')
@@ -84,8 +79,14 @@ class EventFormTest(TestCase):
         event.save()
 
         # get the saved event object
-        event2 = Event.objects.get(title=random_title)
+        event2 = Event.objects.get(title=self.event_title)
+
         self.assertEqual(event, event2)
+
+    def test_invalid_event_image_format(self):
+        with open("crud/test/image_svg.svg", 'rb') as image:
+            form = EventForm(dict(self.data, **{'image': image}))
+            self.assertFalse(form.is_valid())
 
 
 class EventTypeByTopicFormTest(TestCase):
