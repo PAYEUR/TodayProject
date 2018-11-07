@@ -20,8 +20,8 @@ def update_external_events(request):
     # 2) read data
     with open('update_external_events/events_paris.json', 'r') as json_f:
         data = json.load(json_f)
-        html_data = []
         new_events = []
+        updated_events = []
         for event in data['events']:
 
             # get event_types
@@ -41,7 +41,7 @@ def update_external_events(request):
             ET_event.location = City.objects.get(city_slug='paris')
 
             ## from data
-            ET_event.image = event['image']
+            ET_event.image = utils.mock_image(event)
             ET_event.title = event['title']['fr']
             ET_event.public_transport = u'Non défini'
             ET_event.address = event['address']
@@ -56,6 +56,7 @@ def update_external_events(request):
                 previous_event = Event.objects.get(title=ET_event.title)
                 Occurrence.objects.filter(event__pk=previous_event.id).delete()
                 Event.objects.get(pk=previous_event.id).delete()
+                updated_events.append(ET_event)
 
             except ObjectDoesNotExist:
                 new_events.append(ET_event)
@@ -67,11 +68,10 @@ def update_external_events(request):
             # get and save occurrences
             ET_event.add_occurrences(*utils.get_occurrences(event))
 
-        # for test purpose only:
-            ## keep database clean
-            Occurrence.objects.filter(event__pk=ET_event.id).delete()
-            Event.objects.get(pk=ET_event.id).delete()
-
-        html = "<html><body>New events : %s.</body></html>" % str([event.title for event in new_events])
+        html = "<html><body>New events : %s. </br>"\
+               "Updated events: %s </body></html>" \
+               % (str([event.title for event in new_events]),
+                  str([event.title for event in updated_events])
+                  )
 
         return HttpResponse(html)

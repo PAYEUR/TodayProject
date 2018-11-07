@@ -4,6 +4,8 @@ from __future__ import print_function, unicode_literals
 import sys
 from datetime import datetime, timedelta
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 
 def convert_to_utf8(filename):
     # gather the encodings you think that the file may be
@@ -49,3 +51,15 @@ def get_occurrences(event):
     delta_hour = first_end - first_start
 
     return datetime_list, delta_hour, True
+
+
+def mock_image(event):
+    """
+    Mock an uploaded image and set the url (which is the only accessed attribute)
+    :param event:
+    :return:
+    """
+    upload_file = open("update_external_events/mock.jpg", 'rb')
+    image = SimpleUploadedFile(upload_file.name, upload_file.read())
+    image.url = event['image']
+    return image
