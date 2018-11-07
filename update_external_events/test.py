@@ -3,6 +3,7 @@
 from __future__ import print_function, unicode_literals
 import json
 import urllib2
+from datetime import datetime, timedelta
 
 from django.test import SimpleTestCase
 
@@ -52,3 +53,10 @@ class TestUtils(SimpleTestCase):
         description = utils.set_event_description(self.event)
         self.assertEqual(description, self.event['longDescription']['fr'])
 
+    def test_get_occurrences(self):
+        datetime_list, delta_hour, is_multiple = utils.get_occurrences(self.event)
+
+        self.assertEqual(datetime_list[0],
+                         datetime.strptime('2018-11-06T19:30:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+                         )
+        self.assertEqual(delta_hour, timedelta(hours=1))
