@@ -12,12 +12,14 @@ class TestUtils(SimpleTestCase):
     def test_read_jsonfile(self):
 
         with open('update_external_events/events_paris.json', 'r') as json_f:
-            print(json_f.read()[:10])
-            data = json.loads(json_f.read(), 'utf-8')
-            print(data)
-            self.assertEqual(data['total'], 307)
+            data = json.load(json_f)
+            self.assertEqual(data['total'], 387)
 
     def test_read_jsonurl(self):
         url = 'https://openagenda.com/agendas/82290100/events.json'
-        data = json.load(urllib2.urlopen(url))
-        print(data['total'])
+        response = urllib2.urlopen(url)
+        self.assertEqual(response.getcode(), 200)
+        try:
+            json.load(response)
+        except Exception:
+            self.fail("json.load() raised an exeption")
