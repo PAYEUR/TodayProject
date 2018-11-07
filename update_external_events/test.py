@@ -32,8 +32,8 @@ class TestUrlForUpdate(SimpleTestCase):
 
     def test_url(self):
         url = '/paris/test-update'
-        # response = self.client.get(url)
-        # self.assertEqual(response.status_code, 200)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestUtils(SimpleTestCase):

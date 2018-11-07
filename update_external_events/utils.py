@@ -1,4 +1,4 @@
-# coding = utf-8
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function, unicode_literals
 import sys
@@ -27,7 +27,7 @@ def convert_to_utf8(filename):
 
 
 def set_event_description(event):
-    description = event['longDescription']['fr']
+    description = event['longDescription']['fr'] if event['longDescription'] else event['description']['fr']
     if event['registration']:
         description = "%s \n%s %s" % (description, u"Inscriptions:", event['registration'][0]['value'])
     return description

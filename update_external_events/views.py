@@ -1,11 +1,12 @@
-# coding = utf-8
+# -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 import json
 from datetime import datetime
 
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
-from topic.models import Event, EventType
+from topic.models import Event, EventType, Occurrence
 from location.models import City
 from connection.models import EnjoyTodayUser
 import utils
@@ -20,6 +21,7 @@ def update_external_events(request):
     with open('update_external_events/events_paris.json', 'r') as json_f:
         data = json.load(json_f)
         html_data = []
+        new_events = []
         for event in data['events']:
 
             # get event_types
@@ -32,35 +34,44 @@ def update_external_events(request):
             # create Event object:
             ET_event = Event()
 
-            # by default
-            ET_event.event_planner = EnjoyTodayUser.objects.get(user='admin')
+            ## by default
+            ET_event.event_planner = EnjoyTodayUser.objects.get(user__username='admin')
             ET_event.event_type = EventType.objects.get(label='autres')
             ET_event.created_at = datetime.now()
             ET_event.location = City.objects.get(city_slug='paris')
 
+            ## from data
             ET_event.image = event['image']
-            ET_event.title = event['origin']['title']
-            ET_event.public_transport = None
+            ET_event.title = event['title']['fr']
+            ET_event.public_transport = u'Non défini'
             ET_event.address = event['address']
             ET_event.contact = event['contributor']['organization']
-            ET_event.price = event['conditions']['fr']
+            ET_event.price = event['conditions']['fr'] if event['conditions'] else 0
             ET_event.description = utils.set_event_description(event)
 
             ET_event.image_main = ET_event.image
 
+            # delete previous versions of the same event
+            try:
+                previous_event = Event.objects.get(title=ET_event.title)
+                Occurrence.objects.filter(event__pk=previous_event.id).delete()
+                Event.objects.get(pk=previous_event.id).delete()
+
+            except ObjectDoesNotExist:
+                new_events.append(ET_event)
 
 
+            # save event
+            ET_event.save()
 
-            # get occurrences
-            #if len(event['timings']) > 1:
-                # event_is_multiple = True
-            #for timing in event['timings']:
-                #Event.add_occurrences()
+            # get and save occurrences
+            ET_event.add_occurrences(*utils.get_occurrences(event))
 
-            # create an ET event
-            #event = Event()
-            #events_title.append(event['title'])
+        # for test purpose only:
+            ## keep database clean
+            Occurrence.objects.filter(event__pk=ET_event.id).delete()
+            Event.objects.get(pk=ET_event.id).delete()
 
-        html = "<html><body>TITLES : %s.</body></html>" % str(html_data)
+        html = "<html><body>New events : %s.</body></html>" % str([event.title for event in new_events])
+
         return HttpResponse(html)
-
