@@ -2,7 +2,8 @@
 
 from __future__ import print_function, unicode_literals
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+import urllib2
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -41,25 +42,30 @@ def get_occurrences(event):
     :return: datetime_list, delta_hour (unique), isMultiple=True
     """
     datetime_list = []
-    format = '%Y-%m-%dT%H:%M:%S.000Z'
+    str_format = '%Y-%m-%dT%H:%M:%S.000Z'
 
     for timing in event['timings']:
-        datetime_list.append(datetime.strptime(timing['start'], format))
+        datetime_list.append(datetime.strptime(timing['start'], str_format))
 
-    first_start = datetime.strptime(event['timings'][0]['start'], format)
-    first_end = datetime.strptime(event['timings'][0]['end'], format)
+    first_start = datetime.strptime(event['timings'][0]['start'], str_format)
+    first_end = datetime.strptime(event['timings'][0]['end'], str_format)
     delta_hour = first_end - first_start
 
     return datetime_list, delta_hour, True
 
 
-def mock_image(event):
+def get_image(event):
     """
-    Mock an uploaded image and set the url (which is the only accessed attribute)
     :param event:
-    :return:
+    :return: SimpleUploadedFile fitting with ImageField
     """
-    upload_file = open("update_external_events/mock.jpg", 'rb')
-    image = SimpleUploadedFile(upload_file.name, upload_file.read())
-    image.url = event['image']
-    return image
+    if event['image']:
+        # download image locally
+        image_url = urllib2.urlopen(event['image'])
+        with open('update_external_events/tata.jpg', 'w') as f:
+            f.write(image_url.read())
+        with open('update_external_events/tata.jpg', 'rb') as f:
+            return SimpleUploadedFile(f.name, f.read())
+    else:
+        with open('update_external_events/mock.jpg', 'rb') as f:
+            return SimpleUploadedFile(f.name, f.read())

@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals
 import json
 from datetime import datetime
+import os
 
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -41,7 +42,7 @@ def update_external_events(request):
             ET_event.location = City.objects.get(city_slug='paris')
 
             ## from data
-            ET_event.image = utils.mock_image(event)
+            ET_event.image = utils.get_image(event)
             ET_event.title = event['title']['fr']
             ET_event.public_transport = u'Non défini'
             ET_event.address = event['address']
@@ -61,12 +62,18 @@ def update_external_events(request):
             except ObjectDoesNotExist:
                 new_events.append(ET_event)
 
-
             # save event
             ET_event.save()
 
             # get and save occurrences
             ET_event.add_occurrences(*utils.get_occurrences(event))
+
+            # flush
+            try:
+                os.remove('tata.jpg')
+            except OSError:
+                print('no file to remove')
+                pass
 
         html = "<html><body>New events : %s. </br>"\
                "Updated events: %s </body></html>" \
