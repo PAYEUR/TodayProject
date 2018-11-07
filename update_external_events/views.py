@@ -70,7 +70,7 @@ def update_external_events(request):
 
             # flush
             try:
-                os.remove('tata.jpg')
+                os.remove('update_external_events/last_event_image.jpg')
             except OSError:
                 print('no file to remove')
                 pass
