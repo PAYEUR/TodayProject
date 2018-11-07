@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class UpdateExternalEventsConfig(AppConfig):
     name = 'update_external_events'

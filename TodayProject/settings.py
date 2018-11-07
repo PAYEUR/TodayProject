@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
     'widget.apps.WidgetConfig',
+    'update_external_events.apps.UpdateExternalEventsConfig'
 
 ]
 
