@@ -1,9 +1,8 @@
 # coding = utf-8
 
 from __future__ import print_function, unicode_literals
-import os
 import sys
-import shutil
+from datetime import datetime, timedelta
 
 
 def convert_to_utf8(filename):
@@ -25,3 +24,28 @@ def convert_to_utf8(filename):
     # and at last convert it to utf-8
     with open(filename, 'w') as f:
         f.write(data.encode('utf-8'))
+
+
+def set_event_description(event):
+    description = event['longDescription']['fr']
+    if event['registration']:
+        description = "%s \n%s %s" % (description, u"Inscriptions:", event['registration'][0]['value'])
+    return description
+
+
+def get_occurrences(event):
+    """
+    :param event:
+    :return: datetime_list, delta_hour (unique), isMultiple=True
+    """
+    datetime_list = []
+    format = '%Y-%m-%dT%H:%M:%S.000Z'
+
+    for timing in event['timings']:
+        datetime_list.append(datetime.strptime(timing['start'], format))
+
+    first_start = datetime.strptime(event['timings'][0]['start'], format)
+    first_end = datetime.strptime(event['timings'][0]['end'], format)
+    delta_hour = first_end - first_start
+
+    return datetime_list, delta_hour, True
