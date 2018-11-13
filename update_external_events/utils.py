@@ -70,6 +70,7 @@ def get_occurrences(event):
     return datetime_list, delta_hour, True
 
 
+# TODO: problem with image
 def get_image(event):
     """
     :param event:

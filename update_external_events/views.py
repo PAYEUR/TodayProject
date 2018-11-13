@@ -52,6 +52,7 @@ def update_external_events(request):
                 new_events.append(ET_event)
 
             # save event
+            # TODO: problem with image
             ET_event.save()
 
             # get and save occurrences
