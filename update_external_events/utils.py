@@ -6,6 +6,22 @@ from datetime import datetime
 import urllib2
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.exceptions import ObjectDoesNotExist
+
+from topic.models import EventType
+
+
+CORRESPONDING_EVENT_TYPE = {
+    u'Retraite/pélerinage': [u'retraite', u'pelerinage'],
+    u'Groupe de prière': [u'célébration', u'prière'],
+    u'Réflexion et partage': [u'amitié', u'partage', u'réflexion'],
+    u'Concert et spectacles': [u'concert', u'culture', u'exposition'],
+    u'Action sociale': [u'action caritative', u'caritatifs', u'solidarité'],
+    u'Adoration': [u'adoration', u'saint sacrement'],
+    u'Confession': [u'pardon', u'confessions'],
+    u'Conférence': [u'conférence', u'formation', u'enseignement', u'forum'],
+    u'Autre': [],
+}
 
 
 def convert_to_utf8(filename):
@@ -69,3 +85,25 @@ def get_image(event):
     else:
         with open('update_external_events/default.jpg', 'rb') as f:
             return SimpleUploadedFile(f.name, f.read())
+
+
+def get_event_type(event):
+    """
+    :param event
+    :return:
+    """
+    event_type_list = []
+    for tag in event['tags']:
+        for k, v_list in CORRESPONDING_EVENT_TYPE.items():
+            for v in v_list:
+                for word in tag['label'].lower().split(' '):
+                    if word in v:
+                        try:
+                            event_type_list.append(EventType.objects.get(label=k))
+                        except ObjectDoesNotExist:
+                            print('event_type of CORRESPONDING_EVENT_TYPE not in database')
+    if event_type_list:
+        return event_type_list[0]  # if different event_type possible, returns the first
+    else:
+        return EventType.objects.get(label=u'Autre')
+

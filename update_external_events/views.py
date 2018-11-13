@@ -36,8 +36,8 @@ def update_external_events(request):
             ET_event = Event()
 
             ## by default
-            ET_event.event_planner = EnjoyTodayUser.objects.get(user__username='admin')
-            ET_event.event_type = EventType.objects.get(label='autres')
+            ET_event.event_planner = EnjoyTodayUser.objects.get(user__username=u'admin')
+            ET_event.event_type = EventType.objects.get(label='Autre')
             ET_event.created_at = datetime.now()
             ET_event.location = City.objects.get(city_slug='paris')
 

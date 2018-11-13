@@ -1,16 +1,19 @@
-# coding = utf-8
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function, unicode_literals
 import json
 import urllib2
 from datetime import datetime, timedelta
 
-from django.test import SimpleTestCase
+from django.test import TestCase
 
+from topic.models import EventType
 import utils
 
+FIXTURES = ['fixtures/data_test.json']
 
-class TestRawData(SimpleTestCase):
+
+class TestRawData(TestCase):
 
     def test_jsonfile(self):
 
@@ -28,7 +31,9 @@ class TestRawData(SimpleTestCase):
     #         self.fail("json.load() raised an exeption")
 
 
-class TestUrlForUpdate(SimpleTestCase):
+class TestUrlForUpdate(TestCase):
+
+    fixtures = FIXTURES
 
     def test_url(self):
         url = '/paris/test-update'
@@ -36,7 +41,9 @@ class TestUrlForUpdate(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestUtils(SimpleTestCase):
+class TestUtils(TestCase):
+
+    fixtures = FIXTURES
 
     def setUp(self):
         with open('update_external_events/events_paris.json', 'r') as json_f:
@@ -60,3 +67,21 @@ class TestUtils(SimpleTestCase):
                          datetime.strptime('2018-11-06T19:30:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
                          )
         self.assertEqual(delta_hour, timedelta(hours=1))
+
+    def test_get_event_type_not_in_db(self):
+        """
+        event_type not in DB
+        :return: EventType.Objects.get(label=u'Autre')
+        """
+        self.assertEqual(utils.get_event_type(self.event), EventType.objects.get(label=u'Autre'))
+
+    def test_get_event_type_in_db(self):
+        """
+        event_type in DB
+        :return: EventType.Objects.get(label=u'Conférence')
+        """
+        self.event = self.data['events'][10]
+        self.assertEqual(utils.get_event_type(self.event), EventType.objects.get(label=u'Conférence'))
+
+
+
