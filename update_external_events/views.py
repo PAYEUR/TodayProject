@@ -40,7 +40,7 @@ def update_external_events(request):
         ET_event.image = utils.get_image(event)
         ET_event.title = event['title']['fr']
         ET_event.public_transport = u'Non défini'
-        ET_event.address = event['address']
+        ET_event.address = utils.get_address(event)
         ET_event.contact = event['contributor']['organization']
         ET_event.price = event['conditions']['fr'] if event['conditions'] else 0
         ET_event.description = utils.set_event_description(event)

@@ -101,5 +101,8 @@ class TestUtils(TestCase):
         self.event = self.data['events'][10]
         self.assertEqual(utils.get_event_type(self.event), EventType.objects.get(label=u'Conférence'))
 
+    def test_get_address(self):
+        address = utils.get_address(self.event)
+        self.assertEqual(address, u'Cathédrale Notre-Dame de Paris, 6 parvis Notre-Dame, 75004 Paris')
 
 

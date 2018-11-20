@@ -94,3 +94,13 @@ def get_event_type(event):
     else:
         return EventType.objects.get(label=u'Autre')
 
+
+# TODO: convert this to openstreet map or google maps
+def get_address(event):
+    """
+    :param event:
+    :return: full ET address
+    """
+    address = event['location']['address']
+    name = event['location']['name']
+    return u'%s, %s' % (name, address)
