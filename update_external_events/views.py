@@ -7,6 +7,7 @@ import time
 
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import user_passes_test
 
 from topic.models import Event, Occurrence
 from location.models import City
@@ -14,6 +15,7 @@ from connection.models import EnjoyTodayUser
 import utils
 
 
+@user_passes_test(lambda u: u.is_superuser, login_url='connection:login')
 def update_external_events(request):
     url = 'https://openagenda.com/agendas/82290100/events.json'
     r = urllib2.urlopen(url)
