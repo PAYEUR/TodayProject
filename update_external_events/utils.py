@@ -81,7 +81,7 @@ def get_image(event):
         image_url = urllib2.urlopen(event['image'])
         with open('update_external_events/last_event_image.jpg', 'w') as f:
             f.write(image_url.read())
-        with open('update_external_events/tata.jpg', 'rb') as f:
+        with open('update_external_events/last_event_image.jpg', 'rb') as f:
             return SimpleUploadedFile(f.name, f.read())
     else:
         with open('update_external_events/default.jpg', 'rb') as f:
