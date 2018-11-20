@@ -4,7 +4,7 @@ from __future__ import print_function, unicode_literals
 import json
 import urllib2
 from datetime import datetime, timedelta
-import os
+from unittest import skip
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -23,14 +23,14 @@ class TestRawData(TestCase):
             data = json.load(json_f)
             self.assertEqual(data['total'], 387)
 
-    # def test_jsonurl(self):
-    #     url = 'https://openagenda.com/agendas/82290100/events.json'
-    #     response = urllib2.urlopen(url)
-    #     self.assertEqual(response.getcode(), 200)
-    #     try:
-    #         json.load(response)
-    #     except Exception:
-    #         self.fail("json.load() raised an exeption")
+    def test_jsonurl(self):
+        url = 'https://openagenda.com/agendas/82290100/events.json'
+        response = urllib2.urlopen(url)
+        self.assertEqual(response.getcode(), 200)
+        try:
+            json.load(response)
+        except Exception:
+            self.fail("json.load() raised an exeption")
 
 
 class TestUrlForUpdate(TestCase):
