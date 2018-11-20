@@ -53,11 +53,7 @@ class TestUtils(TestCase):
             self.event = self.data['events'][0]
 
     def tearDown(self):
-        try:
-            os.remove('update_external_events/last_event_image.jpg')
-        except OSError:
-            print("no 'last_event_image.jpg' in 'update_external_events' to remove")
-            pass
+        utils.flush_image()
 
     def test_set_event_description_with_registration(self):
         description = utils.set_event_description(self.event)

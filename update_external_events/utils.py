@@ -3,6 +3,7 @@
 from __future__ import print_function, unicode_literals
 from datetime import datetime
 import urllib2
+import os
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
@@ -63,6 +64,14 @@ def get_image(event):
     else:
         with open('update_external_events/default.jpg', 'rb') as f:
             return SimpleUploadedFile(f.name, f.read())
+
+
+def flush_image(image_name='last_event_image.jpg'):
+    try:
+        os.remove('update_external_events/%s' % image_name)
+    except OSError:
+        print("no %s in 'update_external_events' to remove" % image_name)
+        pass
 
 
 def get_event_type(event):

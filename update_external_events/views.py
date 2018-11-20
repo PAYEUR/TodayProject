@@ -52,18 +52,13 @@ def update_external_events(request):
                 new_events.append(ET_event)
 
             # save event
-            # TODO: problem with image
             ET_event.save()
 
             # get and save occurrences
             ET_event.add_occurrences(*utils.get_occurrences(event))
 
             # flush
-            try:
-                os.remove('update_external_events/last_event_image.jpg')
-            except OSError:
-                print("no image file in '.' to remove")
-                pass
+            utils.flush_image()
 
         html = "<html><body>New events : %s. </br>"\
                "Updated events: %s </body></html>" \
