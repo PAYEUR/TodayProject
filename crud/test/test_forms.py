@@ -40,7 +40,7 @@ class EventFormTest(TestCase):
             }
 
         # https://stackoverflow.com/questions/2473392/unit-testing-a-django-form-with-a-filefield
-        upload_file = open("crud/test/adoration.jpg", 'rb')
+        upload_file = open(u"crud/test/adoration.jpg", 'rb')
         self.file_data = {'image': SimpleUploadedFile(upload_file.name,
                                                       upload_file.read())}
 
@@ -68,7 +68,7 @@ class EventFormTest(TestCase):
         self.assertEqual(event, event2)
 
     def test_save_image_with_particular_names(self):
-        upload_file = open("crud/test/image whith é and space.jpg", 'rb')
+        upload_file = open(u"crud/test/image whith é and space.jpg", 'rb')
         file_data = {'image': SimpleUploadedFile(upload_file.name,
                                                  upload_file.read())}
         form = EventForm(self.data, file_data)
@@ -84,7 +84,7 @@ class EventFormTest(TestCase):
         self.assertEqual(event, event2)
 
     def test_invalid_event_image_format(self):
-        with open("crud/test/image_svg.svg", 'rb') as image:
+        with open(u"crud/test/image_svg.svg", 'rb') as image:
             form = EventForm(dict(self.data, **{'image': image}))
             self.assertFalse(form.is_valid())
 
