@@ -4,11 +4,10 @@ from __future__ import print_function, unicode_literals
 import json
 import urllib2
 from datetime import datetime, timedelta
-from unittest import skip
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 
 from topic.models import EventType
 import utils
@@ -20,7 +19,7 @@ class TestRawData(TestCase):
 
     def test_jsonfile(self):
 
-        with open('update_external_events/events_paris.json', 'r') as json_f:
+        with open('update_external_events/test_events_paris.json', 'r') as json_f:
             data = json.load(json_f)
             self.assertEqual(data['total'], 387)
 
@@ -58,7 +57,7 @@ class TestUtils(TestCase):
     fixtures = FIXTURES
 
     def setUp(self):
-        with open('update_external_events/events_paris.json', 'rb') as json_f:
+        with open('update_external_events/test_events_paris.json', 'rb') as json_f:
             self.data = json.load(json_f)
             self.event = self.data['events'][0]
 

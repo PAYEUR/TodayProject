@@ -6,7 +6,7 @@ from django.conf.urls import static, include, url
 from django.conf import settings
 
 test_url_patterns = [
-    url(r'test-update', include('update_external_events.urls'))
+
 ]
 
 urlpatterns = test_url_patterns \
