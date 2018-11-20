@@ -8,7 +8,7 @@ import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
 
-from topic.models import EventType
+from topic.models import EventType, Topic
 
 
 CORRESPONDING_EVENT_TYPE = {
@@ -92,7 +92,8 @@ def get_event_type(event):
     if event_type_list:
         return event_type_list[0]  # if different event_type possible, returns the first
     else:
-        return EventType.objects.get(label=u'Autre')
+        topic = Topic.objects.get(name='spi')
+        return EventType.objects.filter(label=u'Autre').filter(topic=topic)[0]
 
 
 # TODO: convert this to openstreet map or google maps
