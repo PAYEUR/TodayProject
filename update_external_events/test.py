@@ -8,6 +8,7 @@ from unittest import skip
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth import authenticate, login
 
 from topic.models import EventType
 import utils
@@ -37,7 +38,16 @@ class TestUrlForUpdate(TestCase):
 
     fixtures = FIXTURES
 
-    def test_url(self):
+    def test_url_without_admin_access(self):
+        url = '/paris/test-update'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_url_with_admin_access(self):
+        user = authenticate(username='machin', password='machinchose')
+        self.assertTrue(user.is_superuser)
+
+        self.client.login(username='machin', password='machinchose')
         url = '/paris/test-update'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
