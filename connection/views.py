@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
@@ -19,7 +18,12 @@ def connexion(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return redirect("connection:logging_success")
+                try:
+                    request.GET.get('next')
+                    return redirect(request.GET.get('next'))
+                except TypeError:
+                    return render(request, 'connection/logging_success.html')
+
             else:
                 error = True
 
@@ -28,28 +32,21 @@ def connexion(request):
 
     context = dict({'connexion_form': connexion_form,
                     'error': error
-                    }
-                )
+                    })
 
-    return render(request, 'connection/connexion.html', context)
+    return render(request, 'connection/login.html', context)
 
 
-@login_required(login_url='connection:login')
+@login_required()
 def deconnexion(request):
     logout(request)
     return redirect('core:index')
-
-
-@login_required(login_url='connection:login')
-def logging_success(request):
-    return render(request, 'connection/logging_success.html')
 
 
 def create_user(
         request,
         template='connection/inscription.html',
         form_class=MyUserCreationForm,
-        success_url = reverse_lazy('logging_success')
         ):
 
     logout(request)
@@ -65,7 +62,7 @@ def create_user(
             login(request, user)
             event_planner = EnjoyTodayUser(user=user)
             event_planner.save()
-            return redirect('connection:logging_success')
+            return render(request, 'connection/logging_success.html')
 
     else:
         registration_form = form_class()

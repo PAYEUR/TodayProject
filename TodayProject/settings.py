@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crud.apps.CrudConfig',
     'location.apps.LocationConfig',
     'widget.apps.WidgetConfig',
+    'update_external_events.apps.UpdateExternalEventsConfig'
 
 ]
 
@@ -146,6 +147,6 @@ with open('/etc/easy_map_key') as f:
     EASY_MAPS_GOOGLE_MAPS_API_KEY = f.read().strip()
 
 # to overwrite when we will properly separate login process from core
-LOGIN_URL = ''
+LOGIN_URL = 'connection:login'
 
 ALLOWED_HOSTS = ['127.0.0.1:8000']
