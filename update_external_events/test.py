@@ -4,8 +4,10 @@ from __future__ import print_function, unicode_literals
 import json
 import urllib2
 from datetime import datetime, timedelta
+import os
 
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from topic.models import EventType
 import utils
@@ -46,9 +48,16 @@ class TestUtils(TestCase):
     fixtures = FIXTURES
 
     def setUp(self):
-        with open('update_external_events/events_paris.json', 'r') as json_f:
+        with open('update_external_events/events_paris.json', 'rb') as json_f:
             self.data = json.load(json_f)
             self.event = self.data['events'][0]
+
+    def tearDown(self):
+        try:
+            os.remove('update_external_events/last_event_image.jpg')
+        except OSError:
+            print("no 'last_event_image.jpg' in 'update_external_events' to remove")
+            pass
 
     def test_set_event_description_with_registration(self):
         description = utils.set_event_description(self.event)
@@ -67,6 +76,19 @@ class TestUtils(TestCase):
                          datetime.strptime('2018-11-06T19:30:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
                          )
         self.assertEqual(delta_hour, timedelta(hours=1))
+
+    def test_get_image_for_existing_image(self):
+        image = utils.get_image(self.event)
+        with open('update_external_events/last_event_image.jpg', 'rb') as f:
+            upload_file = SimpleUploadedFile(f.name, f.read())
+            self.assertEqual(image.read(), upload_file.read())
+
+    def test_get_image_by_default(self):
+        self.event['image'] = ''
+        image = utils.get_image(self.event)
+        with open('update_external_events/default.jpg', 'rb') as f:
+            upload_file = SimpleUploadedFile(f.name, f.read())
+            self.assertEqual(image.read(), upload_file.read())
 
     def test_get_event_type_not_in_db(self):
         """
