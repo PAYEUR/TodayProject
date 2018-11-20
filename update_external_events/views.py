@@ -8,6 +8,7 @@ import time
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
 
 from topic.models import Event, Occurrence
 from location.models import City
@@ -33,7 +34,10 @@ def update_external_events(request):
         ET_event = Event()
 
         ## by default
-        ET_event.event_planner = EnjoyTodayUser.objects.get(user__username=u'admin')
+        # At least one user is superuser
+        user = User.objects.filter(is_staff=True)[0]
+
+        ET_event.event_planner = EnjoyTodayUser.objects.get(user=user)
         ET_event.created_at = datetime.now()
         ET_event.location = City.objects.get(city_slug='paris')
 
