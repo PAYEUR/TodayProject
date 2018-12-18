@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     'bootstrap3',
     'datetimewidget',
     'easy_maps',
@@ -150,3 +152,5 @@ with open('/etc/easy_map_key') as f:
 LOGIN_URL = 'connection:login'
 
 ALLOWED_HOSTS = ['127.0.0.1:8000']
+
+SITE_ID = 1
