@@ -38,7 +38,7 @@ class TestUrlForUpdate(TestCase):
     fixtures = FIXTURES
 
     def test_url_without_admin_access(self):
-        url = '/paris/test-update'
+        url = '/update-events/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
@@ -47,7 +47,7 @@ class TestUrlForUpdate(TestCase):
         self.assertTrue(user.is_superuser)
 
         self.client.login(username='machin', password='machinchose')
-        url = '/paris/test-update'
+        url = '/update-events/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
