@@ -11,7 +11,7 @@ from django.contrib.sites.models import Site
 def set_sites_arguments(apps, schema_editor):
     site = Site()
     site.domain = ALLOWED_HOSTS[0]
-    site.name = ALLOWED_HOSTS[0].split('.')
+    site.name = ALLOWED_HOSTS[0].split('.')[0]
     site.save()
 
 
