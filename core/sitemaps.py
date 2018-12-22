@@ -17,7 +17,7 @@ class StaticSitemap(Sitemap):
     changefreq = 'yearly'
 
     def items(self):
-        return ['index',
+        urls = ['index',
                 'contact',
                 'team',
                 'CGU',
@@ -27,6 +27,8 @@ class StaticSitemap(Sitemap):
                 'presentation',
                 'charte',
                 'explain_categories']
+
+        return ['core:' + url for url in urls]
 
     def location(self, item):
         return reverse(item)
