@@ -68,6 +68,6 @@ software-center-aptd-plugins==0.0.0
 SQLAlchemy==1.2.5
 subprocess32==3.2.7
 Twisted==19.7.0
-urllib3==1.22
+urllib3==1.24.2
 wstools==0.4.3
 zope.interface==4.1.3
